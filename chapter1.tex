@@ -1,0 +1,184 @@
+%----------------------------------------------------------------------------
+\chapter{Korábbi munkám áttekintése}
+%----------------------------------------------------------------------------
+%----------------------------------------------------------------------------
+\section{Rövid ismertetõ}
+%----------------------------------------------------------------------------
+BSc-s szakdolgozatom keretében egy komponens alapú játékmotort készítettem, melyet meglevõ
+megjelenítési és fizikai alrendszereket felhasználva készítettem el. A felhasznált technológiákról
+részletesebben az \autoref{subsec:3rdparty} -ben térek ki.
+
+az engine-t dll-be fordítottam, ezt használta a példa alkalmazás
+%----------------------------------------------------------------------------
+\section{A komponens alapú megközelítés}
+%----------------------------------------------------------------------------
+
+%----------------------------------------------------------------------------
+\subsection{Öröklés esetén felmerülõ problémák}
+%----------------------------------------------------------------------------
+Képzeljük el a következõt: öröklésen alapú rendszert akarunk létrehozni, melynek alapja egy absztrakt
+õsosztály, \textit{GameObject} néven. Ebbõl az õsosztályból örököltetünk egy \textit{Dynamic} és egy
+\textit{Static} osztályt, melyek a mozgó és nem mozgó játékobjektumokat reprezentálják.
+De ezek még mindig absztrakt osztályok, vagyis nem lehet õket példányosítani.
+Ahhoz, hogy objektumokat kapjunk, további leszármazásokat kell tennünk. Legyen egy \textit{Dynamic}
+leszármazott \textit{Car} néven, illetve egy \textit{Static} leszármazott \textit{House} néven.
+Ezeken felül ha létrehozunk egy \textit{Caravan} osztályt, mely származik a \textit{Car} és a
+\textit{House} osztályból is, akkor máris fatális logikai hibába ütköztünk, hiszen a \textit{Caravan}
+az egyszerre \textit{Dynamic} és \textit{Static} is, ami természetesen ellentmondáshoz vezet (\figref{BadInheritance} ábra).
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=40mm, keepaspectratio]{figures/bad_inheritance.png}
+\caption{Ellentmondás: a Caravan egyszerre Dynamic és Static is} 
+\label{fig:BadInheritance}
+\end{figure}
+
+Az olvasó gondolataiban persze jogosan megfogalmazódhat, hogy ezt az egyszerû rendszert
+le lehetne cserélni egy olyanra, ahol problémamentesen megférne egymás mellet az autó, a ház illetve
+a lakókocsi osztály is. Ez így is van, de a gyakorlatban nem három, hanem sokkal több játékobjektummal
+kell dolgozniuk a programozóknak, s egy hatalmas öröklési rendszerbe beszúrni egy újabb típusú
+játékobjektumot sokszor vezethet hasonló anomáliákhoz, mint amilyet az elõbbiekben ismertettem.
+
+Ezek után már talán nem is olyan meglepõ, hogy az iparban manapság nem az öröklésen alapuló rendszereket
+részesítik elõnyben. A továbbiakban egy alternatív megközelítést ismertetek.
+
+%----------------------------------------------------------------------------
+\subsection{Leszármazás helyett tartalmazás}
+%----------------------------------------------------------------------------
+Ebben a rendszerben kizárólag egyetlen játékobjektum osztály van, illetve ezen kívül vannak komponensek
+is. Minden komponens egyetlen jól meghatározott funkcionalitásért felel, például a kirajzolásért, a
+fizikáért, stb. Általában ilyen rendszerek esetén a felhasználónak is lehetõsége van új komponensek
+létrehozására.
+
+A módszer lényege, hogy a játékobjektum tulajdonságait kizárólag az határozza meg, hogy milyen típusú
+komponensek vannak hozzárendelve, vagyis a játékobjektumtól elcsatoljuk annak tulajdonságait (\figref{ComponentBased} ábra).
+Ez egyszerre lehet áldás és átok is. Áldás, hiszen egy ilyen rendszer sokkal rugalmasabb és karbantarthatóbb lehet,
+mint az öröklésen alapuló megoldás (gondoljunk csak arra, hogy az objektumok tulajdonságait dinamikusan,
+futás közben is nagyon egyszerûen módosíthatjuk), emellett viszont átok is egyben, hiszen egy ilyen rendszer
+megvalósításához el kell vonatkoztatnunk attól az objektumorientált szemléletmódtól, amiben
+egyébként a programozók jelentõs hányada képes gondolkodni.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=70mm, keepaspectratio]{figures/component_based.png}
+\caption{Funkcionalitás elcsatolása az objektumtól}
+\label{fig:ComponentBased}
+\end{figure}
+
+Ennek a módszernek a segítségével az elõzõ szakaszban felvetett problémát egyszerûen meg lehet oldani.
+Ehhez létre kell hozni három \textit{GameObject} példányt a megfelelõ komponensekkel. A \textit{Car}
+objektumhoz a \textit{WheelComponent} komponenst, a \textit{House} objektumhoz a \textit{KitchenComponent}
+komponenst illetve a \textit{Caravan} objektumhoz mindkét elõbb említett komponenst
+hozzárendeljük (\figref{SolutionWithComponents} ábra).
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=60mm, keepaspectratio]{figures/all_compbased.png}
+\caption{A feladat megoldása komponensekkel}
+\label{fig:SolutionWithComponents}
+\end{figure}
+
+%----------------------------------------------------------------------------
+\section{Felhasznált technológiák}
+%----------------------------------------------------------------------------
+
+%----------------------------------------------------------------------------
+\subsection{Programozási nyelv és fejlesztõkörnyezet}
+%----------------------------------------------------------------------------
+Visual Studio 2015 és C++11
+%----------------------------------------------------------------------------
+\subsection{3rdparty alrendszerek}
+\label{subsec:3rdparty}
+%----------------------------------------------------------------------------
+Természetesen nem volt - és nem is lehetett - célja a szakdolgozatomnak, hogy minden egyes
+funkcionalitást saját magam implementáljak, hiszen ennek a véghez vitele túlmutatott volna a tantárgy terjedelmi és idõkorlátain. Ennek megfelelõen a fontosabb részfeladatokhoz már meglevõ, ingyenes és
+platform-független eszközöket használtam fel, melyeket a továbbiakban ismertetek.
+%----------------------------------------------------------------------------
+\subsubsection{OGRE 3D}
+%----------------------------------------------------------------------------
+A játékmotorok egyik legalapvetõbb funkcionalitása a virtuális világ megjelenítésének képessége.
+Ennek megvalósításához különféle grafikai alrendszereket használnak fel, melyek lehetnek a motortól teljesen külön váló külsõ könyvtárak, vagy éppen a motorhoz fejlesztett belsõ eszközök is. Az én megvalósításomban nem volt cél egy ilyen belsõ eszköz megvalósítása, így egy erre a célra alkalmas külsõ könyvtárat, az OGRE-t használtam fel, melyet az alábbiakban ismertetek.
+
+Az OGRE (\textbf{O}bject-Oriented \textbf{G}raphics \textbf{R}endering \textbf{E}ngine), vagyis
+az objektumorientált grafikai megjelenítõ motor egy színtér alapú, rugalmas 3D grafikai motor,
+melyet C++ nyelven készítettek. Célja, hogy könnyebbé tegye a fejlesztõk számára olyan alkalmazások készítését, melyek hardveresen gyorsított grafikai megjelenítéseket is igénybe vehetnek. Ez a könyvtár elvonatkoztat az alatta levõ grafikai könyvtáraktól (mint például DirectX, OpenGL), s ezek használatához
+biztosít egy egységes interfészt a szoftverrendszer többi szereplõje számára.
+
+Jónéhány grafikai motorral ellentétben tervezés-orientált, s nem funkció-orientált módon készült, vagyis a fejlesztés során a letisztult szoftver-struktúra legalább olyan fontos volt, mint a megvalósított funkciók mennyisége. Ennek köszönhetõen kellõen általános lett ahhoz, hogy bármilyen típusú játék elkészítéséhez megfelelõen alkalmazható legyen. Ezek mellett a meglehetõsen gazdag dokumentációja is hozzájárult ahhoz, hogy ilyen mértékben elterjedjen a játékfejlesztõk körében.
+
+Elterjedtségének ellenére azonban az OGRE népszerûsége folyamatosan csökken. Ez többek között
+betudható annak, hogy a fejlesztõi közösség az utóbbi idõben nem mutatott megfelelõ aktivitást
+(a Visual Studio 2015-höz fordított 1.9-es SDK 2016 decemberében jelent meg, s azt is csak egy fórumozó kommentjében lehetett megtalálni), illetve magyarázható azzal a tendenciával is, hogy manapság a játékfejlesztõk elõnyben részesítik azokat a szoftver-rendszereket, melyek nem csak a megjelenítésért, hanem más funkcionalitások elvégzéséért is felelõsek. Ez azonban nem kizárólag az OGRE problémája, hiszen általánosságban elmondható, hogy az általános célú játékmotorok kezdik kiszorítnani a piacról a funkció-specifikus motorokat.
+%----------------------------------------------------------------------------
+\subsubsection{OIS}
+%----------------------------------------------------------------------------
+
+Object Oriented Input System
+
+OGRE-tol fuggetlen???
+
+%----------------------------------------------------------------------------
+\subsubsection{Boost}
+%----------------------------------------------------------------------------
+C++ konyvtarcsomag, wikipedia es google segit
+
+en explcite nem hasznalom, az OGRE-nek kell
+
+
+%----------------------------------------------------------------------------
+\subsubsection{Bullet}
+%----------------------------------------------------------------------------
+TODO atdolgozni
+
+Egy játékmotornak képesnek kell lennie szimulálni a fizikai valóság törvényeit,
+különben a játékprogramozók nem használnák fel munkájukhoz. Ezen alrendszer
+hiányában ugyanis az õ feladatuk lenne ezt a funkcionalitást megvalósítani a
+játéklogika-oldalon, ami túl nagy árat jelentene számukra. Éppen ezért valamiféle
+fizikai rendszert az én motoromban is meg kellett valósítani, melyet az elõbbiekben leírt
+módon nem én készítettem el, hanem egy külsõ megoldást használtam fel, melynek
+neve Bullet. Ennek a bemutatását teszem meg az alábbiakban.
+
+A Bullet egy fizikai motor, mely ütközés detektálásért, illetve puha és merev
+testek fizikai szimulációjáért felelõs. Elõszeretettel használják számítógépes
+játékokban és animációs filmekben is. A szoftver fõ fejlesztõje Erwin Coumans, aki a
+szakdolgozatom írása idején a Google alkalmazottja. Az eszköz jelenlegi legfrissebb
+stabil verziója a 2.83.7-es, melyet 2016.01.09.-én adtak ki.
+
+Ez a fizikai könyvtár ingyenesen felhasználható és nyílt forráskódú, továbbá
+több platformon is mûködik, ezek miatt ez az egyik legnépszerûbb fizikai motor ma a
+piacon. Fõbb funkciói között megemlítendõ a merev test és puha test szimuláció
+diszkrét és folytonos ütközésdetektálással, ezek mellett tartalmaz néhány ütközési alakot
+(collision shape) is, mint például gömb, téglatest, henger, vagy éppen kúp, illetve
+lehetõvé teszi puha testek beépített támogatását ruhák, kötelek és deformálható
+objektumok megvalósításával.
+
+Ami a piaci alkalmazását illeti, a számítógépes játékok területén ezt a szoftvert
+használták fizikai szimulációkhoz a Rockstar Games számos alkotásánál (GTA IV,
+GTA V, Red Dead Redemption), az Activision cég Blood Drive nevezetû játékánál,
+vagy éppen a DIRT sorozat összes részénél. Jó néhány hollywood-i alkotás is
+alkalmazta már a Bullet-et merev testek fizikai szimulációinál a speciális effektek
+megalkotásához. Példaként megemlíthetõ a Shrek 4 a PDI/Dreamworks-tõl, vagy a
+Framestore 2009-es közremûködésével létrejött Sherlock Holmes film.
+
+A könyvár használatának elõnyei között megemlítendõ, hogy pontos
+szimulációkat képes végezni rövid idõ alatt, aminek köszönhetõen nagy népszerûségre
+tett szert a piacon az évek során. Hátrányaként felróható a jól dokumentáltság hiánya, de
+ez magyarázható azzal, hogy nyílt forráskódú mivolta miatt túl dinamikusan fejlõdik
+ahhoz, hogy megfelelõ mennyiségû és minõségû dokumentáció álljon hozzá
+rendelkezésre.
+%----------------------------------------------------------------------------
+\subsubsection{TinyXML}
+%----------------------------------------------------------------------------
+Kicsi, egyszerû, operációs rendszer független XML feldolgozó a C++ nyelvhez.
+Nyílt forráskódú, szabad szoftver.
+%----------------------------------------------------------------------------
+\subsection{Verziókezelõ rendszer}
+%----------------------------------------------------------------------------
+
+%----------------------------------------------------------------------------
+\subsubsection{Verziókezelõ rendszerekrõl általában}
+%----------------------------------------------------------------------------
+
+%----------------------------------------------------------------------------
+\subsubsection{A Git verziókezelõ rendszer ismertetése}
+%----------------------------------------------------------------------------

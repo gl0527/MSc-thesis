@@ -1,0 +1,91 @@
+%----------------------------------------------------------------------------
+\chapter{Korábbi munkám átdolgozása}
+%----------------------------------------------------------------------------
+
+%----------------------------------------------------------------------------
+\section{Projektek build-elése}
+%----------------------------------------------------------------------------
+
+%----------------------------------------------------------------------------
+\subsection{Build-elési idõ csökkentése}
+%----------------------------------------------------------------------------
+A build idõ C++ projektek esetén egy fontos metrika, hiszen ennek a nyelvnek az egyik leglassabb
+a build-elése. Eddig nem tettem erõfeszítéseket ennek csökkentésére, de kénytelen voltam, meg ez
+amúgy is egyre csak rosszabb lett volna a kódbázis méretének növekedésével.
+Függvénydefiníciók számának csökkentése, ami miatt kevesebb includ-olás kell a header-ökben. Ez
+azért lényeges, mert ha egy header változik, akkor nem csak azt kell újrafordítani, hanem az összes
+olyan fájlt is, mely õt include-olja. Tehát ezzel a megközelítéssel csökkenteni lehet a build idõt.
+A másik elõny az implicite inline-nak deklarált függvények elkerülése. Ennek hatáskörét ma már jobb
+a fordítókra bízni. Precompiled header-ök? (minél nagyobb és minél ritkábban változó dolgokat kell beletenni /
+beinclude-olni)
+Forward declaration-ök használata a header fajlokban
+include guard-ok hasznalata a pragma once mellett
+tranzitiv include-ok csokkentese
+=> a lényeg: a header-ökben levõ include-ok számának és méretének csökkentése
+
+%----------------------------------------------------------------------------
+\subsection{Binárisok méreteinek minimalizálása}
+%----------------------------------------------------------------------------
+DLL_EXPORT-ok minimalizalasa
+
+a jatek merete 475KB-rol 290 KB-ra csokkent
+
+az engine merete 3.35MB-rol 3.29MB-ra csokkent
+
+ezek persze csak hozzavetoleges adatok, nagyobb pontossagnak nincs ertelme
+
+%----------------------------------------------------------------------------
+\subsection{CMake használata}
+%----------------------------------------------------------------------------
+ide kell minden a cmake-rol
+
+hátha más platformon is mûködne a programom
+
+a visual studio beállításai között matatni sem leányálom + könnyû elrontani
+nagy projekteknél ez egyszerûbb, mint mindig kézzel beállítani a dependenciákat a user-eknél
+
+a visual studio nem szemeteli tele a forras konyvtarakat
+
+A projekt könyvtárszerkezetének kialakítása
+
+%----------------------------------------------------------------------------
+\section{XML-feldolgozó módosítása}
+%----------------------------------------------------------------------------
+namespace-esites
+%----------------------------------------------------------------------------
+\section{Erõforrások kezelése}
+%----------------------------------------------------------------------------
+Korábban nem fordítottam kellõ figyelmet az erõforrások kezelésére, hiszen lényegtelen volt, hogy
+milyen fájlszerkezetben vannak elhelyezve, illetve milyen módon vannak betöltve. Csak az számított,
+hogy a betöltés sikeres legyen. Ezzel nem is volt gond addig, amíg a motor illetve a hozzá tartozó példa alkalmazás kis méretû volt, s kevés erõforrást használt.
+
+Viszont ahogy nõtt a felhasználandó erõforrások száma, úgy kezdett egyre nehézkesebbé válni
+a kezelésük. A rengeteg fájl egyetlen mappába sûrítve átláthatatlanná tette azt, hogy mely
+erõforrások tartoznak össze, s melyek nem. Továbbá azt sem volt triviális kideríteni, hogy
+mely erõforrások redundánsak, vagy éppen használaton kívüliek a példa alkalmazás által.
+
+A problémák megoldására a motor oldalon ``beégetett'' elérési út helyett config fájlokat kezdtem
+el használni, s azokat beparszolni betöltéskor. Emellett az erõforrások tárolási módján is változtattam.
+Ezelõtt az erõforrásokat típusuk szerint tároltam (a mesh-ek együtt, a textúrák együtt, a materialok
+együtt stb.), mostantól viszont az erõforrásokat objektumonként tárolom, ami azt jelenti, hogy egy
+adott objektumhoz tartozó fájlok egy egységben foglalnak helyett, jól elkülönítve a többi
+erõforrástól.
+
+Ennek a megoldásnak talán a legnagyobb elõnye, hogy új erõforrások illetve elérési utak felvétele után a programot nem kell újrafordítani (hiszen ettõl a config fájl parszolása nem változik meg),
+így jelentõs idõt lehet megtakarítani. Emellett ha egy másik játékban is használni szeretnék egy objektumot, akkor nem kell ``összevadászni'' a hozzá tartozó erõforrásokat a különbözõ almappákból,
+tehát ezzel a megoldással az erõforrások újra felhasználhatóak más kontextusban is.
+Végül, de nem utolsó sorban mivel ezek az erõforrásokból álló egységek tömörítve foglalnak helyet a számítógép háttértárán (.zip fájlok), így tárterületet is lehet spórolni ezzel a megoldással.
+
+%----------------------------------------------------------------------------
+\section{Anyagok leírása}
+%----------------------------------------------------------------------------
+material scriptek es shaderek modositasa
+
+átállás directx-rol opengl-re
+
+hlsl helyett glsl
+
+ez az ogre verzio nem a directx9-et, hanem a 11-et támogatja, amiben már
+nincs fixed function pipeline
+
+esetleges multiplatformositas miatt is jobb az opengl
