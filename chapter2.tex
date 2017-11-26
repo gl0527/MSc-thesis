@@ -9,24 +9,77 @@
 %----------------------------------------------------------------------------
 \subsection{Build-elési idõ csökkentése}
 %----------------------------------------------------------------------------
-A build idõ C++ projektek esetén egy fontos metrika, hiszen ennek a nyelvnek az egyik leglassabb
-a build-elése. Eddig nem tettem erõfeszítéseket ennek csökkentésére, de kénytelen voltam, meg ez
-amúgy is egyre csak rosszabb lett volna a kódbázis méretének növekedésével.
-Függvénydefiníciók számának csökkentése, ami miatt kevesebb includ-olás kell a header-ökben. Ez
-azért lényeges, mert ha egy header változik, akkor nem csak azt kell újrafordítani, hanem az összes
-olyan fájlt is, mely õt include-olja. Tehát ezzel a megközelítéssel csökkenteni lehet a build idõt.
-A másik elõny az implicite inline-nak deklarált függvények elkerülése. Ennek hatáskörét ma már jobb
-a fordítókra bízni. Precompiled header-ök? (minél nagyobb és minél ritkábban változó dolgokat kell beletenni /
-beinclude-olni)
-Forward declaration-ök használata a header fajlokban
-include guard-ok hasznalata a pragma once mellett
-tranzitiv include-ok csokkentese
-=> a lényeg: a header-ökben levõ include-ok számának és méretének csökkentése
+C++ projektek esetében nem lehet figyelmen kívül hagyni a build-elési idõ hosszát, hiszen ez az
+egyik leglassabban build-elõ programozási nyelv, ami a komplexitásából adódik. Korábbi munkáim
+során nem törõdtem ezzel a metrikával, hiszen a projektek mérete és bonyolultsága miatt az
+újrabuild-elések ideje sem volt számottevõ, viszont a szakdolgozatom eredményeként megszületett
+szoftverre ezt nem lehetett elmondani. A fejlesztési idõ vége felé kifejezetten hosszú ideig tartott
+egy-egy kisebb módosítás utáni build-elés ideje is, ezért határoztam el azt, hogy idõmet és energiámat
+nem sajnálva megpróbálom csökkenteni a build-elési folyamat idejét, hiszen ha ezt nem tenném meg, akkor
+a késõbbi -- feltehetõleg nagyobb -- kódbázis esetén a várakozási idõk még hosszabbak lennének.
 
+Az legfontosabb követendõ elv volt számomra a header fájlok szerepének csökkentése. Ez azt
+jelenti, hogy minimalizálni kell az \verb+#include+-okat illetve a függvény definíciókat ezekben
+a fájlokban. Mindez azért hasznos, mert így csökkenthetõ a header fájlok változási gyakorisága, így
+ritkábban kell azokat illetve az azokat használó fájlokat újrafordítani. Tehát egy source fájlban
+történõ változás sokkal ``olcsóbb'', mint egy header-beli változás, mivel a source fájlt nem 
+\verb+#include+-olja senki, így a változása nem érint más fájlokat.
+
+A header fájlokban levõ \verb+#include+-ok számának minimalizálására egy bevált módszer az elõdeklarálás
+módszere. Ennek az a lényege, hogy ha egy header fájlban használok egy szimbólum nevet (pl.: egy osztály
+neve), viszont nem használom annak definícióját (pl.: egy osztály tagfüggvényét), akkor igazából
+abban a fájlban nincs is szükség a használt szimbólum definíciójára, csak a nevének elõdeklarálására.
+Ebben az esetben a tényleges definíció használata -- tehát a tényleges \verb+#include+-olás -- a source fájlban történik meg. Megjegyzendõ, hogy ez a módszer hatékonyan használható a körkörös dependenciák problémájának feloldására is. Mindezeken túl a dependenciák számának kordában tartására is megfelelõ
+módszer az \verb+#include+-ok számának minimalizálása, hiszen gondoljunk csak bele, ha egy header
+fájlt valamely kódrészbe beemelek, akkor nem csak annak a tartalma, hanem az õ \verb+#include+
+fájljainak a tartalma is beemelõdik, és így tovább, tranzitív módon. Így könnyen elõfordulhat, hogy
+a ténylegesen beemelt kódmennyiségnek csak a töredékét szeretnénk ténylegesen használni.
+
+\begin{lstlisting}
+// forward declaration of the class A
+class A;
+
+class B
+{
+	A* pA;	// there is no need for the definition of class A
+};
+\end{lstlisting}
+
+Egy másik technika is a header fájlokhoz köthetõ, miszerint használjunk include guard-okat. Ennek
+a techikának a lényege, hogy a header tartalmát a compiler csak akkor parszolja be, ha azt még nem
+tette meg. Ezt header fájlonként külön makrók definiálásával tehetjük meg. Modernebb fordítók támogatják
+a \verb+#pragma once+ preprocesszor parancsot is, melynek használatával ugyan azt az eredményt lehet
+elérni, mint az include guard-os makrók definiálásával. Az én kódjaimban a két ismertetett megoldást
+együtt használom, melynek magyarázata <INSERT MAGYARÁZAT HERE>.
+
+\begin{lstlisting}
+#ifndef INCLUDE_GUARD
+#define INCLUDE_GUARD
+
+#pragma once
+
+/* header content goes here*/
+
+#endif
+\end{lstlisting}
+
+Az imént említett módszerek mellett népszerû megoldás az elõfordított header fájlok használata is.
+Ennek a technikának az a lényege, hogy létrehozunk egy olyan header fájlt, melyben az olyan
+\verb+#include+-olások szerepelnek, melyek nagy méretûek, sok helyen kell használni õket illetve
+soha -- vagy csak nagyon ritkán -- változnak. Ennek a fájlnak a létrehozása után megmondhatjuk
+a kurrens fordítónak -- ha az támogatja --, hogy kezelje ezt a header fájlt elõfordítottként, vagyis
+ezt fordítsa le elsõnek, és egyetlen egyszer, s linkeléskor a már meglevõ object fájlt kelljen
+használni. Ez is tipikusan egy olyan módszer, mellyel esetenként többszörös gyorsulást lehet
+elérni az eredeti build-elési módszerhez képest, viszont ha nem megfelelõen használják, akkor
+akár többet is árthat, mint használhat.
+
+A felsorolt módszereken kívül természetesen még számos más technika is létezik a C++-os projektek
+build-elési idejének csökkentésére, s a lista valószínûleg a jövõben még tovább fog gyarapodni, hiszen
+az gyorsításra való igény továbbra is megvan a fejlesztõk körében.
 %----------------------------------------------------------------------------
 \subsection{Binárisok méreteinek minimalizálása}
 %----------------------------------------------------------------------------
-DLL_EXPORT-ok minimalizalasa
+dllexportok minimalizalasa
 
 a jatek merete 475KB-rol 290 KB-ra csokkent
 
@@ -72,7 +125,7 @@ adott objektumhoz tartozó fájlok egy egységben foglalnak helyett, jól elkülönítv
 erõforrástól.
 
 Ennek a megoldásnak talán a legnagyobb elõnye, hogy új erõforrások illetve elérési utak felvétele után a programot nem kell újrafordítani (hiszen ettõl a config fájl parszolása nem változik meg),
-így jelentõs idõt lehet megtakarítani. Emellett ha egy másik játékban is használni szeretnék egy objektumot, akkor nem kell ``összevadászni'' a hozzá tartozó erõforrásokat a különbözõ almappákból,
+így jelentõs idõt lehet megtakarítani. Emellett ha egy másik játékban is használni szeretnék egy objektumot, akkor nem kell megkeresni a hozzá tartozó erõforrásokat a különbözõ almappákból,
 tehát ezzel a megoldással az erõforrások újra felhasználhatóak más kontextusban is.
 Végül, de nem utolsó sorban mivel ezek az erõforrásokból álló egységek tömörítve foglalnak helyet a számítógép háttértárán (.zip fájlok), így tárterületet is lehet spórolni ezzel a megoldással.
 

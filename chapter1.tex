@@ -85,7 +85,7 @@ hozzárendeljük (\figref{SolutionWithComponents} ábra).
 %----------------------------------------------------------------------------
 \subsection{Programozási nyelv és fejlesztõkörnyezet}
 %----------------------------------------------------------------------------
-Visual Studio 2015 és C++11
+Visual Studio 2010
 %----------------------------------------------------------------------------
 \subsection{3rdparty alrendszerek}
 \label{subsec:3rdparty}
@@ -101,8 +101,7 @@ Ennek megvalósításához különféle grafikai alrendszereket használnak fel, melyek 
 
 Az OGRE (\textbf{O}bject-Oriented \textbf{G}raphics \textbf{R}endering \textbf{E}ngine), vagyis
 az objektumorientált grafikai megjelenítõ motor egy színtér alapú, rugalmas 3D grafikai motor,
-melyet C++ nyelven készítettek. Célja, hogy könnyebbé tegye a fejlesztõk számára olyan alkalmazások készítését, melyek hardveresen gyorsított grafikai megjelenítéseket is igénybe vehetnek. Ez a könyvtár elvonatkoztat az alatta levõ grafikai könyvtáraktól (mint például DirectX, OpenGL), s ezek használatához
-biztosít egy egységes interfészt a szoftverrendszer többi szereplõje számára.
+melyet C++ nyelven készítettek\cite{OGRE}. Célja, hogy könnyebbé tegye a fejlesztõk számára olyan alkalmazások készítését, melyek hardveresen gyorsított grafikai megjelenítéseket is igénybe vehetnek. Ez a könyvtár elvonatkoztat az alatta levõ grafikai könyvtáraktól (mint például DirectX, OpenGL), s ezek használatához biztosít egy egységes interfészt a szoftverrendszer többi szereplõje számára.
 
 Jónéhány grafikai motorral ellentétben tervezés-orientált, s nem funkció-orientált módon készült, vagyis a fejlesztés során a letisztult szoftver-struktúra legalább olyan fontos volt, mint a megvalósított funkciók mennyisége. Ennek köszönhetõen kellõen általános lett ahhoz, hogy bármilyen típusú játék elkészítéséhez megfelelõen alkalmazható legyen. Ezek mellett a meglehetõsen gazdag dokumentációja is hozzájárult ahhoz, hogy ilyen mértékben elterjedjen a játékfejlesztõk körében.
 
@@ -112,7 +111,6 @@ betudható annak, hogy a fejlesztõi közösség az utóbbi idõben nem mutatott megfel
 %----------------------------------------------------------------------------
 \subsubsection{OIS}
 %----------------------------------------------------------------------------
-
 Object Oriented Input System
 
 OGRE-tol fuggetlen???
@@ -124,53 +122,29 @@ C++ konyvtarcsomag, wikipedia es google segit
 
 en explcite nem hasznalom, az OGRE-nek kell
 
-
 %----------------------------------------------------------------------------
 \subsubsection{Bullet}
 %----------------------------------------------------------------------------
-TODO atdolgozni
+A virtuális világ megjelenítése csak a legritkább esetben elegendõ egy grafikus alkalmazás - 
+például egy számítógépes játék - elkészítéséhez. Manapság szinte kötelezõ eleme a játékmotoroknak
+valamilyen fizikai motor, mely a programozók által felparaméterezett fizikai világ viselkedését képes
+szimulálni - bizonyos keretek között - valós idõben.
 
-Egy játékmotornak képesnek kell lennie szimulálni a fizikai valóság törvényeit,
-különben a játékprogramozók nem használnák fel munkájukhoz. Ezen alrendszer
-hiányában ugyanis az õ feladatuk lenne ezt a funkcionalitást megvalósítani a
-játéklogika-oldalon, ami túl nagy árat jelentene számukra. Éppen ezért valamiféle
-fizikai rendszert az én motoromban is meg kellett valósítani, melyet az elõbbiekben leírt
-módon nem én készítettem el, hanem egy külsõ megoldást használtam fel, melynek
-neve Bullet. Ennek a bemutatását teszem meg az alábbiakban.
+Az ilyen alrendszerek elkészítése közel sem triviális feladat, így levéve ezt a terhet a
+játéklogika-programozók válláról az én motorom is tartalmaz fizikai alrendszert, melynek megvalósításához
+a Bullet nevû fizikai motort használtam fel\cite{Bullet}.
 
-A Bullet egy fizikai motor, mely ütközés detektálásért, illetve puha és merev
-testek fizikai szimulációjáért felelõs. Elõszeretettel használják számítógépes
-játékokban és animációs filmekben is. A szoftver fõ fejlesztõje Erwin Coumans, aki a
-szakdolgozatom írása idején a Google alkalmazottja. Az eszköz jelenlegi legfrissebb
-stabil verziója a 2.83.7-es, melyet 2016.01.09.-én adtak ki.
+A Bullet ingyenes, platform független, nyílt forráskódú fizikai motor. Fõbb funkciói között megemlítendõ
+a merev- és puhatest szimuláció illetve a diszkrét és folytonos ütközés-detektálás. Jelenlegi legfrissebb
+stabil verziója a 2.87-es.
 
-Ez a fizikai könyvtár ingyenesen felhasználható és nyílt forráskódú, továbbá
-több platformon is mûködik, ezek miatt ez az egyik legnépszerûbb fizikai motor ma a
-piacon. Fõbb funkciói között megemlítendõ a merev test és puha test szimuláció
-diszkrét és folytonos ütközésdetektálással, ezek mellett tartalmaz néhány ütközési alakot
-(collision shape) is, mint például gömb, téglatest, henger, vagy éppen kúp, illetve
-lehetõvé teszi puha testek beépített támogatását ruhák, kötelek és deformálható
-objektumok megvalósításával.
-
-Ami a piaci alkalmazását illeti, a számítógépes játékok területén ezt a szoftvert
-használták fizikai szimulációkhoz a Rockstar Games számos alkotásánál (GTA IV,
-GTA V, Red Dead Redemption), az Activision cég Blood Drive nevezetû játékánál,
-vagy éppen a DIRT sorozat összes részénél. Jó néhány hollywood-i alkotás is
-alkalmazta már a Bullet-et merev testek fizikai szimulációinál a speciális effektek
-megalkotásához. Példaként megemlíthetõ a Shrek 4 a PDI/Dreamworks-tõl, vagy a
-Framestore 2009-es közremûködésével létrejött Sherlock Holmes film.
-
-A könyvár használatának elõnyei között megemlítendõ, hogy pontos
-szimulációkat képes végezni rövid idõ alatt, aminek köszönhetõen nagy népszerûségre
-tett szert a piacon az évek során. Hátrányaként felróható a jól dokumentáltság hiánya, de
-ez magyarázható azzal, hogy nyílt forráskódú mivolta miatt túl dinamikusan fejlõdik
-ahhoz, hogy megfelelõ mennyiségû és minõségû dokumentáció álljon hozzá
-rendelkezésre.
+Ami a piaci alkalmazását illeti, a számítógépes játékok területén ezt a szoftvert használták fizikai szimulációkhoz a Rockstar Games számos alkotásánál (GTA IV, GTA V, Red Dead Redemption), az Activision cég Blood Drive nevezetû játékánál, vagy éppen a DIRT sorozat összes részénél. Számos hollywood-i alkotás is
+alkalmazta már a Bullet-et merev testek fizikai szimulációinál a speciális effektek megalkotásához. Példaként megemlíthetõ a Shrek 4 a PDI/Dreamworks-tõl, vagy a Framestore 2009-es közremûködésével létrejött Sherlock Holmes film.
 %----------------------------------------------------------------------------
 \subsubsection{TinyXML}
 %----------------------------------------------------------------------------
-Kicsi, egyszerû, operációs rendszer független XML feldolgozó a C++ nyelvhez.
-Nyílt forráskódú, szabad szoftver.
+C++-ban írt, platformfüggetlen, nyílt forráskódú, ingyenes XML feldolgozó.
+
 %----------------------------------------------------------------------------
 \subsection{Verziókezelõ rendszer}
 %----------------------------------------------------------------------------
