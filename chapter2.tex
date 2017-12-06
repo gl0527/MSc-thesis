@@ -1,6 +1,9 @@
 %----------------------------------------------------------------------------
-\chapter{Korábbi munkám átdolgozása}
+\chapter{A keretrendszer átdolgozása}
 %----------------------------------------------------------------------------
+Ez a fejezet bemutatja azokat a módszereket, melyek segítségével módosítottam a szoftverkörnyezet
+felépítését annak érdekében, hogy annak build-elési módja, karbantarthatósága illetve bõvíthetõsége
+javuljon a korábbi rendszerhez képest.
 
 %----------------------------------------------------------------------------
 \section{Projektek build-elése}
@@ -29,16 +32,18 @@ A header fájlokban levõ \verb+#include+-ok számának minimalizálására egy bevált 
 módszere. Ennek az a lényege, hogy ha egy header fájlban használok egy szimbólum nevet (pl.: egy osztály
 neve), viszont nem használom annak definícióját (pl.: egy osztály tagfüggvényét), akkor igazából
 abban a fájlban nincs is szükség a használt szimbólum definíciójára, csak a nevének elõdeklarálására.
-Ebben az esetben a tényleges definíció használata -- tehát a tényleges \verb+#include+-olás -- a source fájlban történik meg. Megjegyzendõ, hogy ez a módszer hatékonyan használható a körkörös dependenciák problémájának feloldására is. Mindezeken túl a dependenciák számának kordában tartására is megfelelõ
+Ebben az esetben a tényleges definíció használata -- tehát a tényleges \verb+#include+-olás -- a source
+fájlban történik meg. Megjegyzendõ, hogy ez a módszer hatékonyan használható a körkörös dependenciák
+problémájának feloldására is. Mindezeken túl a dependenciák számának kordában tartására is megfelelõ
 módszer az \verb+#include+-ok számának minimalizálása, hiszen gondoljunk csak bele, ha egy header
 fájlt valamely kódrészbe beemelek, akkor nem csak annak a tartalma, hanem az õ \verb+#include+
 fájljainak a tartalma is beemelõdik, és így tovább, tranzitív módon. Így könnyen elõfordulhat, hogy
 a ténylegesen beemelt kódmennyiségnek csak a töredékét szeretnénk ténylegesen használni.
 
-\begin{lstlisting}
-// forward declaration of the class A
+\begin{lstlisting}[frame=single,float=!ht,
+caption={Példa elõdeklarálásra a C++ nyelvben}, label=ForwardDeclarationCpp]
+// forward declaration of class A
 class A;
-
 class B
 {
 	A* pA;	// there is no need for the definition of class A
@@ -52,7 +57,8 @@ a \verb+#pragma once+ preprocesszor parancsot is, melynek használatával ugyan az
 elérni, mint az include guard-os makrók definiálásával. Az én kódjaimban a két ismertetett megoldást
 együtt használom, melynek magyarázata <INSERT MAGYARÁZAT HERE>.
 
-\begin{lstlisting}
+\begin{lstlisting}[frame=single,float=!ht,
+caption={Include guard és pragma once együttes használata}, label=IncludeGuardsCpp]
 #ifndef INCLUDE_GUARD
 #define INCLUDE_GUARD
 
@@ -77,15 +83,33 @@ A felsorolt módszereken kívül természetesen még számos más technika is létezik a
 build-elési idejének csökkentésére, s a lista valószínûleg a jövõben még tovább fog gyarapodni, hiszen
 az gyorsításra való igény továbbra is megvan a fejlesztõk körében.
 %----------------------------------------------------------------------------
-\subsection{Binárisok méreteinek minimalizálása}
+\subsection{Binárisok méreteinek csökkentése}
 %----------------------------------------------------------------------------
-dllexportok minimalizalasa
+Mint ahogy arról korábban már írtam, a motort egy dinamikus könyvtárba fordítom bele.
+Ahhoz, hogy az egyes motorban implementált funkcionalitások a játéklogika oldalán is elérhetõek legyenek,
+explicite meg kell mondani a fordítóprogramnak, hogy azt tegye elérhetõvé a könyvtárt használók számára.
+Ezt gyakran úgy szokták megoldani, hogy ha egy osztálynak egy adott függvényére szükség van a könyvtáron
+kívül is, akkor az egész osztály kikerül a könyvtár publikus interfészére. Ez gyakran nem túl szerencsés,
+ugyanis legtöbbször ezzel a megoldással sok olyan dolgot is kiajánlunk a könyvtár használói számára,
+melyekre igazából nincs is szükségük. Ezzel a megközelítéssel éppen ezért indokolatlanul nagyra
+lehet növelni a könyvtár méretét.
 
-a jatek merete 475KB-rol 290 KB-ra csokkent
+Ennek a problémának a megoldására minimalizáltam a könyvtárba bekerülõ tartalmat, melynek hatására
+a motor mérete 3.35MB-ról 3.29MB-ra, a játék mérete 475KB-ról 290 KB-ra csökkent.
 
-az engine merete 3.35MB-rol 3.29MB-ra csokkent
+Ezek mellett kijavítottam egy régóta elhúzódó hibát, melynek az volt a kiváltó oka, hogy a Bullet-hez
+-- figyelmetlenségem miatt -- statikusan linkeltem a C Runtime-ot, melynek következtében a motoromnál
+is rá voltam kényszerülve a statikus linkelésre a linker error-ok elkerülése végett. A példajáték viszont
+továbbra is dinamikusan linkelte magához a C Runtime-ot, aminek következtében elõfordulhattak olyan
+esetek dinamikus memóriafoglalásnál, mikor pl. a motor oldalon foglalom le a memóriát, de a játék oldalon
+próbálom felszabadítani, ami a legjobb esetben is assert-et okoz, mivel a játék egy olyan memóriaterületet
+akar felszabadítani, amit nem is lát, mivel másik heap-en lett foglalva.
 
-ezek persze csak hozzavetoleges adatok, nagyobb pontossagnak nincs ertelme
+Ezt -- miután rájöttem a hiba forrására -- már triviális volt kijavítani, hiszen csak a megfelelõ
+Bullet-hez tartozó statikus könyvtárakat kellett újrafordítani úgy, hogy dinamikusan linkeljék
+magukhoz a C Runtime-ot, majd az engine-re is alkalmazva ezt a beállítást a fentebb említett
+problémák megszûntek. A javítás után az engine mérete -- mivel már nem tartalmazta magában a
+C Runtime-ot -- lecsökkent 1.8MB-ra.
 
 %----------------------------------------------------------------------------
 \subsection{CMake használata}
@@ -110,7 +134,8 @@ namespace-esites
 %----------------------------------------------------------------------------
 Korábban nem fordítottam kellõ figyelmet az erõforrások kezelésére, hiszen lényegtelen volt, hogy
 milyen fájlszerkezetben vannak elhelyezve, illetve milyen módon vannak betöltve. Csak az számított,
-hogy a betöltés sikeres legyen. Ezzel nem is volt gond addig, amíg a motor illetve a hozzá tartozó példa alkalmazás kis méretû volt, s kevés erõforrást használt.
+hogy a betöltés sikeres legyen. Ezzel nem is volt gond addig, amíg a motor illetve a hozzá tartozó
+példa alkalmazás kis méretû volt, s kevés erõforrást használt.
 
 Viszont ahogy nõtt a felhasználandó erõforrások száma, úgy kezdett egyre nehézkesebbé válni
 a kezelésük. A rengeteg fájl egyetlen mappába sûrítve átláthatatlanná tette azt, hogy mely
@@ -124,10 +149,13 @@ együtt stb.), mostantól viszont az erõforrásokat objektumonként tárolom, ami azt
 adott objektumhoz tartozó fájlok egy egységben foglalnak helyett, jól elkülönítve a többi
 erõforrástól.
 
-Ennek a megoldásnak talán a legnagyobb elõnye, hogy új erõforrások illetve elérési utak felvétele után a programot nem kell újrafordítani (hiszen ettõl a config fájl parszolása nem változik meg),
-így jelentõs idõt lehet megtakarítani. Emellett ha egy másik játékban is használni szeretnék egy objektumot, akkor nem kell megkeresni a hozzá tartozó erõforrásokat a különbözõ almappákból,
+Ennek a megoldásnak talán a legnagyobb elõnye, hogy új erõforrások illetve elérési utak felvétele
+után a programot nem kell újrafordítani (hiszen ettõl a config fájl parszolása nem változik meg),
+így jelentõs idõt lehet megtakarítani. Emellett ha egy másik játékban is használni szeretnék egy
+objektumot, akkor nem kell megkeresni a hozzá tartozó erõforrásokat a különbözõ almappákból,
 tehát ezzel a megoldással az erõforrások újra felhasználhatóak más kontextusban is.
-Végül, de nem utolsó sorban mivel ezek az erõforrásokból álló egységek tömörítve foglalnak helyet a számítógép háttértárán (.zip fájlok), így tárterületet is lehet spórolni ezzel a megoldással.
+Végül, de nem utolsó sorban mivel ezek az erõforrásokból álló egységek tömörítve foglalnak helyet a
+számítógép háttértárán (.zip fájlok), így tárterületet is lehet spórolni ezzel a megoldással.
 
 %----------------------------------------------------------------------------
 \section{Anyagok leírása}

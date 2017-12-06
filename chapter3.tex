@@ -1,6 +1,13 @@
 %----------------------------------------------------------------------------
 \chapter{A motor bõvítése}
 %----------------------------------------------------------------------------
+Ez a fejezet tartalmazza a Bevezetõ fejezetben ismertetett feladataimnak a megoldásait.
+
+Elsõként bemutatja a játékobjektumok késleltetett létrehozásának megvalósítását, aztán az
+állapotgép alapú rendszerek taglalását követõen az animációs alrendszer és a mesterséges intelligencia
+alrendszer implementálását ismerteti. Ezt követõen részletezi a felhasználói felület létrehozásának módját.
+Végezetül a fejezet a -- már alapjaiben eddig is meglevõ -- hangrendszer illetve részecskerendszer
+továbbfejlesztésével illetve az elkészült rendszer áttekintésével zárul.
 
 %----------------------------------------------------------------------------
 \section{Játékobjektumok késleltetett létrehozása}
@@ -9,17 +16,46 @@
 %----------------------------------------------------------------------------
 \subsection{Motiváció}
 %----------------------------------------------------------------------------
+Korábban az XML parszolás azt határozta meg, hogy milyen legyen a betöltött virtuális világ a
+kezdeti idõpontjában. Nem volt lehetõség olyan objektumok definiálására, melyek példányosítását
+csak a virtuális világ egy késõbbi szakaszában lehetett volna véghez vinni.
 
-%----------------------------------------------------------------------------
-\subsection{Sablon metaprogramozási lehetõségek a C++ nyelvben}
-%----------------------------------------------------------------------------
-eloszor a sablonokrol kene egy altalanos bevezeto
+Igény viszont lett volna erre a funkcionalitásra, gondoljunk csak egy lõfegyverre, mely valamilyen
+lövedéket képes magából kibocsátani egy adott esemény -- például bal egérgomb lenyomása -- hatására.
+A lövedék leírásának természetesen helye van az XML leíró fájlban, mégsem szeretnénk, ha az azonnal
+betöltõdne. Persze azt sem tudhatjuk, hogy hány példányt definiáljunk a leíró fájlban, mert ez
+kizárólag a felhasználótól függ. Viszont azt sem szeretnénk, ha minden lövedék-betöltés elõtt az XML
+fájlhoz kellene fordulni, mert az nagyon lelassítaná a program futását (a háttértár elérési ideje
+nagyságrendekkel nagyobb a memória elérési idejénél).
 
-igazabol itt a leglenyegesebb dolog a variadic templates
+Másfelõl annak is van értelme, ha több féle lövedék típus létezik egy játékban, s ezeknek vannak közös
+tulajdonságaik. Ebben az esetben is hasznos lenne egy olyan absztrakt játékobjektum definíció
+az XML leírásban, melyet közvetlenül nem példányosítunk, viszont a tartalmát felhasználva
+-- esetleg azt módosítva -- konkrét játékobjektumokat lehet létrehozni.
 
 %----------------------------------------------------------------------------
 \subsection{Megvalósítás}
 %----------------------------------------------------------------------------
+Mindezen funkcionalitások megvalósítására lehetõvé tettem a motorom számára a játékobjektumok
+késleltetett létrehozását. A megvalósításnak a lényege, hogy minden komponenshez definiálok egy-egy
+leíró struktúrát, mely tartalmazza az összes olyan paramétert, mely átadható a hozzá tartozó
+komponensnek. A leíró struktúrák mellett létrehoztam egy \textit{GenericPrefab} nevû generikus osztályt,
+melynek feladata adott típusú létrehozó struktúra feltöltése és alkalmazása adott típusú komponensre.
+A \textit{GenericPrefab} osztály a nem generikus \textit{IPrefab} interfészbõl származik le, melynek
+a legfõbb létjogosultsága, hogy segítségével a különbözõ \textit{GenericPrefab} példányok
+eltárolhatók heterogén kollekcióban. Az összetartozó \textit{GenericPrefab} példányokat
+\textit{GameObjectCreator} példányban tárolom, melybõl szükség szerint lehet \textit{GameObject}
+példányokat gyártani. A \textit{GameObjectCreator} objektumok az \textit{ObjectManager}-ben
+foglalnak helyet.
+
+Ezen módosítások mellett módosítanom kellett a komponensek XML-bõl történõ beolvasásáért felelõs
+osztályokat is. A korábbiakkal ellentétben ugyanis ezek az objektumok már nem konkrét komponens
+leszármazottakat, hanem \textit{GenericPrefab}-okat hoznak létre. Szükség esetén természetesen
+a \textit{GenericPrefab} példányból azonnal lehet komponens leszármazottat is készíteni, tehát a régi
+funkcionalitás nem vész el. Viszont bõvül azzal, hogy a \textit{GenericPrefab} példányt elrakhatom egy
+\textit{GameObjectCreator}-ba egy -- vagy több -- késõbbi használat reményében.
+
+<DIAGRAM(OK)>
 
 %----------------------------------------------------------------------------
 \section{Állapotgép alapú rendszerek}
@@ -28,46 +64,51 @@ igazabol itt a leglenyegesebb dolog a variadic templates
 %----------------------------------------------------------------------------
 \subsection{Az állapotgépekrõl általánosságban}
 %----------------------------------------------------------------------------
-nyau, véges automaták, automataelméleti bevezetõ
+infoc + nyau, véges automaták, automataelméleti bevezetõ
 %----------------------------------------------------------------------------
 \subsection{A State tervezési minta}
 %----------------------------------------------------------------------------
-A tervezési mintákról általában
+A tervezési minták gyakran elõforduló szoftverfejlesztési problémákra adnak
+egy -- az ipar által elfogadott -- megoldást. Ez elsõre különösen hangozhat, hiszen egy
+probléma megoldásának számos módja lehet egy adott programozási nyelven, miért van szükség
+egyetlen megoldás kiemelésére? Természetesen ezek a megoldások csak ajánlások, használatukra nyílván
+nem is lehetne kötelezni a programozókat, ráadásul ezek az ajánlott megoldások esetenként nem is
+jelentik a ``legjobb'' megoldást a felmerülõ problémáinkra, ennek ellenére ezeknek a mintáknak
+a használata -- az ismertségük miatt -- mindenképpen ajánlott. A használatot ebben az esetben nem úgy
+kell érteni, hogy teljes mértékben azt valósítjuk meg, amit a minta állít, hanem hogy a minta által
+sugallt megoldási ötletet felhasználva készítjük el az implementációt. Ha így járunk el, akkor a
+tervezési mintákat ismerõ fejlesztõk könnyebben és így gyorsabban tudják értelmezni a kódjainkat.
+Ehhez kapcsolódóan megjegyzendõ, hogy  -- fõleg tapasztalatlan fejlesztõk körében -- nem a minták
+ignorálása, hanem épp ellenkezõleg, a minták túlhasználása szokta a gondot jelenteni. Magyarán a néhány
+kódsorral megoldható problémára is megpróbálnak ráhúzni valamilyen tervezési mintát, ami természetesen
+a kódbázis indokolatlan megnövekedéséhez vezet. Megítélni a minták használatának szükségességét
+jelentõs fejlesztõi tapasztalatot igényel.
 
-A State tervezési minta egy viselkedési minta<LINK>, mely egy állapotgépet implementál objektumorientált
-módon. Tehát ennek a mintának a segítségével egy objektum meg tudja változtatni a viselkedését, amikor a 
-belsõ állapota megváltozik.
-%----------------------------------------------------------------------------
-\subsubsection{Probléma}
-%----------------------------------------------------------------------------
-Egy objektum viselkedésének meg kell változnia abban az esetben, ha a belsõ állapota megváltozik.
-Az állapotok listáját dinamikusan kell kezelni (új állapotok felvétele + meglevõk módosítása ill. törlése)
-%----------------------------------------------------------------------------
-\subsubsection{Megoldás}
-%----------------------------------------------------------------------------
-Definiál egymástól független állapot-objektumokat, amelyek állapot-specifikus viselkedéseket zárnak egységbe.
-Természetesen ezek az állapotok közös interfészt valósítanak meg.
-Ennek megfelelõen az állapottal rendelkezõ objektum az állapot-specifikus viselkedést a kurrens állapotra delegálja.
-%----------------------------------------------------------------------------
-\subsubsection{Statikus viselkedés}
-%----------------------------------------------------------------------------
-osztálydiagram(ok)
-%----------------------------------------------------------------------------
-\subsubsection{Dinamikus viselkedés}
-%----------------------------------------------------------------------------
-szekvenciadiagram(ok)
-%----------------------------------------------------------------------------
-\subsubsection{Implementációs kérdések}
-%----------------------------------------------------------------------------
-singleton állapotok vagy nem, ... netes anyagok alapjan kitoltheto
-%----------------------------------------------------------------------------
-\subsubsection{Mérleg}
-%----------------------------------------------------------------------------
-elonyok vs. hatranyok - nem biztos, hogy ez a resz kell
-%----------------------------------------------------------------------------
-\subsubsection{Alkalmazás}
-%----------------------------------------------------------------------------
-milyen esetekben szoktak ezt a mintat alkalmazni?
+A State tervezési minta egy viselkedési minta, melynek célja az objektum viselkedésének megváltoztatása
+abban az esetben, ha a belsõ állapota módosul\cite{StatePattern}. Tehát feladata függõséget létrehozni
+az objektum viselkedése és állapota között.
+
+Ez a minta mindezt egy objektumorientált állapotgép implementálásával valósítja meg. Egymástól független
+állapot objektumokat definiál, melyek egy-egy állapothoz köthetõ viselkedést implementálnak.
+Ennek megfelelõen az állapottal rendelkezõ objektum az állapot-specifikus viselkedést a kurrens
+állapotra delegálja, melyet egy absztrakt õs objektumra mutató pointerrel ér el, kihasználva a C++
+nyelv polimorfizmusa által nyújtotta lehetõségeket.
+
+Ami a mintában részt vevõ objektumokat illeti, definiálni kell egy \textit{Context} osztályt,
+mely az állapottal rendelkezõ objektumot testesíti meg. Emellett létre kell hozni a már korábban
+is említett absztrakt \textit{State} osztályt, mely a konkrét állapotobjektumok közös õse lesz. Ennek
+megfelelõen a konkrét állapotokat a \textit{State} osztály leszármazottaiként kell definiálni.
+Ezek után már csak a C++ nyelv polimorfizmusát kell használni, miszerint a \textit{Context} osztály tagjaként
+el kell tárolni egy \textit{State}-re mutató pointert, melynek a mutatott értékét futás közben tetszõlegesen
+állíthatjuk bármilyen \textit{State}-bõl leszármazó osztályra (\figref{StatePatternClassDiagram} ábra).
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=130mm, keepaspectratio]{figures/state_static_diagram.png}
+\caption{A State tervezési minta UML osztálydiagrammja}
+\label{fig:StatePatternClassDiagram}
+\end{figure}
+
 %----------------------------------------------------------------------------
 \section{Animációs alrendszer}
 %----------------------------------------------------------------------------
@@ -132,9 +173,11 @@ mukodes + implementacio
 mukodes + implementacio
 
 %----------------------------------------------------------------------------
-\section{Grafikus interfész}
+\section{Felhasználói felület}
 %----------------------------------------------------------------------------
+interakcio a felhasznaloval
 
+manapsag egy jatek enelkul elkepzelhetetlen
 %----------------------------------------------------------------------------
 \subsection{OGRE overlay keretrendszer bõvíthetõségi kérdései}
 %----------------------------------------------------------------------------

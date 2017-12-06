@@ -1,20 +1,88 @@
 %----------------------------------------------------------------------------
-\chapter{Korábbi munkám áttekintése}
+\chapter{Bevezetõ}
 %----------------------------------------------------------------------------
-%----------------------------------------------------------------------------
-\section{Rövid ismertetõ}
-%----------------------------------------------------------------------------
-BSc-s szakdolgozatom keretében egy komponens alapú játékmotort készítettem, melyet meglevõ
-megjelenítési és fizikai alrendszereket felhasználva készítettem el. A felhasznált technológiákról
-részletesebben az \autoref{subsec:3rdparty} -ben térek ki.
-
-az engine-t dll-be fordítottam, ezt használta a példa alkalmazás
-%----------------------------------------------------------------------------
-\section{A komponens alapú megközelítés}
-%----------------------------------------------------------------------------
+Ez a fejezet tömören összefoglalja a diplomaterv feladatkiírásának a lényegét, majd áttekinti a
+dolgozatot megelõzõ munkákat, végezetül pedig a dolgozat szerkezetét ismerteti.
 
 %----------------------------------------------------------------------------
-\subsection{Öröklés esetén felmerülõ problémák}
+\section{Feladat értelmezése}
+%----------------------------------------------------------------------------
+A feladatkiírás alapján a szakdolgozatom során elkészített -- és a késõbbiekben bemutatásra kerülõ --
+komponens alapú játékmotorom továbbfejlesztése a cél. Az elvégzendõ feladataimnak a következõkre
+kell kiterjednie:
+\begin{itemize}
+	\item a szakdolgozat során elkészített szoftver áttekintése, kritikus megvizsgálása és esetleges
+	átdolgozása
+	\item játékobjektumok sablonból történõ késleltetett létrehozásának implementálása
+	\item a motor felkészítése csontváz alapú animáció hatékony használatára animációs alrendszer
+	megvalósításával
+	\item általános állapotgép funkciók megvalósítása, melyeket késõbb a felhasználó hasznosítani
+	tud pl.: mesterséges intelligencia implementálásánál
+	\item motor képességeinek bõvítése felhasználói felület megvalósításával
+	\item motor képességeinek bõvítése hangrendszer megvalósításával
+	\item motor képességeinek bõvítése részecskerendszer megvalósításával
+\end{itemize}
+
+%----------------------------------------------------------------------------
+\section{Elõzmények, motiváció}
+%----------------------------------------------------------------------------
+
+Komponens alapú játékmotor-fejlesztéssel a BSc-s Önálló laboratórium tárgy keretében kezdtem el
+ismerkedni. Ennek a tárgynak a keretein belül megismerkedtem a fizikai és grafikai alrendszerek
+mûködésével, a komponens alapú szemlélettel és ezeken felül lehetõségem volt fejleszteni a C++-
+programozási képességemet is.
+
+A BSc-s Szakdolgozat tárgy keretében alakult ki az a gyakorlat, mely szerint az engine-t és a játékot
+külön választom, s az elõbbibõl dinamikus csatolású könyvtárat (Windows platformon .dll-t, Linux platformon .so-t),
+utóbbiból futtatható binárist készítek. A tervezés során létrehoztam alrendszereket, melyek feladata
+a komponensek tárolása és kezelése volt. Egy komponenshez aszerint rendeltem alrendszert, hogy
+mikor akartam meghívni annak befrissítõ függvényét. Ezek alapján egy komponens pontosan egy alrendszernek
+lehetett a része. Emellett létrehoztam egy ObjectFactory osztályt, mely a játékobjektumok
+eltárolásáért felelt. A játékobjektumok létrehozására megfelelõ gyártó objektumokat kreáltam.
+A komponensek leírása helyett a motor (\figref{BScThesisEngineComponents} ábra) és
+játéklogika (\figref{BScThesisGameComponents} ábra) oldali komponens-hierarchiákat UML osztálydiagrammok
+segítségével szemléltetem.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=110mm, keepaspectratio]{figures/old_engine_components.png}
+\caption{Szakdolgozatom motor oldali komponenseinek UML osztálydiagrammja}
+\label{fig:BScThesisEngineComponents}
+\end{figure}
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=110mm, keepaspectratio]{figures/old_game_components.png}
+\caption{Szakdolgozatom játéklogika oldali komponenseinek UML osztálydiagrammja}
+\label{fig:BScThesisGameComponents}
+\end{figure}
+
+A mesterképzés kezdeti szakaszában megszüntettem a komponensek
+redundáns tárolását, melyet az okozott, hogy a játékobjektumokban is és a megfelelõ alrendszerekben
+is el voltak tárolva a komponensek. Emiatt változott a komponensek befrissítési mechanizmusa is,
+aminek a lényege, hogy a befrissítési sorrend meghatározásához a megfelelõ befrissítési függvényeket
+kell a komponenseknek felüldefiniálniuk, melyek meghívásáról a gazda \textit{GameObject} gondoskodott.
+Új funkcionalitások implementálásával is foglalkoztam, ugyanis ebben az idõszakban valósítottam meg
+egy alap hang alrendszert, melyet az OpenAL felhasználásával valósítottam meg. Emellett megvalósítottam
+a virtuális világ XML-bõl történõ betöltését is, melynek köszönhetõen a korábbiaknál egyszerûbben tudtam
+leírni a betöltendõ színteret, illetve annak módosítása esetén ennek köszönhetõen már nem kellett többé
+újrafordítanom a kódot, ami a fejlesztés felgyorsítását is eredményezte. Szintén erre az idõszakra
+tehetõ a fényforrások beemelése motor oldalra, illetve az OGRE overlay elemeinek alapszintû,
+játéklogika oldali felhasználása is.
+
+A diplomaterv során az eddigre kialakult rendszert kívánom továbbfejleszteni az elõzõ szakaszban
+leírtaknak megfelelõen.
+
+A legfõbb célom ezzel a diplomatervvel egy olyan eszköz létrehozása, mely a késõbbiekben alapot
+szolgáltathat más dolgozatok elkészítéséhez illetve esetlegesen oktatási segédanyagként is
+felhasználható a késõbbiek folyamán.
+
+%----------------------------------------------------------------------------
+\subsection{A komponens alapú megközelítés}
+%----------------------------------------------------------------------------
+
+%----------------------------------------------------------------------------
+\subsubsection{Öröklés esetén felmerülõ problémák}
 %----------------------------------------------------------------------------
 Képzeljük el a következõt: öröklésen alapú rendszert akarunk létrehozni, melynek alapja egy absztrakt
 õsosztály, \textit{GameObject} néven. Ebbõl az õsosztályból örököltetünk egy \textit{Dynamic} és egy
@@ -43,7 +111,7 @@ Ezek után már talán nem is olyan meglepõ, hogy az iparban manapság nem az öröklé
 részesítik elõnyben. A továbbiakban egy alternatív megközelítést ismertetek.
 
 %----------------------------------------------------------------------------
-\subsection{Leszármazás helyett tartalmazás}
+\subsubsection{Leszármazás helyett tartalmazás}
 %----------------------------------------------------------------------------
 Ebben a rendszerben kizárólag egyetlen játékobjektum osztály van, illetve ezen kívül vannak komponensek
 is. Minden komponens egyetlen jól meghatározott funkcionalitásért felel, például a kirajzolásért, a
@@ -79,56 +147,63 @@ hozzárendeljük (\figref{SolutionWithComponents} ábra).
 \end{figure}
 
 %----------------------------------------------------------------------------
-\section{Felhasznált technológiák}
-%----------------------------------------------------------------------------
-
-%----------------------------------------------------------------------------
-\subsection{Programozási nyelv és fejlesztõkörnyezet}
-%----------------------------------------------------------------------------
-Visual Studio 2010
-%----------------------------------------------------------------------------
 \subsection{3rdparty alrendszerek}
 \label{subsec:3rdparty}
 %----------------------------------------------------------------------------
-Természetesen nem volt - és nem is lehetett - célja a szakdolgozatomnak, hogy minden egyes
-funkcionalitást saját magam implementáljak, hiszen ennek a véghez vitele túlmutatott volna a tantárgy terjedelmi és idõkorlátain. Ennek megfelelõen a fontosabb részfeladatokhoz már meglevõ, ingyenes és
-platform-független eszközöket használtam fel, melyeket a továbbiakban ismertetek.
+Természetesen nem volt -- és nem is lehetett -- célja a szakdolgozatomnak, hogy minden egyes
+funkcionalitást saját magam implementáljak, hiszen ennek a véghez vitele túlmutatott volna a
+tantárgy terjedelmi és idõkorlátain. Ennek megfelelõen a fontosabb részfeladatokhoz már meglevõ,
+ingyenes és platform-független eszközöket használtam fel, melyeket a továbbiakban ismertetek.
 %----------------------------------------------------------------------------
 \subsubsection{OGRE 3D}
 %----------------------------------------------------------------------------
 A játékmotorok egyik legalapvetõbb funkcionalitása a virtuális világ megjelenítésének képessége.
-Ennek megvalósításához különféle grafikai alrendszereket használnak fel, melyek lehetnek a motortól teljesen külön váló külsõ könyvtárak, vagy éppen a motorhoz fejlesztett belsõ eszközök is. Az én megvalósításomban nem volt cél egy ilyen belsõ eszköz megvalósítása, így egy erre a célra alkalmas külsõ könyvtárat, az OGRE-t használtam fel, melyet az alábbiakban ismertetek.
+Ennek megvalósításához különféle grafikai alrendszereket használnak fel, melyek lehetnek a motortól
+teljesen külön váló külsõ könyvtárak, vagy éppen a motorhoz fejlesztett belsõ eszközök is. Az én
+megvalósításomban nem volt cél egy ilyen belsõ eszköz megvalósítása, így egy erre a célra alkalmas
+külsõ könyvtárat, az OGRE-t használtam fel, melyet az alábbiakban ismertetek.
 
 Az OGRE (\textbf{O}bject-Oriented \textbf{G}raphics \textbf{R}endering \textbf{E}ngine), vagyis
 az objektumorientált grafikai megjelenítõ motor egy színtér alapú, rugalmas 3D grafikai motor,
-melyet C++ nyelven készítettek\cite{OGRE}. Célja, hogy könnyebbé tegye a fejlesztõk számára olyan alkalmazások készítését, melyek hardveresen gyorsított grafikai megjelenítéseket is igénybe vehetnek. Ez a könyvtár elvonatkoztat az alatta levõ grafikai könyvtáraktól (mint például DirectX, OpenGL), s ezek használatához biztosít egy egységes interfészt a szoftverrendszer többi szereplõje számára.
+melyet C++ nyelven készítettek\cite{OGRE}. Célja, hogy könnyebbé tegye a fejlesztõk számára olyan
+alkalmazások készítését, melyek hardveresen gyorsított grafikai megjelenítéseket is igénybe vehetnek.
+Ez a könyvtár elvonatkoztat az alatta levõ grafikai könyvtáraktól (mint például DirectX, OpenGL),
+s ezek használatához biztosít egy egységes interfészt a szoftverrendszer többi szereplõje számára.
 
-Jónéhány grafikai motorral ellentétben tervezés-orientált, s nem funkció-orientált módon készült, vagyis a fejlesztés során a letisztult szoftver-struktúra legalább olyan fontos volt, mint a megvalósított funkciók mennyisége. Ennek köszönhetõen kellõen általános lett ahhoz, hogy bármilyen típusú játék elkészítéséhez megfelelõen alkalmazható legyen. Ezek mellett a meglehetõsen gazdag dokumentációja is hozzájárult ahhoz, hogy ilyen mértékben elterjedjen a játékfejlesztõk körében.
+Jónéhány grafikai motorral ellentétben tervezés-orientált, s nem funkció-orientált módon készült,
+vagyis a fejlesztés során a letisztult szoftver-struktúra legalább olyan fontos volt, mint a
+megvalósított funkciók mennyisége. Ennek köszönhetõen kellõen általános lett ahhoz, hogy bármilyen
+típusú játék elkészítéséhez megfelelõen alkalmazható legyen. Ezek mellett a meglehetõsen gazdag
+dokumentációja is hozzájárult ahhoz, hogy ilyen mértékben elterjedjen a játékfejlesztõk körében.
 
 Elterjedtségének ellenére azonban az OGRE népszerûsége folyamatosan csökken. Ez többek között
 betudható annak, hogy a fejlesztõi közösség az utóbbi idõben nem mutatott megfelelõ aktivitást
-(a Visual Studio 2015-höz fordított 1.9-es SDK 2016 decemberében jelent meg, s azt is csak egy fórumozó kommentjében lehetett megtalálni), illetve magyarázható azzal a tendenciával is, hogy manapság a játékfejlesztõk elõnyben részesítik azokat a szoftver-rendszereket, melyek nem csak a megjelenítésért, hanem más funkcionalitások elvégzéséért is felelõsek. Ez azonban nem kizárólag az OGRE problémája, hiszen általánosságban elmondható, hogy az általános célú játékmotorok kezdik kiszorítnani a piacról a funkció-specifikus motorokat.
+(a Visual Studio 2015-höz fordított 1.9-es SDK 2016 decemberében jelent meg, s azt is csak egy
+fórumozó kommentjében lehetett megtalálni), illetve magyarázható azzal a tendenciával is, hogy
+manapság a játékfejlesztõk elõnyben részesítik azokat a szoftver-rendszereket, melyek nem csak a
+megjelenítésért, hanem más funkcionalitások elvégzéséért is felelõsek. Ez azonban nem kizárólag az
+OGRE problémája, hiszen általánosságban elmondható, hogy az általános célú játékmotorok kezdik
+kiszorítnani a piacról a funkció-specifikus motorokat.
 %----------------------------------------------------------------------------
 \subsubsection{OIS}
 %----------------------------------------------------------------------------
-Object Oriented Input System
-
-OGRE-tol fuggetlen???
+Az OIS (\textbf{O}bject \textbf{O}riented \textbf{I}nput \textbf{S}ystem) platformfüggetlen C++
+osztálykönyvtár, melynek feladata a különbözõ felhasználói bemenetek kezelése.
+Az OGRE az 1.4-es verziója óta használja\cite{OIS}.
 
 %----------------------------------------------------------------------------
 \subsubsection{Boost}
 %----------------------------------------------------------------------------
-C++ konyvtarcsomag, wikipedia es google segit
-
-en explcite nem hasznalom, az OGRE-nek kell
+A Boost C++ szabványon alapuló modern könyvtárak gyûjteménye. Nyílt forráskódú, platformfüggetlen projekt,
+mely a legtöbb népszerû C++ fordítót támogatja\cite{Boost}.
 
 %----------------------------------------------------------------------------
 \subsubsection{Bullet}
 %----------------------------------------------------------------------------
-A virtuális világ megjelenítése csak a legritkább esetben elegendõ egy grafikus alkalmazás - 
-például egy számítógépes játék - elkészítéséhez. Manapság szinte kötelezõ eleme a játékmotoroknak
+A virtuális világ megjelenítése csak a legritkább esetben elegendõ egy grafikus alkalmazás -- 
+például egy számítógépes játék -- elkészítéséhez. Manapság szinte kötelezõ eleme a játékmotoroknak
 valamilyen fizikai motor, mely a programozók által felparaméterezett fizikai világ viselkedését képes
-szimulálni - bizonyos keretek között - valós idõben.
+szimulálni \textemdash{} bizonyos keretek között --- valós idõben.
 
 Az ilyen alrendszerek elkészítése közel sem triviális feladat, így levéve ezt a terhet a
 játéklogika-programozók válláról az én motorom is tartalmaz fizikai alrendszert, melynek megvalósításához
@@ -138,21 +213,35 @@ A Bullet ingyenes, platform független, nyílt forráskódú fizikai motor. Fõbb funk
 a merev- és puhatest szimuláció illetve a diszkrét és folytonos ütközés-detektálás. Jelenlegi legfrissebb
 stabil verziója a 2.87-es.
 
-Ami a piaci alkalmazását illeti, a számítógépes játékok területén ezt a szoftvert használták fizikai szimulációkhoz a Rockstar Games számos alkotásánál (GTA IV, GTA V, Red Dead Redemption), az Activision cég Blood Drive nevezetû játékánál, vagy éppen a DIRT sorozat összes részénél. Számos hollywood-i alkotás is
-alkalmazta már a Bullet-et merev testek fizikai szimulációinál a speciális effektek megalkotásához. Példaként megemlíthetõ a Shrek 4 a PDI/Dreamworks-tõl, vagy a Framestore 2009-es közremûködésével létrejött Sherlock Holmes film.
+Ami a piaci alkalmazását illeti, a számítógépes játékok területén ezt a szoftvert használták fizikai
+szimulációkhoz a Rockstar Games számos alkotásánál (GTA IV, GTA V, Red Dead Redemption), az
+Activision cég Blood Drive nevezetû játékánál, vagy éppen a DIRT sorozat összes részénél.
+Számos hollywood-i alkotás is alkalmazta már a Bullet-et merev testek fizikai szimulációinál a
+speciális effektek megalkotásához. Példaként megemlíthetõ a Shrek 4 a PDI/Dreamworks-tõl, vagy a
+Framestore 2009-es közremûködésével létrejött Sherlock Holmes film.
+
 %----------------------------------------------------------------------------
 \subsubsection{TinyXML}
 %----------------------------------------------------------------------------
-C++-ban írt, platformfüggetlen, nyílt forráskódú, ingyenes XML feldolgozó.
+C++-ban írt, platformfüggetlen, nyílt forráskódú, ingyenes XML feldolgozó\cite{TinyXML}.
 
 %----------------------------------------------------------------------------
-\subsection{Verziókezelõ rendszer}
+\section{Diplomaterv felépítése}
 %----------------------------------------------------------------------------
+A dolgozat második fejezete az eddigi munkám átdolgozásával foglalkozik, kitérve az egyes módosítandó
+egységekre, úgy mint a projektek build-elési folyamatai, az XML-feldolgozó alrendszer, az erõforrások
+kezelése és anyagok leírása.
 
-%----------------------------------------------------------------------------
-\subsubsection{Verziókezelõ rendszerekrõl általában}
-%----------------------------------------------------------------------------
+A dolgozat harmadik fejezete a diplomaterv leglényegesebb része, ugyanis ebben a fejezetben foglalkozok
+a komponens alapú motorom bõvítésével. Ebben a fejezetben kitérek az összes olyan pontra, melyek
+a feladatkiírásban szerepelnek, majd a fejezetet egy áttekintõ szakasszal zárom.
 
-%----------------------------------------------------------------------------
-\subsubsection{A Git verziókezelõ rendszer ismertetése}
-%----------------------------------------------------------------------------
+A dolgozat negyedik fejezete arra szolgál, hogy bizonyítsa az elkészült motor mûködõképességét egy
+demonstrációs alkalmazáson keresztül. Ebben a fejezetben ismertetem a demonstrációs alkalmazás felé
+támasztott követelményeket, az alkalmazás megvalósításának menetét, majd egy áttekintõ szakasz után
+az alkalmazás tesztelésével zárom a fejezetet.
+
+A dolgozat ötödik fejezete az elkészült programok értékelésével foglalkozik, mely használhatóság,
+kódminõség és sebesség szempontjából vizsgálja meg a dolgozat eredményeként létrejött szoftvereket.
+
+Végül a dolgozat összefoglalással és kitekintéssel zárul a hatodik fejezetben.

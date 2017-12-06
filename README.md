@@ -1,5 +1,5 @@
 # MSC thesis
-This project is the LaTeX source of my MSc thesis in computer engineering at the Budapest University of Technology and Economics.
+This project is the LaTeX source of my master's thesis in computer engineering at the Budapest University of Technology and Economics.
 
 ## Title
 Development of a general purpose, component based game engine
