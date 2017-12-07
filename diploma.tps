@@ -36,7 +36,7 @@ Document=abstract.tex
 
 [Frame1_View0,0]
 TopLine=0
-Cursor=682
+Cursor=540
 
 [Frame2]
 Flags=0
@@ -71,8 +71,8 @@ Class=LaTeXView
 Document=diploma.tex
 
 [Frame3_View0,0]
-TopLine=0
-Cursor=319
+TopLine=105
+Cursor=4891
 
 [Frame4]
 Flags=0
@@ -90,7 +90,7 @@ Document=chapter1.tex
 
 [Frame4_View0,0]
 TopLine=0
-Cursor=192
+Cursor=461
 
 [Frame5]
 Flags=0
@@ -107,8 +107,8 @@ Class=LaTeXView
 Document=chapter2.tex
 
 [Frame5_View0,0]
-TopLine=0
-Cursor=86
+TopLine=50
+Cursor=4490
 
 [Frame6]
 Flags=0
@@ -125,8 +125,8 @@ Class=LaTeXView
 Document=chapter3.tex
 
 [Frame6_View0,0]
-TopLine=12
-Cursor=948
+TopLine=0
+Cursor=97
 
 [Frame7]
 Flags=0

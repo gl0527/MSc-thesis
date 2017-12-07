@@ -1,7 +1,7 @@
 %----------------------------------------------------------------------------
 \chapter{A keretrendszer átdolgozása}
 %----------------------------------------------------------------------------
-Ez a fejezet bemutatja azokat a módszereket, melyek segítségével módosítottam a szoftverkörnyezet
+Az alábbi fejezet bemutatja azokat a módszereket, melyek segítségével módosítottam a szoftverkörnyezet
 felépítését annak érdekében, hogy annak build-elési módja, karbantarthatósága illetve bõvíthetõsége
 javuljon a korábbi rendszerhez képest.
 
@@ -52,10 +52,11 @@ class B
 
 Egy másik technika is a header fájlokhoz köthetõ, miszerint használjunk include guard-okat. Ennek
 a techikának a lényege, hogy a header tartalmát a compiler csak akkor parszolja be, ha azt még nem
-tette meg. Ezt header fájlonként külön makrók definiálásával tehetjük meg. Modernebb fordítók támogatják
-a \verb+#pragma once+ preprocesszor parancsot is, melynek használatával ugyan azt az eredményt lehet
-elérni, mint az include guard-os makrók definiálásával. Az én kódjaimban a két ismertetett megoldást
-együtt használom, melynek magyarázata <INSERT MAGYARÁZAT HERE>.
+tette meg. Ezt header fájlonként külön makrók definiálásával tehetjük meg. Modernebb fordítók többsége
+támogatja a \verb+#pragma once+ preprocesszor direktívát is (annak ellenére, hogy ez nem a szabvány része),
+melynek használatával ugyan azt az eredményt lehet elérni, mint az include guard-os makrók definiálásával.
+Az én kódjaimban a két ismertetett megoldást együtt használom, így a kívánt funkcionalitást olyan
+fordítók esetén is el tudom érni, melyek nem támogatják a \verb+#pragma once+ használatát.
 
 \begin{lstlisting}[frame=single,float=!ht,
 caption={Include guard és pragma once együttes használata}, label=IncludeGuardsCpp]
