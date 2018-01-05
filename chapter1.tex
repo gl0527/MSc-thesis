@@ -29,11 +29,25 @@ kell kiterjednie:
 %----------------------------------------------------------------------------
 \section{Elõzmények, motiváció}
 %----------------------------------------------------------------------------
-
 Komponens alapú játékmotor-fejlesztéssel a BSc-s Önálló laboratórium tárgy keretében kezdtem el
 ismerkedni. Ennek a tárgynak a keretein belül megismerkedtem a fizikai és grafikai alrendszerek
 mûködésével, a komponens alapú szemlélettel és ezeken felül lehetõségem volt fejleszteni a C++-
-programozási képességemet is.
+programozási képességemet is. Ezek mellett lehetõségem volt ismerkedni az Ubuntu operációs rendszerrel
+és a QtCreator fejlesztõkörnyezettel is.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=120mm, keepaspectratio]{figures/bsc_onlab_palya.png}
+\caption{Pályaleírás módja és a betöltés eredménye a BSc-s önálló labor tárgyam alkalmával}
+\label{fig:BScLabFieldGen}
+\end{figure}
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=100mm, keepaspectratio]{figures/bsc_onlab_pathfinding.png}
+\caption{Már az BSc-s önálló laboratórium tárgy keretében létezett egy mohó útkeresõ algoritmus}
+\label{fig:BScLabPathFinding}
+\end{figure}
 
 A BSc-s Szakdolgozat tárgy keretében alakult ki az a gyakorlat, mely szerint az engine-t és a játékot
 külön választom, s az elõbbibõl dinamikus csatolású könyvtárat (Windows platformon .dll-t, Linux platformon .so-t),
@@ -166,6 +180,13 @@ teljesen külön váló külsõ könyvtárak, vagy éppen a motorhoz fejlesztett belsõ es
 megvalósításomban nem volt cél egy ilyen belsõ eszköz megvalósítása, így egy erre a célra alkalmas
 külsõ könyvtárat, az OGRE-t használtam fel, melyet az alábbiakban ismertetek.
 
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=40mm, keepaspectratio]{figures/ogre_logo.png}
+\caption{Az Ogre3D logója}
+\label{fig:OGRELogo}
+\end{figure}
+
 Az OGRE (\textbf{O}bject-Oriented \textbf{G}raphics \textbf{R}endering \textbf{E}ngine), vagyis
 az objektumorientált grafikai megjelenítõ motor egy színtér alapú, rugalmas 3D grafikai motor,
 melyet C++ nyelven készítettek\cite{OGRE}. Célja, hogy könnyebbé tegye a fejlesztõk számára olyan
@@ -212,6 +233,13 @@ Az ilyen alrendszerek elkészítése közel sem triviális feladat, így levéve ezt a 
 játéklogika-programozók válláról az én motorom is tartalmaz fizikai alrendszert, melynek megvalósításához
 a Bullet nevû fizikai motort használtam fel\cite{Bullet}.
 
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=40mm, keepaspectratio]{figures/bullet_logo.png}
+\caption{A Bullet logója}
+\label{fig:BulletLogo}
+\end{figure}
+
 A Bullet ingyenes, platform független, nyílt forráskódú fizikai motor. Fõbb funkciói között megemlítendõ
 a merev- és puhatest szimuláció illetve a diszkrét és folytonos ütközés-detektálás. Jelenlegi legfrissebb
 stabil verziója a 2.87-es.
@@ -226,7 +254,7 @@ Framestore 2009-es közremûködésével létrejött Sherlock Holmes film.
 %----------------------------------------------------------------------------
 \subsubsection{TinyXML}
 %----------------------------------------------------------------------------
-C++-ban írt, platformfüggetlen, nyílt forráskódú, ingyenes XML feldolgozó\cite{TinyXML}.
+C++-ban írt, platformfüggetlen, nyílt forráskódú, ingyenes XML feldolgozó könyvtár\cite{TinyXML}.
 
 %----------------------------------------------------------------------------
 \section{Diplomaterv felépítése}

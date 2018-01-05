@@ -12,13 +12,13 @@ MaxPos.y=-1
 NormalPos.left=4
 NormalPos.top=26
 NormalPos.right=1643
-NormalPos.bottom=738
+NormalPos.bottom=679
 Class=LaTeXView
 Document=appendices.tex
 
 [Frame0_View0,0]
 TopLine=0
-Cursor=532
+Cursor=643
 
 [Frame1]
 Flags=0
@@ -30,7 +30,7 @@ MaxPos.y=-1
 NormalPos.left=4
 NormalPos.top=26
 NormalPos.right=1643
-NormalPos.bottom=738
+NormalPos.bottom=679
 Class=LaTeXView
 Document=abstract.tex
 
@@ -48,7 +48,7 @@ MaxPos.y=-1
 NormalPos.left=4
 NormalPos.top=26
 NormalPos.right=1643
-NormalPos.bottom=738
+NormalPos.bottom=679
 Class=BibTeXView
 Document=mybib.bib
 
@@ -66,13 +66,13 @@ MaxPos.y=-1
 NormalPos.left=4
 NormalPos.top=26
 NormalPos.right=1643
-NormalPos.bottom=738
+NormalPos.bottom=679
 Class=LaTeXView
 Document=diploma.tex
 
 [Frame3_View0,0]
-TopLine=105
-Cursor=4891
+TopLine=96
+Cursor=4825
 
 [Frame4]
 Flags=0
@@ -84,13 +84,13 @@ MaxPos.y=-1
 NormalPos.left=4
 NormalPos.top=26
 NormalPos.right=1643
-NormalPos.bottom=738
+NormalPos.bottom=679
 Class=LaTeXView
 Document=chapter1.tex
 
 [Frame4_View0,0]
-TopLine=0
-Cursor=461
+TopLine=245
+Cursor=17039
 
 [Frame5]
 Flags=0
@@ -102,13 +102,13 @@ MaxPos.y=-1
 NormalPos.left=4
 NormalPos.top=26
 NormalPos.right=1643
-NormalPos.bottom=738
+NormalPos.bottom=679
 Class=LaTeXView
 Document=chapter2.tex
 
 [Frame5_View0,0]
-TopLine=50
-Cursor=4490
+TopLine=0
+Cursor=4695
 
 [Frame6]
 Flags=0
@@ -120,12 +120,12 @@ MaxPos.y=-1
 NormalPos.left=4
 NormalPos.top=26
 NormalPos.right=1643
-NormalPos.bottom=738
+NormalPos.bottom=679
 Class=LaTeXView
 Document=chapter3.tex
 
 [Frame6_View0,0]
-TopLine=0
+TopLine=12
 Cursor=97
 
 [Frame7]
@@ -138,7 +138,7 @@ MaxPos.y=-1
 NormalPos.left=4
 NormalPos.top=26
 NormalPos.right=1643
-NormalPos.bottom=738
+NormalPos.bottom=679
 Class=LaTeXView
 Document=chapter4.tex
 
@@ -156,13 +156,13 @@ MaxPos.y=-1
 NormalPos.left=4
 NormalPos.top=26
 NormalPos.right=1643
-NormalPos.bottom=738
+NormalPos.bottom=679
 Class=LaTeXView
 Document=chapter5.tex
 
 [Frame8_View0,0]
 TopLine=0
-Cursor=604
+Cursor=592
 
 [Frame9]
 Flags=0
@@ -174,13 +174,13 @@ MaxPos.y=-1
 NormalPos.left=4
 NormalPos.top=26
 NormalPos.right=1643
-NormalPos.bottom=738
+NormalPos.bottom=679
 Class=LaTeXView
 Document=chapter6.tex
 
 [Frame9_View0,0]
 TopLine=0
-Cursor=362
+Cursor=364
 
 [SessionInfo]
 FrameCount=10
