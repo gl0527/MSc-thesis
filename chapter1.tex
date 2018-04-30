@@ -74,6 +74,13 @@ segítségével szemléltetem.
 \label{fig:BScThesisGameComponents}
 \end{figure}
 
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=90mm, keepaspectratio]{figures/bscthesis_result.png}
+\caption{Szakdolgozatom végeredménye}
+\label{fig:BScThesisResult}
+\end{figure}
+
 A mesterképzés kezdeti szakaszában megszüntettem a komponensek
 redundáns tárolását, melyet az okozott, hogy a játékobjektumokban is és a megfelelõ alrendszerekben
 is el voltak tárolva a komponensek. Emiatt változott a komponensek befrissítési mechanizmusa is,
@@ -90,7 +97,7 @@ játéklogika oldali felhasználása is.
 A diplomaterv során az eddigre kialakult rendszert kívánom továbbfejleszteni az elõzõ szakaszban
 leírtaknak megfelelõen.
 
-A legfõbb célom ezzel a diplomatervvel egy olyan eszköz létrehozása, mely a késõbbiekben alapot
+A legfõbb célom ezzel a dolgozattal egy olyan rendszer létrehozása, mely a késõbbiekben alapot
 szolgáltathat más dolgozatok elkészítéséhez illetve esetlegesen oktatási segédanyagként is
 felhasználható a késõbbiek folyamán.
 
@@ -101,6 +108,8 @@ felhasználható a késõbbiek folyamán.
 %----------------------------------------------------------------------------
 \subsubsection{Öröklés esetén felmerülõ problémák}
 %----------------------------------------------------------------------------
+a többszörös örökléssel vigyázni kell, nehogy beleütközzünk a gyémánt problémába
+
 Képzeljük el a következõt: öröklésen alapú rendszert akarunk létrehozni, melynek alapja egy absztrakt
 õsosztály, \textit{GameObject} néven. Ebbõl az õsosztályból örököltetünk egy \textit{Dynamic} és egy
 \textit{Static} osztályt, melyek a mozgó és nem mozgó játékobjektumokat reprezentálják.
@@ -130,6 +139,10 @@ részesítik elõnyben. A továbbiakban egy alternatív megközelítést ismertetek.
 %----------------------------------------------------------------------------
 \subsubsection{Leszármazás helyett tartalmazás}
 %----------------------------------------------------------------------------
+is-a helyett has-a
+
+composition over inheritance - kód újrafelhasználás és polimorfizmus leszármazás helyett kompozícióval
+
 Ebben a rendszerben kizárólag egyetlen játékobjektum osztály van, illetve ezen kívül vannak komponensek
 is. Minden komponens egyetlen jól meghatározott funkcionalitásért felel, például a kirajzolásért, a
 fizikáért, stb. Általában ilyen rendszerek esetén a felhasználónak is lehetõsége van új komponensek

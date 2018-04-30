@@ -9,8 +9,15 @@ zárul.
 %----------------------------------------------------------------------------
 \section{Követelmények}
 %----------------------------------------------------------------------------
-kb. mint a specifikáció, de nem olyan szigorú (mi a jatek mufaja, milyen funkciokat kellett 
-megvalositanom hozza + nehany screenshot is mehet)
+A követelmények meghatározásakor arra kellett törekednem, hogy az elkészített motor képességeire
+minél jobban támaszkodjon a demonstrációs alkalmazás. Fontos szempont volt továbbá az is, hogy
+a példa alkalmazásnak ``legyen értelme'', vagyis legyen kezdeti állapota és célja, illetve hogy
+ne csak nyerni, hanem veszteni is lehessen benne.
+
+Ezen szempontokat is figyelembe véve egy zárt térben játszódó FPS (First Person Shooter) játék
+megvalósítására vállalkoztam, ahol a felhasználó által irányított játékosnak nincsenek segítõi, csak
+ellenfelei, melyek a pálya tetszõleges pontján jelenhetnek meg. A játékosnak az a feladata, hogy
+adott idõ alatt elpusztítsa az összes ellenfelét úgy, hogy a saját életereje nem csökken le nullára.
 
 %----------------------------------------------------------------------------
 \section{Megvalósítás}
@@ -19,6 +26,8 @@ az ismertetõben leírt funkciókat hogyan lehetett játéklogika-oldalon megvalósíta
 mennyire könnyû volt, mert az engine nagyon jó :D
 persze a funkciok mellett a fobb osztalyokat is meg kell itt emliteni
 itt a konnyu megvalositast jol lehet demonstralni nehany kisebb kodreszlettel
+
+<SCREENSHOT-OK!!!>
 
 %----------------------------------------------------------------------------
 \section{Áttekintés}
@@ -35,12 +44,5 @@ fontosabb reszei ES a jatekoldal egyszerre szerepel
 %----------------------------------------------------------------------------
 \section{Tesztelés}
 %----------------------------------------------------------------------------
-
-%----------------------------------------------------------------------------
-\subsection{Tesztelés Windows platformon}
-%----------------------------------------------------------------------------
-
-%----------------------------------------------------------------------------
-\subsection{Tesztelés Linux platformon}
-%----------------------------------------------------------------------------
-nem biztos, hogy kell
+Különféle eseteket kéne kipróbálni, s bizonygatni, hogy minden esetben az elvárt viselkedés
+tapasztalató. (pl.: fegyver nélkül próbálok meg lõni, halottan próbálok mozogni, ...)

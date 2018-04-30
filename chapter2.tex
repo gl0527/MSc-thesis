@@ -131,6 +131,54 @@ A projekt könyvtárszerkezetének kialakítása
 %----------------------------------------------------------------------------
 namespace-esites
 %----------------------------------------------------------------------------
+\section{Bemenetek kezelésének módosítása}
+%----------------------------------------------------------------------------
+Ezelõtt a bemeneti eszközök eseményeit kizárólag pollingolós módszerrel figyeltem, ami azt jelenti,
+hogy minden frame-ben rá kellett néznem a bemeneti eszközök aktuális állapotaira. Ennek a megoldásnak
+az az elõnye, hogy mindig pontosan tudom, hogy az update-elési lánc melyik részérõl polling-olok.
+A megoldásnak a hátránya viszont az, hogy nem költség-hatékony, hiszen a frame-enkénti ellenõrzés
+túl sok fölösleges kommunikációt vihet a rendszerbe.
+
+Ezt a megoldást kiegészítettem azzal, hogy a bemeneti eseményeket figyelõ osztályom (InputManager)
+feliratkozik OIS eseményekre, s mint ahogy azt az Observer tervezési mintánál megszokhattuk, bármilyen
+bemeneti eszköz-eseményrõl értesítést kap, s meghívódik a megfelelõ eseménykezelõ függvénye. Ennek a
+megoldásnak az az elõnye, hogy az eseménykezelõ kód kizárólag akkor hívódik meg, amikor az esemény
+bekövetkezett, tehát nincs fölösleges kommunikációs overhead. A megoldás hátrányaként ugyanakkor
+megemlíthetõ, hogy nem tudjuk azt, hogy az eseménykezelõ függvény az update-lánc melyik szakaszában
+hívódott meg.
+
+Ahogy látható, mindkét megoldásnak megvannak az elõnyei illetve a hátrányai egyaránt, éppen ezért
+a felhasználó dönthet arról, hogy mikor melyik módszert kívánja használni a bemeneti események
+kezelésére.
+
+%----------------------------------------------------------------------------
+\section{Transzformációs komponens módosítása}
+%----------------------------------------------------------------------------
+<EZ A KOMPONENS A SZAKDOGAKOR MÉG NEM LÉTEZETT, AKKOR ÚJ KOMPONENSKÉNT KELLENE FELTÜNTETNI?>
+
+A rendszeremben ez az egyik legfontosabb komponens típus, ugyanis ez az egyetlen olyan komponens-
+leszármazott, melyet alapértelmezetten hozzárendelek minden játékobjektumhoz. Emellett természetesen
+rengeteg más komponens is támaszkodik a transzformációs komponens különbözõ funkcionalitására, így
+nyugodtan kijelenthetem, hogy a motorom egyik alappillérét képezi ez az osztály, helyes és hatékony
+mûködése tehát kulcskérdés a rendszer egésze szempontjából. Elég, ha csak arra gondolunk, hogy a
+játékobjektumok hierarchiákba rendezõdhetnek, így a gyerek játékobjektumnak örökölnie kell a szülõ
+játékobjektumnak a transzformációit (eltolás, forgatás, skálázás), illetve ha a felhasználó egy
+gyerek játékobjektumnak a transzformációit kívánja megadni, akkor azt a szülõ játékobjektum koordináta-
+rendszerében kell megtennie.
+
+Viszont amilyen fontos ennek az osztálynak a helyes és hatékony mûködése, annyira nem triviális ennek
+az állapotnak az elõidézése, ugyanis ehhez nélkülözhetetlenek matematikai -- fõleg lineáris algebrai --
+alapismeretek.
+
+A megvalósításhoz a TransformComponent nyílván tartja a hozzá tartozó játékobjektum transzformációs
+adatait (eltolást, forgatást, skálázást illetve az ezeket egységben reprezentálni képes transzformációs mátrixot) mind világtérben, mind a szülõ koordináta-rendszerében. Bármilyen módosítás hatására be kell
+frissíteni az összes vektort/kvaterniót/mátrixot a konzisztens állapot érdekében. A sok tagváltozó miatt
+az osztály getter függvényeinek költsége elhanyagolható, viszont az elõbb említett konzisztens
+állapot megtartása miatt a setter függvények költsége nagyságrendekkel nagyobb, de ez összességében
+nem volt zavaró tényezõ a fejlesztés és a tesztelés során sem. Egyébként is a helyes mûködést ez a
+diplomaterv fontosabbnak tartja, mint a villámgyors mûködést.
+
+%----------------------------------------------------------------------------
 \section{Erõforrások kezelése}
 %----------------------------------------------------------------------------
 Korábban nem fordítottam kellõ figyelmet az erõforrások kezelésére, hiszen lényegtelen volt, hogy
@@ -158,16 +206,26 @@ tehát ezzel a megoldással az erõforrások újra felhasználhatóak más kontextusban 
 Végül, de nem utolsó sorban mivel ezek az erõforrásokból álló egységek tömörítve foglalnak helyet a
 számítógép háttértárán (.zip fájlok), így tárterületet is lehet spórolni ezzel a megoldással.
 
+resource group-okra bontas fajlrendszer szinten es a leiro fajlban is (minden resource group egy
+jelenetnek feleltethetõ meg)
+
 %----------------------------------------------------------------------------
 \section{Anyagok leírása}
 %----------------------------------------------------------------------------
-material scriptek es shaderek modositasa
+Egy játékmotor lehet akármennyire jól használható, rugalmas és hatékony, ha nem tud grafikailag
+elfogadható eredményt produkálni vele a felhasználó, akkor igazából nem jó semmire.
 
-átállás directx-rol opengl-re
+Az OGRE-ben az anyagok leírására material script-eket szokás használni. Ezek olyan szkriptek, melyek
+segítségével könnyen olvasható formában lehet leírni a legkülönfélébb anyagokat, illetve kényelmesen
+lehet árnyalóprogramoknak paramétereket átadni. Pontosabban az anyagleíró szkriptekben nem közvetlenül
+árnyalóprogramokat, hanem azok egy OGRE-ben definiált absztrakcióit, az úgynevezett programokat
+használhatjuk.
 
-hlsl helyett glsl
+Az árnyalóprogramok tekintetében csak az OpenGL jöhetett szóba, melynek árnyalónyelve a GLSL. Egy
+alternatíva lehetett volna a DirectX is, de ennek használata akadályokba ütközött, lásd <TODO> fejezet.
 
-ez az ogre verzio nem a directx9-et, hanem a 11-et támogatja, amiben már
-nincs fixed function pipeline
+Itt meg le kene irni, hogy milyen shader-eket hasznaltam az egyes objektumokra
 
-esetleges multiplatformositas miatt is jobb az opengl
+<RÉGI KÉP, AMELYEN SZINTE MINDEN SZURKE VOLT> -- OpenGL-lel, de meg a regi HLSL shaderek hasznalataval
+
+<ÚJ KÉP, MÁR A VÉGLEGES SHADER-EKKEL>

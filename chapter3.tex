@@ -33,6 +33,9 @@ tulajdonságaik. Ebben az esetben is hasznos lenne egy olyan absztrakt játékobjek
 az XML leírásban, melyet közvetlenül nem példányosítunk, viszont a tartalmát felhasználva
 -- esetleg azt módosítva -- konkrét játékobjektumokat lehet létrehozni.
 
+Ezen igények kielégítésére találták ki a prefab-okat, melyek implementálását a saját rendszeremben
+az alábbiakban ismertetek.
+
 %----------------------------------------------------------------------------
 \subsection{Megvalósítás}
 %----------------------------------------------------------------------------
@@ -64,7 +67,19 @@ funkcionalitás nem vész el. Viszont bõvül azzal, hogy a \textit{GenericPrefab} p
 %----------------------------------------------------------------------------
 \subsection{Az állapotgépekrõl általánosságban}
 %----------------------------------------------------------------------------
-infoc + nyau, véges automaták, automataelméleti bevezetõ
+Az állapotgépek - vagy ahogy a diszkrét matematika nevezi: véges automaták - véges állapothalmazzal
+rendelkezõ absztrakt gépek. Definiálásához meg kell adni az állapotok halmazát, a kezdõ állapotot,
+az ``elfogadó'' állapotok halmazát (ami a teljes állapothalmaz részhalmaza), az automata ábécéjét
+(vagyis azt a halmazt, ami fölött értelmezve vannak az automata lehetséges bemenetei), illetve az
+állapotátmeneti függvényeket, amik egy állapot-bemenet pároshoz egy állapotot rendelnek (vagyis ezek
+a függvények megmondják, hogy ha egy adott állapotban egy adott input érkezik, akkor mely állapotba
+kell átmennie az automatának).
+
+Egy ilyen gép mûködése a következõ: adott egy véges hosszú input szalag illetve egy olvasófej,
+mely kezdetben a szalag bal szélén helyezkedik el, s csak jobbra tud lépni. Az automata az aktuálisan
+olvasott input és az állapotátmeneti függvények ismeretében minden lépésben meghatározza a saját következõ
+állapotát. Ha az olvasófej az input végére ért, akkor két eset lehetséges: ha akkor elfogadó állapotba
+ment át az automata, akkor az automata elfogadja a bemenetét, különben nem fogadja el.
 %----------------------------------------------------------------------------
 \subsection{A State tervezési minta}
 %----------------------------------------------------------------------------
@@ -110,6 +125,10 @@ el kell tárolni egy \textit{State}-re mutató pointert, melynek a mutatott értéké
 \end{figure}
 
 %----------------------------------------------------------------------------
+\subsection{Generikus implementáció}
+%----------------------------------------------------------------------------
+
+%----------------------------------------------------------------------------
 \section{Animációs alrendszer}
 %----------------------------------------------------------------------------
 
@@ -128,84 +147,118 @@ a 3DGraf konyv sokat segit (es mashol is)
 %----------------------------------------------------------------------------
 
 %----------------------------------------------------------------------------
-\section{Mesterséges intelligencia alrendszer}
-%----------------------------------------------------------------------------
-
-%----------------------------------------------------------------------------
-\subsection{Gráfelméleti alapok}
-%----------------------------------------------------------------------------
-
-%----------------------------------------------------------------------------
-\subsection{Útkeresõ algoritmusokról általában}
-%----------------------------------------------------------------------------
-
-%----------------------------------------------------------------------------
-\subsection{Az A* algoritmus}
-%----------------------------------------------------------------------------
-mukodes + implementacio
-
-\begin{algorithm}
-\caption{Euclid algorithm}\label{a_star}
-\begin{algorithmic}[1]
-\Procedure{MyProcedure}{}
-\State $\textit{stringlen} \gets \text{length of }\textit{string}$
-\State $i \gets \textit{patlen}$
-\State \emph{top}:
-\If {$i > \textit{stringlen}$} \Return false
-\EndIf
-\State $j \gets \textit{patlen}$
-\State \emph{loop}:
-\If {$\textit{string}(i) = \textit{path}(j)$}
-\State $j \gets j-1$.
-\State $i \gets i-1$.
-\State \textbf{goto} \emph{loop}.
-\State \textbf{close};
-\EndIf
-\State $i \gets i+\max(\textit{delta}_1(\textit{string}(i)),\textit{delta}_2(j))$.
-\State \textbf{goto} \emph{top}.
-\EndProcedure
-\end{algorithmic}
-\end{algorithm}
-
-%----------------------------------------------------------------------------
-\subsection{A Dijkstra algoritmus}
-%----------------------------------------------------------------------------
-mukodes + implementacio
-
-%----------------------------------------------------------------------------
 \section{Felhasználói felület}
 %----------------------------------------------------------------------------
-interakcio a felhasznaloval
+A felhasználói felületek használata a mai játékokban alap funkcionalitásnak tekinthetõ, hiszen még
+egy kisebb mobil alkalmazásnak is nyújtania kell valamiféle GUI-t a felhasználó felé, hogy tájékoztassa
+õt a legfontosabb adatokról (pl.: játékos életereje), lehetõséget adjon neki a játékmenetbe történõ
+beavatkozásra (pl.: fegyver felvétele), vagy éppen megváltoztassa az alkalmazás használatának módját
+(pl.: gombok jelentése, hangerõ szabályozása).
 
-manapsag egy jatek enelkul elkepzelhetetlen
-%----------------------------------------------------------------------------
-\subsection{OGRE overlay keretrendszer bõvíthetõségi kérdései}
-%----------------------------------------------------------------------------
-
-%----------------------------------------------------------------------------
-\subsection{Kész keretrendszerek áttekintése}
-%----------------------------------------------------------------------------
+Ezen felsorolt jellemzõi miatt az én rendszeremben is megvalósítottam egy GUI rendszert a MyGUI
+felhasználásával, melyet a továbbiakban ismertetek.
 
 %----------------------------------------------------------------------------
 \subsection{MyGUI ismertetése}
 %----------------------------------------------------------------------------
+A MyGUI egy nyílt forrású, ingyenes, multiplatform GUI keretrendszer, mely MIT licensz alatt fut.
+Gyorsasága és egyszerûsége ellenére igen komplex felhasználói felületek kialakítására is alkalmas.
+Hátrányaként felróható, hogy a dolgozat írásának idején a legfrissebb stabil verziója (3.2.2) 2015 január
+26.-án jelent meg, tehát az eszközt fejlesztõ közösség nem mutat túlzott aktivitást.
+Ennek ellenére számos OGRE-s projektben került már felhasználásra, ezért esett rá a választásom.
+
+Az eszköz használatának kierõszakolása viszont nem volt zökkenõmentes. A szokásos CMake-es kitérõk
+mellett valamiért a program DirectX használata mellett nem volt hajlandó mûködni. Ennek az volt az
+oka, hogy az általam használt OGRE verzió (1.9) már a DirectX11-et használja, amelyben viszont már
+nincs fixed function pipeline, vagyis a keretrendszer már nem kínál alapértelmezett árnyalóprogramokat
+a felhasználók számára. Hosszas debuggolási folyamat végén derült csak ki, hogy ezért a hibáért
+a MyGUI is felelõs, hiszen neki is vannak saját material-jai, melye(ke)t saját magának, belül állít
+össze, támaszkodva a rendszer alap árnyalóprogramjaira. A hiba javítása helyett áttértem a GLSL
+használatára, mellyel egy újabb lépést tettem a multiplatformság felé.
+
+A probléma megoldása után a motor oldali GUI rendszert a GUI szkriptek használatának irányába
+fejlesztettem.
+
+<KÉPERNYÕKÉPEK!!!>
 
 %----------------------------------------------------------------------------
-\section{Hangrendszer}
+ \section{Hangrendszer}
 %----------------------------------------------------------------------------
+A hangok használata a mai játékokban messze túlmutat a felhasználó szórakoztatásán, hiszen emellett egyéb
+céljai is vannak, mint például az aktuális játékbeli szituációhoz kapcsolódó
+hangulat sugallása illetve felerõsítése, földrajzi elhelyezkedés ismertetése, a játékost megszemélyesítõ
+karakter (vagyis az avatar) jellemzése, vagy éppen a játékos aktuális cselekvésének sikerességét is
+szokás hangokkal jelezni a felhasználó felé (pl.: fegyver felvétele, szintlépés, stb.).
+
+Összességében az elmondható, hogy a megfelelõen megválasztott és idõzített hangokkal hatni lehet a
+felhasználók lelki világára illetve hangulatára, emellett informálják õket a státuszukról, az aktuális környezetrõl illetve az elõrehaladásukról is, s ezen tulajdonságaik miatt a mai játékok elengedhetetlen kellékei.
+
+Az elõbb felsorolt jellemzõk miatt az én megoldásomból sem hiányozhat egy saját hangrendszer implementálása,
+melyet az alábbiakban ismertetek.
 
 %----------------------------------------------------------------------------
-\subsection{Kész hangrendszer megoldások áttekintése}
+\subsection{Megvalósítás}
 %----------------------------------------------------------------------------
+A megvalósításhoz az ingyenes, platformfüggetlen OpenAL-t használtam fel, mely az OpenGL 
+hang-analógiájának is tekinthetõ, legalábbis ami az API felépítését tekinti. Állapotgép!!!
 
-%----------------------------------------------------------------------------
-\subsection{OpenAL ismertetése}
-%----------------------------------------------------------------------------
+Az implementáció ismertetéséhez szükség van néhány OpenAL-hez kapcsolódó fogalom tisztázására, melyeket
+a következõkben ismertetek.
+
+A listener az a térbeli objektum, melynek a szemszögébõl rendereljük a hangforrásokat (pongyolán
+fogalmazva ez a kamera füle). A definíciójából adódik, hogy egyidõben csak egyetlen ilyen
+objektumnak kell léteznie, jelenettõl függetlenül.
+
+A buffer objektum megfeleltethetõ egy olyan leíró fájlnak, mely egy hangfájl adatait 
+tartalmazza. Ilyen típusú objektumból akárhányat fel lehet használni.
+
+A source olyan objektum, mely egy vagy több buffer lejátszását teszi lehetõvé. Több source-hoz is
+hozzá lehet rendelni ugyan azt a buffert, viszont egy source egyszerre csak egyetlen buffer tartalmát
+képes emittálni. Ebbõl már nem lehet
+egyszerre akármennyi a rendszerben, hiszen a hangkártyák hardveres limitációi ezt nem teszik lehetõvé.
+Az én megoldásomban maximum 16 buffer tartalmát lehet lejátszani egyidõben, így a megoldásom régebbi
+hangkártyákkal is kompatibilis.
+A forrás objektumokkal kapcsolatban megjegyzendõ, hogy lehetnek 2D-sek (Music vagy Ambient)
+illetve 3D-sek (SoundEffect) is. Az elõbbi
+azt jelenti, hogy a listenertõl való távolsága mindig nulla, míg értelemszerûen ez a 3D-s esetben nem
+igaz. A háromdimenziós (azaz térbeli) hangoknál a valósághûbb hangérzet elérésének érdekében a
+hangmagasságot megperturbálom egy általam megválasztott random faktorral. A további valósághû érzet
+keltése érdekében nem csak a hangmagasságot, hanem a kiválaszott buffert is randomizálhatja a felhasználó,
+ha akarja (de dönthet úgy is, hogy a source-hoz rendelt buffereket sorrendhelyesen akarja lejátszani).
+Ennek implementálásához ki kellett vennem a rendszerbõl az OpenAL beépített looping funkcionalitását,
+ugyanis az a bufferek cserélgetését nem hordozza magában.
+
+A megvalósításhoz két osztályt definiáltam motor oldalon. Az egyik az AudioManager, melynek feladata
+a source-ok, a bufferek és a listener menedzselése és karbantartása. A másik objektum az
+AudioSourceComponent, mely szabad source-ot és tetszõleges számú buffert kérhet az AudioManager-tõl,
+s lejátszhatja a hozzá rendelt buffereket tetszõleges számú alkalommal, a korábban említett módokon.
+Ha az AudioManager nem tud adni az AudioSourceComponent-nek szabad source-ot, akkor a lejátszás
+egyszerûen nem történik meg, de a rendszerben attól még megjelenik az igény.
+Az AudioManager tehát tetszõleges számú AudioSourceComponent-et menedzsel, s minden frame-ben
+felállít köztük egy sorrendiséget a következõk szerint: legelõre veszi a Music típusú komponenseket,
+aztán az Ambient típusúak következnek, végül pedig a SoundEffect-ek maradnak, melyek közötti sorrendet
+a listenertõl való távolság határozza meg (a közelebbi kerül elõrébb a sorban).
+Az így berendezett tároló elsõ 16 eleme OpenAL source-hoz jut, a többi pedig várakozni kényszerül.
+
+<DIAGRAMOK!!!>
 
 %----------------------------------------------------------------------------
 \section{Plakátok és részecskerendszerek}
 %----------------------------------------------------------------------------
+Nem volt igény kód oldali reprezentációra, mindössze annyiból áll az implementáció, hogy egy
+speciális motor oldali komponens (ParticleComponent) képes beparszolni illetve leállítani/újraindítani
+egy Ogre ParticleScriptet. Ez a megoldás azért elõnyös, mert a részecskerendszer módosulása esetén
+nem kell újrafordítani a forráskódot. Emellett viszont ez a megközelítés nem teszi lehetõvé
+részecskerendszerek kódból történõ módosítását vagy akár létrehozását.
+
+talan lehetne felhozni itt egy pl scriptet?
+%----------------------------------------------------------------------------
+\section{Egyéb}
+%----------------------------------------------------------------------------
+Delegate
 
 %----------------------------------------------------------------------------
 \section{Áttekintés}
 %----------------------------------------------------------------------------
+
+<DIAGRAMOK!!!>
