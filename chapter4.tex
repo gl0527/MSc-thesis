@@ -10,24 +10,123 @@ zárul.
 \section{Követelmények}
 %----------------------------------------------------------------------------
 A követelmények meghatározásakor arra kellett törekednem, hogy az elkészített motor képességeire
-minél jobban támaszkodjon a demonstrációs alkalmazás. Fontos szempont volt továbbá az is, hogy
+minél jobban támaszkodjon az elkészítendõ demonstrációs alkalmazás. Fontos szempont volt továbbá az is, hogy
 a példa alkalmazásnak ``legyen értelme'', vagyis legyen kezdeti állapota és célja, illetve hogy
 ne csak nyerni, hanem veszteni is lehessen benne.
 
 Ezen szempontokat is figyelembe véve egy zárt térben játszódó FPS (First Person Shooter) játék
 megvalósítására vállalkoztam, ahol a felhasználó által irányított játékosnak nincsenek segítõi, csak
-ellenfelei, melyek a pálya tetszõleges pontján jelenhetnek meg. A játékosnak az a feladata, hogy
-adott idõ alatt elpusztítsa az összes ellenfelét úgy, hogy a saját életereje nem csökken le nullára.
+ellenfelei, melyek a pálya adott pontjain jelenhetnek meg, s mohó módon a játékos felé tartanak, ha
+életerejük nagyobb, mint egy, különben menekülnek a játékos elõl. Az ellenséges objektumok hullámokban
+jelennek meg a színtéren, mégpedig úgy, hogy az n. hullám kezdetekor 2n darab új ellenséges objektum
+keletkezik. Az ellenséges objektumok számára nincs felsõ korlát, ilyen értelemben ez egy végtelenített
+játék, amelynek csak akkor van vége, ha a játékos karakterének az életereje nullára csökken.
 
 %----------------------------------------------------------------------------
 \section{Megvalósítás}
 %----------------------------------------------------------------------------
-az ismertetõben leírt funkciókat hogyan lehetett játéklogika-oldalon megvalósítani + kiemelni, hogy
-mennyire könnyû volt, mert az engine nagyon jó :D
-persze a funkciok mellett a fobb osztalyokat is meg kell itt emliteni
-itt a konnyu megvalositast jol lehet demonstralni nehany kisebb kodreszlettel
+Ez a szakasz az alkalmazás során megvalósított fontosabb osztályok bemutatását tartalmazza.
 
-<SCREENSHOT-OK!!!>
+%----------------------------------------------------------------------------
+\subsection{DynamicMovementComponent}
+%----------------------------------------------------------------------------
+Ennek a komponens leszármazottnak az a feladata, hogy dinamikus fizikai komponenssel rendelkezõ
+játékobjektum felhasználói inputokkal történõ transzformálását megoldja illetve a fizikai ütközésekkor
+bekövetkezõ eseményeket lekezelõ függvények definiálását megtegye. Ennek megfelelõen ez a komponens
+felel a felhasználót reprezentáló karakter transzformációjának módosításáért.
+
+%----------------------------------------------------------------------------
+\subsection{EnemyAIComponent}
+%----------------------------------------------------------------------------
+Ez a komponens leszármazott nagyon hasonlít az elõzõekben ismertetett DynamicMovementComponent
+osztályhoz, ugyanis ez az osztály is dinamikus fizikai komponenssel rendelkezõ objektum transzformálását
+és az ütközéseinek kezelését végzi, annyi különbséggel, hogy ebben az esetben nem a felhasználói
+bemenetek, hanem egy belsõ logika dönt az elmozdulás és az elforgatás milyenségérõl. Ahogy arra a
+komponens nevébõl is következtetni lehet, ez az osztály felelõs az ellenséges játékobektumok
+transzformációjának módosításáért.
+
+A megvalósítás során 4 állapotot definiáltam az ellenséges karakterek számára, ezek rendre a Search,
+Attack, RunAway és Dead állapotok. Az állapotokhoz tartozó függvényeket illetve az állapotátmenetek
+menedzselését a motor oldali generikus állapotgép segítségével, a FiniteStateMachine osztály
+felhasználásával valósítottam meg. Ami az implementáció mesterséges intelligenciára vonatkozó részét
+illeti, az állapotgéphez rendelt állapotfüggvényeknek az a feladatuk, hogy a felhasználó által
+irányított karakterhez képest meghatározza az kívánt elmozdulás irányát és az elforgatás szögét, s ezeknek
+megfelelõen erõk illetve forgatónyomatékok segítségével elvégzi a szükséges transzformációkat.
+Látható, hogy ez a megoldás meglehetõsen korlátozott intelligenciát ruház az ellenséges játékobjektumokra,
+hiszen mivel ez egy mohó algoritmus (azaz mindig az aktuális állapot alapján dönt, determinisztikusan),
+így például az akadályok kikerülése, a kooperáció stb. nem megoldható ezzel a megvalósítással.
+
+%----------------------------------------------------------------------------
+\subsection{EnemyAnimationComponent}
+%----------------------------------------------------------------------------
+Ennek az AnimationComponent-leszármazottnak az a feladata, hogy az ellenséges játékobjektumok animálását
+menedzselje a motor oldali FiniteStateMachine osztály segítségével.
+
+Az implementáció során 3 animációs állapotot definiáltam, ezek rendre a Walk, Attack és Dead
+állapotok. Természetesen ezek az állapotok összefüggnek az imént ismertetett EnemyAIComponent-ben
+definiált állapotokkal a következõ módon: amikor az EnemyAIComponent Search vagy RunAway állapotban
+van, akkor az EnemyAnimationComponent Walk állapotban, illetve minden más EnemyAIComponent-beli
+állapothoz a vele megegyezõ nevû EnemyAnimationComponent-beli állapot tartozik.
+
+%----------------------------------------------------------------------------
+\subsection{GUIComponent}
+%----------------------------------------------------------------------------
+Ez a komponens-leszármazott felel a MyGUI szkriptek segítségével definiált felhasználói felület
+menedzseléséért, amibe beletartozik a menüelemekhez kötõdõ események kezelése illetve magának a menünek
+a megjelenítése illetve elrejtése a játékmenet aktuális állapotának megfelelõen.
+
+%----------------------------------------------------------------------------
+\subsection{HUDComponent}
+%----------------------------------------------------------------------------
+Ez a komponens leszármazott is -- a korábbiakban ismertetett GUIComponent-hez hasonlóan -- felhasználói
+felület menedzselésével foglalkozik, annyi különbséggel, hogy ez az osztály az Ogre Overlay keretrendszert
+használja a felhasználó számára fontosnak tartott információk
+(aktuális életpont, aktuális töltények száma, megölt ellenfelek száma illetve az aktuális kör sorszáma) képernyõn történõ megjelenítésére.
+
+%----------------------------------------------------------------------------
+\subsection{ManagerComponent}
+%----------------------------------------------------------------------------
+Ez a komponens-leszármazott felel a pályán megjelenõ ellenséges játékobjektumok megfelelõ ütemben
+és helyen történõ létrehozásáért. Emellett ennek az osztálynak a feladata az is, hogy a HUDComponent-et
+tájékoztassa a szükséges mennyiségek aktuális értékeirõl.
+
+%----------------------------------------------------------------------------
+\subsection{PlayerDataComponent}
+%----------------------------------------------------------------------------
+Ennek a komponensnek az a feladata, hogy a felhasználó által irányított karakter illetve az ellenséges
+játékobjektumok legfontosabb közös tulajdonságait (életerõ, megölt ellenfelek száma illetve egy flag
+arról, hogy van-e nála fegyver) menedzselje.
+
+%----------------------------------------------------------------------------
+\subsection{SoldierAnimationComponent}
+%----------------------------------------------------------------------------
+Ez a speciális AnimationComponent azért felel, hogy a felhasználó által irányított játékobjektum
+mindig a megfelelõ animációval legyen ellátva.
+
+Implementációs szinten ez az osztály úgy viszonyul a DynamicMovementComponent-hez, mint ahogy
+az EnemyAnimationComponent viszonyult az EnemyAIComponent-hez, annyi különbséggel, hogy a
+DynamicMovementComponent-ben nincs állapothalmaz, viszont ebben az osztályban kettõ is van.
+
+A két állapothalmazra azért van szükség, mert a felhasználó által irányított játékobjektum
+animációinak nagy része vagy csak a karakter felsõ testére, vagy csak annak az alsó testére vonatkozik,
+ennek megfelelõen a különbözõ halmazokban levõ állapotok egymástól függetlenül kezelendõk. Ez kódszinten
+azt jelenti, hogy két FiniteStateMachine példányt kell menedzselnie ennek az osztálynak.
+
+Az alsó testre vonatkozó állapothalmaz állapotait az Idle, Run és Dead állapotok alkotják, míg
+a felsõ testen használatos állapothalmazba az Idle, Run, WeaponHold, Shoot és Dead állapotok tartoznak.
+Megjegyzendõ, hogy az állapotok és az animációk között nem egyértelmû a leképezés, hiszen
+a death animáció mind az alsó testre, mind a felsõ testre vonatkozik, viszont mindkét állapotgépben
+szerepel a hozzá tartozó állapot a helyes mûködés elõidézése érdekében.
+
+%----------------------------------------------------------------------------
+\subsection{WeaponComponent}
+%----------------------------------------------------------------------------
+Ez a komponens menedzseli a játékos karaktere által felvehetõ fegyver objektumot. A menedzselésbe
+beletartozik a töltények számának kezelése, illetve maga a lövési folyamat definiálása is, mely során
+a fizikai rendszer segítségével fizikai first hit raycasting-ot használva a fegyver csövébõl lõtt
+sugárral metszi el a színteret, s az elsõként eltalált fizikai objektumtól von le életet akkor, ha az
+az objektum egy ellenség volt (azt, hogy egy játékobjektum ellenség-e, a hozzá rendelt tag-ek
+alapján lehet eldönteni).
 
 %----------------------------------------------------------------------------
 \section{Áttekintés}
@@ -46,3 +145,7 @@ fontosabb reszei ES a jatekoldal egyszerre szerepel
 %----------------------------------------------------------------------------
 Különféle eseteket kéne kipróbálni, s bizonygatni, hogy minden esetben az elvárt viselkedés
 tapasztalató. (pl.: fegyver nélkül próbálok meg lõni, halottan próbálok mozogni, ...)
+
+<SCREENSHOT-OK!!!>
+
+meg a teljesitmenyt is 

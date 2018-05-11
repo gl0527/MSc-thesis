@@ -51,12 +51,19 @@ eltárolhatók heterogén kollekcióban. Az összetartozó \textit{GenericPrefab} péld
 példányokat gyártani. A \textit{GameObjectCreator} objektumok az \textit{ObjectManager}-ben
 foglalnak helyet.
 
-Ezen módosítások mellett módosítanom kellett a komponensek XML-bõl történõ beolvasásáért felelõs
+A C++ oldal mellett a jelenet XML leírása is módosult természetesen. Az eddigi funkcionalitások mellett
+a fejlesztõnek lehetõsége van prefab-ok megadására is. Egy ilyen objektum definiálása gyakorlatilag
+megegyezik egy játékobjektum definiálásával, mindössze az XML tag-ek nevében van különbség (gameobject
+helyett prefab). Mindemellett a felhasználó megadhatja azt is, hogy egy játékobjektum mely prefabból
+példányosodik.
+
+Ezen módosítások miatt módosítanom kellett a komponensek XML-bõl történõ beolvasásáért felelõs
 osztályokat is. A korábbiakkal ellentétben ugyanis ezek az objektumok már nem konkrét komponens
 leszármazottakat, hanem \textit{GenericPrefab}-okat hoznak létre. Szükség esetén természetesen
 a \textit{GenericPrefab} példányból azonnal lehet komponens leszármazottat is készíteni, tehát a régi
 funkcionalitás nem vész el. Viszont bõvül azzal, hogy a \textit{GenericPrefab} példányt elrakhatom egy
 \textit{GameObjectCreator}-ba egy -- vagy több -- késõbbi használat reményében.
+
 
 <DIAGRAM(OK)>
 
@@ -127,24 +134,90 @@ el kell tárolni egy \textit{State}-re mutató pointert, melynek a mutatott értéké
 %----------------------------------------------------------------------------
 \subsection{Generikus implementáció}
 %----------------------------------------------------------------------------
+Az elõzõ megoldás alternatívájaként egy olyan megközelítés is bekerült a motorba, mely közelebb áll
+a korábban említett véges automaták mûködéséhez. Ez az implementáció mindössze egyetlen generikus
+osztályt tartalmaz, melynek neve FiniteStateMachine, ezzel is utalva a már említett véges matematikai
+fogalomra.
+
+Az osztály sablon paraméterben kapja meg a kezelendõ állapotok típusát illetve az automata bemeneteinek
+típusát. Emellett definiálja azokat a típusokat, melyekkel meg lehet adni, hogy egy adott konkrét automata
+az állapotokban való tartózkodást illetve az állapotátmeneteket hogyan kezelje. Az osztály mûködésének
+egyik sarkallatos pontja a bemenetek kezelése. Ennek lényege, hogy az aktuális állapothoz megkeresi
+a belõle kiinduló átmeneteket, s ezek között megkeresi, hogy melyik aktiválódik az olvasott bemenet
+hatására. A megoldásnak Update függvénye is van, mely minden frame-ben meghívódik, s a kurrens állapot
+állapotfüggvényeit hívja meg.
 
 %----------------------------------------------------------------------------
-\section{Animációs alrendszer}
+\section{Animációs rendszer}
 %----------------------------------------------------------------------------
+A mai játékokban gyakorlatilag bármilyen játékobjektum rendelkezik legalább egy minimális szintû
+animációval. Ezen animációk elsõdleges feladata az objektumok mozgásainak minél élethûbb bemutatása.
+Emellett az animációknak információközlõ feladatai is lehetnek, hiszen egy gondosan felépített karakter
+animációi kifejezõbbek -- és emellett egyértelmûbbek, illetve könnyebbek értelmezhetõek -- lehetnek,
+mint a hangok, feliratok és egyéb információközlõ formák.
+
+Az animációk minõsége tehát nagyban meghatározza a játékról alkotott véleményeket, így a játék minõsítésére,
+sikerességére is van befolyásuk. Nem véletlen, hogy a nagy játékfejlesztõ cégek rengeteg pénzt és
+energiát fordítanak a minél élethûbb és részletgazdagabb animációk elõállítására (pl.: motion capture).
+
+Az én rendszeremben is implementáltam animációkkal összefüggõ funkciókat, melyek a State tervezési mintára
+illetve az állapotgépes megközelítésre építenek. A továbbiakban ezen megoldások bemutatása következik.
 
 %----------------------------------------------------------------------------
-\subsection{Animációk típusai}
+\subsection{Csontváz alapú animáció megvalósítása a State tervezési minta felhasználásával}
 %----------------------------------------------------------------------------
-skeleton animacio, inverz kinematika, eloremeno kinematika, kulcskeret animacio...
-a 3DGraf konyv sokat segit (es mashol is)
+Ez az implementáció analógia a State tervezési mintánál leírtakra. A továbbiakban az ott ismertetett
+objektumoknak megfeleltethetõ játékmotor oldali megoldások bemutatása következik.
+
+A State tervezési minta State osztályának a játékmotor IState osztálya felel meg. Ahogy ennek az osztálynak a neve is sugallja, egy interfészrõl van szó, melynek három fõ absztrakt függvénye van:
+az Enter függvény az állapotba lépés legelején, egyszer fut le, az Execute függvény minden frame-ben
+lefut, s az Exit pedig szintén egyszer fut le, mégpedig az állapotból való kilépéskor. Konkrét állapotok
+létrehozásához ebbõl az osztályból kell leszármazott osztályokat készítenie a felhasználónak, s a megfelelõ
+funkciókat az imént ismertetett függvények felüldefiniálásával adhatja meg.
+
+A State minta ismertetésénél bemutatott Context osztálynak a játékmotor Stateable osztálya felel meg.
+Ez az osztály tagváltozóként eltárolja a kurrens állapotát, melyet lecserélhet, illetve befrissítõ
+függvényében meghívhatja annak Execute függvényét.
+
+Játékmotor oldalon még egyetlen osztály, az AnimState képviseli ezt a megoldást, amely az IState osztály
+leszármazottja. Ez az osztály tetszõleges számú Ogre::AnimationState-et képes eltárolni magában (csak a
+számítógép tárkapacitása szabhat határt). A szokásos getter-setter függvények mellett az osztály
+rendelkezik egy Blend függvénnyel, mely az animációk közötti átmenetet valósítja meg lineáris
+interpoláció segítségével.
+
+A megoldás használatához játéklogika-oldalon definiálni kell egy Stateable leszármazottat illetve
+tetszõleges számú AnimState leszármazottat (melyek lehetõség szerint singleton objektumok), mely
+leszármazottak egymás között döntik el, hogy a hozzájuk tartozó Stateable leszármazottnak mikor melyikük
+legyen az aktuális állapota.
 
 %----------------------------------------------------------------------------
-\subsection{Az OGRE animációs rendszerének mûködése}
+\subsection{Csontváz alapú animáció megvalósítása állapotgéppel}
 %----------------------------------------------------------------------------
+Ahhoz, hogy a felhasználónak ne kelljen közvetlenül az Ogre animációs rendszerét használnia,
+létrehoztam egy olyan komponenst motor oldalon, melynek az a feladata, hogy gyakran használt,
+animációkhoz kötõdõ mûveleteket nyújtson a felhasználók felé. Természetesen ezen mûveletek
+implementációi továbbhívnak az Ogre animációs rendszerébe, viszont ennek köszönhetõen a programozóknak
+már ezt nem kell megtenniük, nekik elég ezt az absztrahált interfészt használniuk.
+
+A korábban taglalt állapotgép implementációmhoz ez úgy kapcsolódik, hogy a felhasználó játék oldalon
+definiál egy AnimationComponent leszármazottat, s ennek a leszármazottnak a tagváltozójaként veheti fel
+azt az egy vagy több állapotgépet, melyek a konkrét animációs állapotokat és átmeneteiket reprezentálják.
 
 %----------------------------------------------------------------------------
-\subsection{Csontváz animáció megvalósítása}
+\subsection{Animációs megoldások összehasonlítása}
 %----------------------------------------------------------------------------
+A State tervezési mintán alapuló megoldásnak egyértelmû elõnye az állapotgépes megoldáshoz képest az
+animációs állapotok interpolálása állapotváltás esetén. Ennek köszönhetõen az így animált karakterek
+mozgása folytonosabbnak, ezáltal életszerûbbnek hat a felhasználók számára.
+
+Ennek ellenére természetesen az állapotgépes megoldásnak is megvan a maga elõnye a másik megoldással
+szemben, mégpedig az, hogy az állapotokat leíró függvények és az állapotátmeneteket definiáló függvények
+kódjai jól elkülönülnek kód szinten, ennek köszönhetõen bonyolultabb állapotgráf
+reprezentálására ez a megoldás alkalmasabb, mint a State mintán alapuló implementáció.
+
+Mivel egyik megoldást sem tudtam egyértelmûen a jobbnak nevezni a másiknál, így mindkét implementáció
+a motor részét képezi, s a felhasználó dönthet arról, hogy melyik megoldást választja a saját feladatai
+elvégzéséhez.
 
 %----------------------------------------------------------------------------
 \section{Felhasználói felület}

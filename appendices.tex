@@ -9,13 +9,90 @@
 \numberwithin{lstlisting}{section}
 %\numberwithin{tabular}{section}
 
-CMake szkriptek tartalma
-
-XML leiro fajl tartalma (prefab peldanyositas, fontosabb komponensek leirasa stb.)
-
-GLSL shaderek tartalma
-
-Material scriptek tartalma
-
-MyGUI szkriptek tartalma
+%----------------------------------------------------------------------------
+\section{Egy jelenetleíró fájl felépítése}
+%----------------------------------------------------------------------------
+\begin{lstlisting}[frame=single,float=!ht,
+caption={Dolgozatom jelenetleíró formátuma}, label=XMLDescription]
+<?xml version="1.0" encoding="utf-8"?>
+<map name="Demo">
+	<environment>
+		<ambientlight r="0.3f" g="0.3f" b="0.3f"/>
+		<skybox material="Stormy" distance="50.0f"/>
+	</environment>
+	
+	<prefab name="demoPrefab">
+		<meshcomponent name="prefabMesh" mesh="ghost.mesh"/>
+		<audiocomponent name="prefabAudio" type="SoundEffect">
+			<volume value="1.0"/>
+			<speed value="1.0"/>
+			<loop value="false"/>
+			<buffer name="pacmanInPain.wav"/>
+			<buffer name="pacmanDead.wav"/>
+			<refdist value="20.0f"/>
+			<maxdist value="100.0f"/>
+			<randombufferselection value="false"/>
+		</audiocomponent>
+		<lightcomponent name="pointLight" type="point">
+			<diffusecolor r="0.0" g="0.0" b="1.0"/>
+			<specularcolor r="0.0" g="0.0" b="1.0"/>
+			<intensity value="100.0"/>
+			<attenuation range="50.0" constant="1.0" linear="0.01" quadric="0.005"/>
+			<angle inner="60.0" outer="90.0"/>
+		</lightcomponent>
+		<physicscomponent name="prefabPhysics" mass="1.0" type="dynamic">
+			<shape type="capsule" r="3.0" h="9.0">
+				<position x="0.0" y="6.0" z="0.0"/>
+			</shape>
+			<material friction="0.8" bounciness="0.1" lin_damping="1.0" ang_damping="1.0"/>
+			<angularfactor x="0.0" y="1.0" z="0.0"/>
+			<trigger value="false"/>
+		</physicscomponent>
+	</prefab>
+\end{lstlisting}
+		
+\begin{lstlisting}[frame=single,float=!ht,
+caption={Dolgozatom jelenetleíró formátuma}, label=XMLDescription2]
+	<gameobject name="demoObject" using="demoPrefab">
+		<transformcomponent name="demoTransform">
+			<position x="20.0" y="0.0" z="-600.0"/>
+			<rotation qw="0.0" qx="0.0" qy="1.0" qz="0.0"/>
+			<scale x="5.0" y="5.0" z="10.0"/>
+		</transformcomponent>
+		// orokolt mas nevvel --- hozzavesz a halmazhoz
+		<audiocomponent name="demoAudio" type="SoundEffect">
+			<volume value="1.0"/>
+			<speed value="1.0"/>
+			<loop value="false"/>
+			<buffer name="sound1.wav"/>
+			<buffer name="sound2.wav"/>
+			<refdist value="30.0"/>
+			<maxdist value="90.0"/>
+			<randombufferselection value="true"/>
+		</audiocomponent>
+		// orokolt tipus ugyan azzal a nevvel --- felulir
+		<lightcomponent name="pointLight" type="point">
+			<diffusecolor r="1.0" g="0.0" b="0.0"/>
+			<specularcolor r="1.0" g="0.0" b="0.0"/>
+			<intensity value="30.0"/>
+			<attenuation range="50.0" constant="1.0" linear="0.01" quadric="0.005"/>
+			<angle inner="65.0" outer="95.0"/>
+		</lightcomponent>
+		// nem orokolt tipusok
+		<particlecomponent name="demoParticle" particle="Flare"/>
+		// gyerek objektum
+		<gameobject name="gijoecamera">
+			<transformcomponent name="cameraTransform">
+				<position x="0.0" y="15.0" z="-28.0"/>
+				<rotation qw="0.0" qx="0.0" qy="1.0" qz="0.0"/>
+			</transformcomponent>
+			<cameracomponent name="camComp" zOrder="10">
+				<frustum nearPlane="1.0" farPlane="1000.0"/>
+				<lookat x="0.0" y="0.0" z="0.0"/>
+				<renderdist dist="300.0"/>
+			</cameracomponent>
+		</gameobject>
+	</gameobject>
+</map>
+\end{lstlisting}
 

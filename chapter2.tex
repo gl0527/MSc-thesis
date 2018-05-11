@@ -127,11 +127,37 @@ a visual studio nem szemeteli tele a forras konyvtarakat
 A projekt könyvtárszerkezetének kialakítása
 
 %----------------------------------------------------------------------------
-\section{XML-feldolgozó módosítása}
+\section{Jelenetek kezelése}
 %----------------------------------------------------------------------------
-namespace-esites
+A szakdolgozatom során implementált megoldásban a jelenet leírása kizárólag a pálya leírására korlátozódott
+(tehát például játékobjektumok kezdeti transzformációit nem lehetett benne leírni),
+ráadásul azt is csak két dimenziós síkként lehetett értelmezni, ennek megfelelõen bármely leíró fájl
+két dimenziós koordinátákat tartalmazott (x, illetve z koordináták).
+
+Természetesen ez a megoldás egyrészt erõsen korlátozza a felhasználó szabadságát a kialakítható jelenet
+milyenségében (például a pálya talaja nem lehet tetszõleges domborzat, mindenképp síknak kell lennie),
+másrészt összetettebb leírások készítése fáradságos munka, ráadásul ha az eredmény nem
+felel meg az elvárásoknak, akkor elég nehéz észrevenni a hiba okát egy hosszadalmas leírásban.
+
+Jelen diplomatervezés során az elõzõtõl teljesen különbözõ megoldást implementáltam, melynek segítségével
+a felhasználónak lehetõsége nyílik bonyolultabb jelenetek leírására is.
+
+Ehhez definiáltam egy olyan XML formátumot, mely illeszkedik ahhoz a komponens alapú szemlélethez,
+melyet az egész rendszer képvisel. Ez azt jelenti, hogy az XML leírás játékobjektumok leírásainak az
+összessége, amely leírások pedig komponensek leírásaiból tevõdnek össze.
+
+Ennek megfelelõen a megvalósítás során komponens parszereket kellett készítenem,
+melyek által létrehozott komponenseket a szülõ XML-tag által reprezentált játékobjektumokhoz kell hozzáfûzni.
+Így a jelenetleíró XML fájl egyetlen rekurzív top-down bejárásával a felhasználó által leírt jelenet
+ -- a megfelelõ komponens parszerek meglétében -- megjelenik a szimuláció kezdetén.
+Onnantól kezdve a fizikai világ szabályai illetve a felhasználói események indukálhatják a virtuális
+világ változásait.
+
+Az XML parszolásához a TinyXML nevû eszközt használtam fel, amely egy C++-ban írt, platformfüggetlen,
+nyílt forráskódú, ingyenes XML feldolgozó könyvtár.
+
 %----------------------------------------------------------------------------
-\section{Bemenetek kezelésének módosítása}
+\section{Bemenetek kezelése}
 %----------------------------------------------------------------------------
 Ezelõtt a bemeneti eszközök eseményeit kizárólag pollingolós módszerrel figyeltem, ami azt jelenti,
 hogy minden frame-ben rá kellett néznem a bemeneti eszközök aktuális állapotaira. Ennek a megoldásnak
@@ -152,10 +178,18 @@ a felhasználó dönthet arról, hogy mikor melyik módszert kívánja használni a beme
 kezelésére.
 
 %----------------------------------------------------------------------------
-\section{Transzformációs komponens módosítása}
+\section{Transzformációk kezelése}
 %----------------------------------------------------------------------------
-<EZ A KOMPONENS A SZAKDOGAKOR MÉG NEM LÉTEZETT, AKKOR ÚJ KOMPONENSKÉNT KELLENE FELTÜNTETNI?>
+A szakdolgozatomban a játékobjektumok tagváltozóként tartalmazták a kurrens pozíciójukat illetve
+orientációjukat, ennek megfelelõen különálló, transzformációkért felelõs komponens még nem létezett
+a rendszerben akkoriban.
+Ez azért nem volt elõnyös, mert a rendszer bõvítési ötletei között szerepelt a
+játékobjektumok hierarchiába történõ rendezésének képessége, aminek így a megvalósítása is a
+játékobjektumokat reprezentáló osztályba került volna elhelyezésre, túlságosan megnövelve annak méretét,
+illetve megnehezítve annak kezelését.
 
+Ennek a problémának a kiküszöbölésére hoztam létre a rendszeremben a geometriai transzformációkért
+(eltolás, forgatás illetve skálázás) felelõs motor oldali komponenst, a TransformComponent-et.
 A rendszeremben ez az egyik legfontosabb komponens típus, ugyanis ez az egyetlen olyan komponens-
 leszármazott, melyet alapértelmezetten hozzárendelek minden játékobjektumhoz. Emellett természetesen
 rengeteg más komponens is támaszkodik a transzformációs komponens különbözõ funkcionalitására, így

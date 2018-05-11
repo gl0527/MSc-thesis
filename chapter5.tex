@@ -9,7 +9,13 @@ metrikák felhasználásával, végezetül bemutatja az általam használt optimalizáció
 %----------------------------------------------------------------------------
 \section{Használhatóság}
 %----------------------------------------------------------------------------
-Mennyire konnyu ra jatekot fejleszteni?
+Az elkészült motor gyakorlatilag értéktelennek tekinthetõ abban az esetben, ha felhasználásával
+a felhasználók nem -- vagy csak nagy erõfeszítések árán -- tudják megvalósítani a saját alkalmazásaikat.
+
+mennyire volt nehez megirni a demonstracios alkalmazast?
+
+miert tekintheto az elozo fejezetben ismertetett implementacio kenyelmesnek? milyen resze nem volt az?
+miben lehetne fejlodni?
 
 %----------------------------------------------------------------------------
 \section{Kód minõsége}
@@ -20,9 +26,33 @@ mennyire sok a hasznalt minta, milyen konnyen bovitheto stb.
 LZ-s metrikak is johetnek ide
 
 %----------------------------------------------------------------------------
-\section{Sebesség}
+\section{Teljesítmény}
 %----------------------------------------------------------------------------
-Mennyire gyors?
+ki kellene probalni, hogy a kulonbozo esetekben mennyit bir:
+
+csak animacioval rendelkezo objektumokbol mennyit bir megjeleniteni
+
+csak renderkomponenssel rendelkezo objektumokbol mennyit bir megjeleniteni
+
+animacio + ai
+
+dinamikus fizikaival
+
+kinematikus fizikaival
+
+statikus fizikaival
+
+hany statikus fenyforrast bir egyszerre
+
+hany dinamikus fenyforrast bir egyszerre
+
+ezeket a mereseket mas architekturakon is el lehetne vegezni (dedikalt GPU, esetleg az otthoni szamitogep)
+
+meg a mereseket debuggolt deves, deves, illetve release modban is el kene vegezni
+
+tablazatok + screenshot-ok
+
+mindegyik merest 60 FPS-nel kene vegezni
 
 %----------------------------------------------------------------------------
 \subsection{Optimalizációs lehetõségek}

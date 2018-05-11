@@ -1,11 +1,45 @@
 %----------------------------------------------------------------------------
 \chapter{Összefoglalás és kitekintés}
 %----------------------------------------------------------------------------
-igazából a leglényegesebb dolog a demonstrációs alkalmazás, ha azt túl nehéz volt megírni, akkor
-nem lett elég jó a motor
 
-meglevo dolgok tovabbfejlesztese
+%----------------------------------------------------------------------------
+\section{Elvégzett munka összegzése}
+%----------------------------------------------------------------------------
 
-bovitesi lehetosegek:
-halozat, tobbszalusitas, szkripteles, grafikus palyaszerkeszto (xml generalasa az iras helyett),
-multiplatformosítás, ...
+
+%----------------------------------------------------------------------------
+\section{Továbbfejlesztési lehetõségek}
+%----------------------------------------------------------------------------
+Ez a szakasz olyan funkciókat ismertet, melyek a dolgozat során elkészült rendszer részét képezik, de
+a mai általános célú játékmotorokban ezek a funkciók sokkal kényelmesebben használhatók.
+
+Ilyen funkció a jelenek betöltését végzõ alrendszer. Ezzel az a gond, hogy az XML leírás már
+közepesen nagy jelenetek definiálásakor is nehezen átlátható illetve módosítható, emellett az XML-
+szintaktikát megsértõ hibák okait sem egyszerû ilyen esetekben megtalálni.
+A jelenetek XML-ben történõ leírása helyett jobb lenne, ha egy grafikus felülettel rendelkezõ
+pályaszerkesztõ segítségével lehetne megadni a jeleneteket, amely pályaszerkesztõ aztán ugyan azt az XML
+formátumot generálná, amelyet most kézzel kell a felhasználónak összeállítania. Úgy vélem, hogy a
+motor használhatóságán ez a funkcionalitás sokat javítana.
+
+jobb kamera rendszer (pl.: cinamatic, több kamerabol egyideju rendereles, ...)
+
+%----------------------------------------------------------------------------
+\section{Bõvítési lehetõségek}
+%----------------------------------------------------------------------------
+A dolgozat hatásköre nem terjedt ki minden olyan szegmensre, melyek a mai játékmotorok részét
+képezik, hiszen az elvégzett munka terjedelmi és idõbeli korlátait a feladatkiírásnál figyelembe
+kellett venni. A továbbiakban olyan funkciókat ismertetek, melyek nem részei a rendszeremnek, viszont
+egy általános játékmotor implementációjából ma már nem hiányozhatnak.
+
+Manapság teret hódítottak maguknak a többfelhasználós játékok. Ezek az alkalmazások olyan motorok fölé
+épültek, mely motorok hálózati kommunikációt is képesek kezelni. Ezt általában úgy valósítják meg, hogy
+a motoron belül implementálnak egy kliens-szerver vagy egy peer-to-peer architektúrát, vagy egy erre
+alkalmas könyvtár szolgáltatásait -- például a HawkNL -- használják fel. Akárhogy is döntenek a
+fejlesztõk, céljuk minden esetben az, hogy a virtuális világ legfrissebb állapota jelenjen meg az
+összes olyan gépen, mely ezt a világot egyidõben megjeleníteni kívánja.
+
+
+
+szkriptelés (animáció, ai)
+
+tobbszalusitas, multiplatformosítás, ...
