@@ -119,6 +119,18 @@ a death animáció mind az alsó testre, mind a felsõ testre vonatkozik, viszont mi
 szerepel a hozzá tartozó állapot a helyes mûködés elõidézése érdekében.
 
 %----------------------------------------------------------------------------
+\subsection{SoldierAnimComponent}
+%----------------------------------------------------------------------------
+A TODO fejezetben leírtaknak megfelelõen nem csak a FiniteStateMachine osztály felhasználásával,
+hanem a State tervezési minta alkalmazásával is lehet állapotgép funkciókat megvalósítani.
+
+Ez az osztály a neve ellenére nem komponens, hanem Stateable leszármazott, ennek megfelelõen
+IState leszármazottak segítségével meg lehet adni a mindenkori aktuális állapotát.
+Ehhez definiáltam három darab AnimState leszármazottat, melyek singleton objektumok, s egymás között
+döntik el, hogy adott feltételek esetén melyikük legyen a hozzájuk tartozó SoldierAnimComponent
+példány aktuális állapota.
+
+%----------------------------------------------------------------------------
 \subsection{WeaponComponent}
 %----------------------------------------------------------------------------
 Ez a komponens menedzseli a játékos karaktere által felvehetõ fegyver objektumot. A menedzselésbe

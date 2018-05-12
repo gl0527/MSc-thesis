@@ -28,31 +28,154 @@ LZ-s metrikak is johetnek ide
 %----------------------------------------------------------------------------
 \section{Teljesítmény}
 %----------------------------------------------------------------------------
-ki kellene probalni, hogy a kulonbozo esetekben mennyit bir:
+Különbözõ összeállítású színtereken végeztem méréseket, melyek eredményeit az alábbiakban ismertetem.
+A mérésekkel kapcsolatosan megjegyzendõ, hogy mindegyiket egy percig végeztem, s a kurrens
+illetve az átlagos FPS (Frames per Seconds, képkockasebesség) jelenik meg a képernyõképeken
+(a háromszögek száma mellett).
 
-csak animacioval rendelkezo objektumokbol mennyit bir megjeleniteni
+A mérésekkel kapcsolatosan megjegyzendõ, hogy az Ogre beépített FPS-re vonatkozó lekérdezõ függvényeit nem
+használhattam, mivel ezek az Ogre beépített megjelenítési hurkát használják fel az implementációjuk során,
+viszont az én rendszeremben saját megjelenítési hurkot definiáltam. Ennek megfelelõen a motorban levõ,
+megjelenítésért felelõs alrendszerben implementálnom kellett az FPS számoláshoz szükséges logikát. Az
+implementáció során arra törekedtem, hogy ez a logika minél egyszerûbb legyen, ami azért fontos ebben az esetben,
+hogy a mérés minél kisebb százalékban befolyásolja a mérési eredményt.
 
-csak renderkomponenssel rendelkezo objektumokbol mennyit bir megjeleniteni
+A méréseket a laptopomon végeztem el, melynek fontosabb adatai a következõk:
+\begin{itemize}
+  \item RAM: 8GB DDRX
+  \item CPU: Intel(R) Core(TM) i7-5500U @ 2.4GHz, 4 mag
+  \item Háttértár: 256GB SSD
+  \item GPU: Intel(R) HD Graphics 5500 (alaplapra integrált videokártya)
+\end{itemize}
 
-animacio + ai
+Elsõként azt vizsgáltam meg, hogy kizárólag megjelenítõ komponenssel rendelkezõ játékobjektumokból álló
+színteret milyen hatékonysággal képes renderelni a rendszerem. Ehhez húsz darab egyforma 
+-- viszonylag kevés háromszögbõl álló -- háromszöghálót használtam fel.
 
-dinamikus fizikaival
+Elõször a program debugger alól indított debug-os verzióján végeztem el a mérést. Az eredményt a \figref{MeasRenderDBDev}
+ábra mutatja.
 
-kinematikus fizikaival
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=100mm, keepaspectratio]{figures/meas_render_debugdev.png}
+\caption{Kizárólag megjelenítéssel rendelkezõ játékobjektumoknál fellépõ képkockasebesség debugger alól indított debug-os program esetében}
+\label{fig:MeasRenderDBDev}
+\end{figure}
 
-statikus fizikaival
+A mérést elvégeztem debugger nélkül is, s jól látható, hogy szignifikáns különbség nem lépett fel a
+debuggeres változathoz képest. Az eredmény a \figref{MeasRenderDev} ábrán látható.
 
-hany statikus fenyforrast bir egyszerre
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=100mm, keepaspectratio]{figures/meas_render_dev.png}
+\caption{Kizárólag megjelenítéssel rendelkezõ játékobjektumoknál fellépõ képkockasebesség debugger nélkül indított debug-os program esetében}
+\label{fig:MeasRenderDev}
+\end{figure}
 
-hany dinamikus fenyforrast bir egyszerre
+Ezek után megvizsgáltam azt az esetet is, amikor a játékobjektumokra dinamikus fizikai komponenst is teszek.
+Az alábbiakban ezeknek a méréseknek az eredményeit közlöm.
 
-ezeket a mereseket mas architekturakon is el lehetne vegezni (dedikalt GPU, esetleg az otthoni szamitogep)
+A program debugger alól indított debug-os verziójának mérési eredményeit a \figref{MeasRenderDynamicDBDev} ábra mutatja be.
 
-meg a mereseket debuggolt deves, deves, illetve release modban is el kene vegezni
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=100mm, keepaspectratio]{figures/meas_renderDynamic_debugdev.png}
+\caption{Megjelenítéssel és dinamikus fizikával rendelkezõ játékobjektumoknál fellépõ képkockasebesség debugger alól indított debug-os program esetében}
+\label{fig:MeasRenderDynamicDBDev}
+\end{figure}
 
-tablazatok + screenshot-ok
+Ugyanezen konfiguráció debugger nélküli futásának eredménye a \figref{MeasRenderDynamicDev} ábrán látható.
 
-mindegyik merest 60 FPS-nel kene vegezni
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=100mm, keepaspectratio]{figures/meas_renderDynamic_dev.png}
+\caption{Megjelenítéssel és dinamikus fizikával rendelkezõ játékobjektumoknál fellépõ képkockasebesség debugger nélkül indított debug-os program esetében}
+\label{fig:MeasRenderDynamicDev}
+\end{figure}
+
+A következõ méréseket olyan játékobjektumokon végeztem, melyek a megjelenítés mellett animációval is rendelkeztek, viszont fizikával nem.
+
+A program debugger alól indított debug-os verziójának mérési eredménye a \figref{MeasRenderAnimDBDev} ábrán látható.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=100mm, keepaspectratio]{figures/meas_renderAnim_dbdev.png}
+\caption{Megjelenítéssel és animációval rendelkezõ játékobjektumoknál fellépõ képkockasebesség debugger alól indított debug-os program esetében}
+\label{fig:MeasRenderAnimDBDev}
+\end{figure}
+
+Ugyanennek a konfigurációnak a debugger nélkül indított futásának eredményeit a \figref{MeasRenderAnimDev} ábra szemlélteti.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=100mm, keepaspectratio]{figures/meas_renderAnim_dev.png}
+\caption{Megjelenítéssel és animációval rendelkezõ játékobjektumoknál fellépõ képkockasebesség debugger nélkül indított debug-os program esetében}
+\label{fig:MeasRenderAnimDev}
+\end{figure}
+
+Végül olyan játékobjektumokon végeztem a méréseket, melyek a megjelenítés mellett pontfényforrással rendelkeznek, s semmi mással.
+Ennek hatására tízszeresére nõtt a háromszögszám.
+Az Ogre elvileg egyszerre csak nyolc fényforrást tud kezelni.
+
+A debugger alól indított debug-os futás eredményeit az \figref{MeasRenderLightDBDev} ábra mutatja.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=100mm, keepaspectratio]{figures/meas_renderLight_dbdev.png}
+\caption{Megjelenítéssel és pontfényforrással rendelkezõ játékobjektumoknál fellépõ képkockasebesség debugger alól indított debug-os program esetében}
+\label{fig:MeasRenderLightDBDev}
+\end{figure}
+
+A debugger nélkül indított debug-os futás eredményeit az \figref{MeasRenderLightDev} ábra mutatja.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=100mm, keepaspectratio]{figures/meas_renderLight_dev.png}
+\caption{Megjelenítéssel és pontfényforrással rendelkezõ játékobjektumoknál fellépõ képkockasebesség debugger nélkül indított debug-os program esetében}
+\label{fig:MeasRenderLightDev}
+\end{figure}
+
+Ide kellenének összefoglaló táblázatok is!!!
+
+DBDev-es táblázat:
+
+\begin{center}
+\begin{tabular}{||c|c|c|c|c||} 
+ \hline
+  & Natúr & Fizika & Animáció & Fényforrás \\ 
+ \hline
+  Átlagos FPS & 55.72 & 56.32 & 20.17 & 14 \\ 
+ \hline
+  Háromszögek & 89614 & 89616 & 89624 & 805774 \\ 
+ \hline
+\end{tabular}
+\end{center}
+
+Dev-es táblázat:
+
+\begin{center}
+\begin{tabular}{||c|c|c|c|c||} 
+ \hline
+  & Natúr & Fizika & Animáció & Fényforrás \\ 
+ \hline
+  Átlagos FPS & 58.87 & 56.58 & 20.89 & 13.76 \\ 
+ \hline
+  Háromszögek & 89612 & 89612 & 89624 & 805774 \\ 
+ \hline
+\end{tabular}
+\end{center}
+
+
+A mérési eredményekbõl jól látható, hogy a rendszeremben a szûk keresztmetszetet a megjelenítéshez kapcsolódó
+funkcionalitások jelentik. Ezt még jobban alátámasztandó készítettem egy teljesítménymérést a Visual Studio 2015
+beépített teljesítmény profilozó eszközével. Ennek az eredménye a \figref{ProfilingDBDev} ábrán látható:
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=150mm, keepaspectratio]{figures/profiling_debugdev.png}
+\caption{A rendszerben levõ szûk keresztmetszet a megjelenítés}
+\label{fig:ProfilingDBDev}
+\end{figure}
 
 %----------------------------------------------------------------------------
 \subsection{Optimalizációs lehetõségek}

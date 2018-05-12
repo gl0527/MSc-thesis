@@ -5,7 +5,20 @@
 %----------------------------------------------------------------------------
 \section{Elvégzett munka összegzése}
 %----------------------------------------------------------------------------
+A feladatom egy általános célú, komponens alapú játékmotor fejlesztése és demonstrálása volt.
 
+A dolgozat kezdetén ismertettem a bemutatandó munkám elõzményeit. Ezt követõen a keretrendszert érintõ
+módosításokat taglaltam. Ezután következett a feladatkiírásban ismertetett pontok kifejtése, kezdve
+a játékmotor új funkcionalitásainak ismertetésével, majd a demonstrációs alkalmazás bemutatásával.
+Végezetül a demonstrációs alkalmazás után az elkészült rendszer értékelése következett.
+
+Az elvégzett munka során megtapasztaltam, hogy mekkora munkával jár egy egyetemi projekt kódbázisánál
+nagyságrendekkel nagyobb feladat megvalósítása. Emellett a C++ nyelv legújabb szabványaiban
+(C++11 illetve C++14) illetve a felhasznált keretrendszerek használatában is lehetõségem volt
+elmélyedni. Ezeken túl úgy vélem, hogy a komponens alapú szemléletet jobban el sikerült sajátítanom,
+mint a szakdolgozatom írásának idején.
+
+A következõ szakaszban az elkészült rendszerre vonatkozó továbbfejlesztési lehetõségeket ismertetem.
 
 %----------------------------------------------------------------------------
 \section{Továbbfejlesztési lehetõségek}
@@ -13,7 +26,7 @@
 Ez a szakasz olyan funkciókat ismertet, melyek a dolgozat során elkészült rendszer részét képezik, de
 a mai általános célú játékmotorokban ezek a funkciók sokkal kényelmesebben használhatók.
 
-Ilyen funkció a jelenek betöltését végzõ alrendszer. Ezzel az a gond, hogy az XML leírás már
+Ilyen funkció a jelenetek betöltését végzõ alrendszer. Ezzel az a gond, hogy az XML leírás már
 közepesen nagy jelenetek definiálásakor is nehezen átlátható illetve módosítható, emellett az XML-
 szintaktikát megsértõ hibák okait sem egyszerû ilyen esetekben megtalálni.
 A jelenetek XML-ben történõ leírása helyett jobb lenne, ha egy grafikus felülettel rendelkezõ
@@ -21,7 +34,24 @@ pályaszerkesztõ segítségével lehetne megadni a jeleneteket, amely pályaszerkeszt
 formátumot generálná, amelyet most kézzel kell a felhasználónak összeállítania. Úgy vélem, hogy a
 motor használhatóságán ez a funkcionalitás sokat javítana.
 
-jobb kamera rendszer (pl.: cinamatic, több kamerabol egyideju rendereles, ...)
+A jelenetek betöltésének módosítása mellett a kamerarendszer átdolgozása is fontos lehet a késõbbiekben.
+Ezt azért érzem szükségesnek, mert az elkészült rendszerem nem támogat cinematic funkciókat, melyek
+viszont egyre nagyobb szerepet kapnak a mai játékokban.
+
+Az említett funkcionalitások mellett megemlítendõ a szálak használata is. Nagyban növelné a rendszer
+teljesítményét az, ha a fizikai alrendszer és a megjelenítõ alrendszer külön szálon futna. Ennek
+megvalósítása sem szerepelt a feladatkiírásban. Megjegyzendõ, hogy a több szál kezelése a programozás
+véleményem szerint egyik legnehezebb feladata, hiszen a hibák keresése illetve a konzisztens állapot
+megtartása sok esetben komoly erõfeszítéseket igényel a programozótól.
+
+Az imént felsorolt funkcionalitásokon túl gyakorlatilag bármely szolgáltatását megemlíthetném itt
+az elkészült motoromnak, hiszen biztos vagyok abban, hogy a ma használatos játékmotorok minden olyan
+funkcionalitást körültekintõbben és részletesebben implementáltak, mint ahogy azt én tettem a saját
+rendszerem megalkotásakor.
+Viszont az is szent meggyõzõdésem, hogy a szóbanforgó játékmotorokat nem néhány félév alatt, és nem
+egyetlen fejlesztõ készítette, ilyen értelemben nem jogos az összehasonlítás.
+
+A következõ szakaszban a dolgozatom alatt elkészített rendszer bõvítési lehetõségeit fogom ismertetni.
 
 %----------------------------------------------------------------------------
 \section{Bõvítési lehetõségek}
@@ -38,8 +68,18 @@ alkalmas könyvtár szolgáltatásait -- például a HawkNL -- használják fel. Akárhog
 fejlesztõk, céljuk minden esetben az, hogy a virtuális világ legfrissebb állapota jelenjen meg az
 összes olyan gépen, mely ezt a világot egyidõben megjeleníteni kívánja.
 
+Egy másik ilyen funkcionalitás a szkriptelés. Manapság gyakori, hogy a játéklogika oldali elemeket
+illetve azok mesterséges intelligenciáját szkript nyelvek segítségével -- például Lua -- definiálják.
+Ez a megoldás talán kényelmesebb lehet, mint C++ oldalon leírni ezeket az információkat, viszont
+ezen nyelvek debuggolása és egyáltalán a szerkesztése a legtöbb esetben elmarad a C++ szintjétõl.
 
+Magát a keretrendszert is lehetne bõvíteni annak érdekében, hogy ne csak Windows platformon, hanem
+más környezetben -- például valamely Linux disztribúció(ko)n vagy Android-on -- is használható legyen
+az elkészített játékmotor.
 
-szkriptelés (animáció, ai)
+A felsorolt bõvítési lehetõségek mellett természetesen még számos más irányban történhetnének módosítások,
+hiszen a mai általános célú játékmotorok hatalmas méretû szoftverrendszerek, melyek rengeteg
+funkcionalitással rendelkeznek. Természetesen ezeket a szoftverrendszereket nem egyetlen hallgató
+készítette, s nem is néhány félév alatt készültek el, ezért úgy gondolom, hogy nem érdemes az én
+elkészült munkámat az iparban megtalálható kész rendszerekkel összehasonlítani.
 
-tobbszalusitas, multiplatformosítás, ...
