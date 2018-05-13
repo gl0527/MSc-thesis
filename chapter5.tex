@@ -9,8 +9,21 @@ metrikák felhasználásával, végezetül bemutatja az általam használt optimalizáció
 %----------------------------------------------------------------------------
 \section{Használhatóság}
 %----------------------------------------------------------------------------
-Az elkészült motor gyakorlatilag értéktelennek tekinthetõ abban az esetben, ha felhasználásával
-a felhasználók nem -- vagy csak nagy erõfeszítések árán -- tudják megvalósítani a saját alkalmazásaikat.
+Ez a szakasz megvizsgálja diplomaterv keretében elkészített általános célú, komponens alapú
+játékmotort annak használhatósága szempontjából. Ez egy olyan metrika, melyet nehéz mérni,
+hiszen alapvetõen szubjektív véleményt tükröz. Valamiféle értékelésre mégis szükség van,
+hiszen az elkészült rendszerem egyik legfontosabb minõsítése a használhatósága.
+
+A demonstrációs alkalmazásnál leírtaknak megfelelõen játéklogika oldalon szinte kizárólag
+komponenseket készítettem (illetve egy main függvényt, ahol a játék indításához szükséges teendõket
+végeztem el és egy XML parser osztályt a DynamicMovementComponent osztály számára).
+
+A dolgozat írásának idején a játéklogika oldali komponensek forrásfájlainak összmérete
+1387 sor, s 11 ilyen komponenst definiáltam (nem mindet ismerettem az elõzõ fejezetben,
+csak a legfontosabbakat). Ezekbõl az következik, hogy komponensenként körülbelül 126
+sornyi kódot kellett írnom, ami véleményem szerint nem nevezhetõ soknak.
+
+mennyire támaszkodnak az engine-re ezek a komponensek?
 
 mennyire volt nehez megirni a demonstracios alkalmazast?
 
@@ -42,7 +55,7 @@ hogy a mérés minél kisebb százalékban befolyásolja a mérési eredményt.
 
 A méréseket a laptopomon végeztem el, melynek fontosabb adatai a következõk:
 \begin{itemize}
-  \item RAM: 8GB DDRX
+  \item RAM: 8GB DDR3
   \item CPU: Intel(R) Core(TM) i7-5500U @ 2.4GHz, 4 mag
   \item Háttértár: 256GB SSD
   \item GPU: Intel(R) HD Graphics 5500 (alaplapra integrált videokártya)
@@ -58,7 +71,8 @@ Elõször a program debugger alól indított debug-os verzióján végeztem el a mérést
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=100mm, keepaspectratio]{figures/meas_render_debugdev.png}
-\caption{Kizárólag megjelenítéssel rendelkezõ játékobjektumoknál fellépõ képkockasebesség debugger alól indított debug-os program esetében}
+\caption{Kizárólag megjelenítéssel rendelkezõ játékobjektumoknál fellépõ képkockasebesség debugger
+alól indított debug-os program esetében}
 \label{fig:MeasRenderDBDev}
 \end{figure}
 
@@ -68,7 +82,8 @@ debuggeres változathoz képest. Az eredmény a \figref{MeasRenderDev} ábrán láthat
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=100mm, keepaspectratio]{figures/meas_render_dev.png}
-\caption{Kizárólag megjelenítéssel rendelkezõ játékobjektumoknál fellépõ képkockasebesség debugger nélkül indított debug-os program esetében}
+\caption{Kizárólag megjelenítéssel rendelkezõ játékobjektumoknál fellépõ képkockasebesség debugger
+nélkül indított debug-os program esetében}
 \label{fig:MeasRenderDev}
 \end{figure}
 
@@ -80,7 +95,8 @@ A program debugger alól indított debug-os verziójának mérési eredményeit a \figr
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=100mm, keepaspectratio]{figures/meas_renderDynamic_debugdev.png}
-\caption{Megjelenítéssel és dinamikus fizikával rendelkezõ játékobjektumoknál fellépõ képkockasebesség debugger alól indított debug-os program esetében}
+\caption{Megjelenítéssel és dinamikus fizikával rendelkezõ játékobjektumoknál fellépõ képkockasebesség
+debugger alól indított debug-os program esetében}
 \label{fig:MeasRenderDynamicDBDev}
 \end{figure}
 
@@ -89,7 +105,8 @@ Ugyanezen konfiguráció debugger nélküli futásának eredménye a \figref{MeasRender
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=100mm, keepaspectratio]{figures/meas_renderDynamic_dev.png}
-\caption{Megjelenítéssel és dinamikus fizikával rendelkezõ játékobjektumoknál fellépõ képkockasebesség debugger nélkül indított debug-os program esetében}
+\caption{Megjelenítéssel és dinamikus fizikával rendelkezõ játékobjektumoknál fellépõ képkockasebesség
+debugger nélkül indított debug-os program esetében}
 \label{fig:MeasRenderDynamicDev}
 \end{figure}
 
@@ -135,57 +152,44 @@ A debugger nélkül indított debug-os futás eredményeit az \figref{MeasRenderLight
 \label{fig:MeasRenderLightDev}
 \end{figure}
 
-Ide kellenének összefoglaló táblázatok is!!!
-
 DBDev-es táblázat:
 
-\begin{center}
-\begin{tabular}{||c|c|c|c|c||} 
- \hline
-  & Natúr & Fizika & Animáció & Fényforrás \\ 
- \hline
-  Átlagos FPS & 55.72 & 56.32 & 20.17 & 14 \\ 
- \hline
-  Háromszögek & 89614 & 89616 & 89624 & 805774 \\ 
- \hline
-\end{tabular}
-\end{center}
+\begin{table}[ht]
+	\footnotesize
+	\centering
+	\caption{A debugger alól futtatott debug-os programok futásainak eredményei.} \label{tab:MeasDevTableDesc}
+	\begin{tabular}{ | l | c | c | c | c | }
+	\hline
+				& Natúr & Fizika & Animáció & Fényforrás \\ \hline
+	Átlagos FPS & 55.72 & 56.32 & 20.17 & 14 \\ \hline
+	Háromszögek & 89614 & 89616 & 89624 & 805774 \\ \hline
+	\end{tabular}
+	\label{tab:MeasDBDevTable}
+\end{table}
 
 Dev-es táblázat:
 
-\begin{center}
-\begin{tabular}{||c|c|c|c|c||} 
- \hline
-  & Natúr & Fizika & Animáció & Fényforrás \\ 
- \hline
-  Átlagos FPS & 58.87 & 56.58 & 20.89 & 13.76 \\ 
- \hline
-  Háromszögek & 89612 & 89612 & 89624 & 805774 \\ 
- \hline
-\end{tabular}
-\end{center}
-
+\begin{table}[ht]
+	\footnotesize
+	\centering
+	\caption{A debugger nélkül futtatott debug-os programok futásainak eredményei.} \label{tab:MeasDevTableDesc}
+	\begin{tabular}{ | l | c | c | c | c | }
+	\hline
+				& Natúr & Fizika & Animáció & Fényforrás \\ \hline
+	Átlagos FPS & 58.87 & 56.58 & 20.89 & 13.76 \\ \hline
+	Háromszögek & 89612 & 89612 & 89624 & 805774 \\ \hline
+	\end{tabular}
+	\label{tab:MeasDevTable}
+\end{table}
 
 A mérési eredményekbõl jól látható, hogy a rendszeremben a szûk keresztmetszetet a megjelenítéshez kapcsolódó
 funkcionalitások jelentik. Ezt még jobban alátámasztandó készítettem egy teljesítménymérést a Visual Studio 2015
-beépített teljesítmény profilozó eszközével. Ennek az eredménye a \figref{ProfilingDBDev} ábrán látható:
+beépített teljesítmény profilozó eszközével. A mérést a demonstrációs alkalmazáson végeztem el.
+Ennek az eredménye a \figref{ProfilingDBDev} ábrán látható:
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[width=150mm, keepaspectratio]{figures/profiling_debugdev.png}
+\includegraphics[width=90mm, keepaspectratio]{figures/profiling_debugdev.png}
 \caption{A rendszerben levõ szûk keresztmetszet a megjelenítés}
 \label{fig:ProfilingDBDev}
 \end{figure}
-
-%----------------------------------------------------------------------------
-\subsection{Optimalizációs lehetõségek}
-%----------------------------------------------------------------------------
-
-%----------------------------------------------------------------------------
-\subsection{Hotspot-ok keresése}
-%----------------------------------------------------------------------------
-
-%----------------------------------------------------------------------------
-\subsection{Mérések}
-%----------------------------------------------------------------------------
-Mennyi FPS-sel ment elõtte, s mennyivel utána?

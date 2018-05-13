@@ -1,5 +1,5 @@
 %----------------------------------------------------------------------------
-\chapter{A játékmotor bõvítése}
+\chapter{A játékmotor bõvítése}\label{sect:Engine}
 %----------------------------------------------------------------------------
 Ez a fejezet tartalmazza a Bevezetõ fejezetben ismertetett feladataimnak a megoldásait.
 
@@ -42,13 +42,13 @@ az alábbiakban ismertetek.
 Mindezen funkcionalitások megvalósítására lehetõvé tettem a motorom számára a játékobjektumok
 késleltetett létrehozását. A megvalósításnak a lényege, hogy minden komponenshez definiálok egy-egy
 leíró struktúrát, mely tartalmazza az összes olyan paramétert, mely átadható a hozzá tartozó
-komponensnek. A leíró struktúrák mellett létrehoztam egy \textit{GenericPrefab} nevû generikus osztályt,
+komponensnek. A leíró struktúrák mellett létrehoztam egy \verb+GenericPrefab+ nevû generikus osztályt,
 melynek feladata adott típusú létrehozó struktúra feltöltése és alkalmazása adott típusú komponensre.
-A \textit{GenericPrefab} osztály a nem generikus \textit{IPrefab} interfészbõl származik le, melynek
-a legfõbb létjogosultsága, hogy segítségével a különbözõ \textit{GenericPrefab} példányok
-eltárolhatók heterogén kollekcióban. Az összetartozó \textit{GenericPrefab} példányokat
-\textit{GameObjectCreator} példányban tárolom, melybõl szükség szerint lehet \textit{GameObject}
-példányokat gyártani. A \textit{GameObjectCreator} objektumok az \textit{ObjectManager}-ben
+A \verb+GenericPrefab+ osztály a nem generikus \verb+IPrefab+ interfészbõl származik le, melynek
+a legfõbb létjogosultsága, hogy segítségével a különbözõ \verb+GenericPrefab+ példányok
+eltárolhatók heterogén kollekcióban. Az összetartozó \verb+GenericPrefab+ példányokat
+\verb+GameObjectCreator+ példányban tárolom, melybõl szükség szerint lehet \verb+GameObject+
+példányokat gyártani. A \verb+GameObjectCreator+ objektumok az \verb+ObjectManager+-ben
 foglalnak helyet.
 
 A C++ oldal mellett a jelenet XML leírása is módosult természetesen. Az eddigi funkcionalitások mellett
@@ -59,13 +59,22 @@ példányosodik.
 
 Ezen módosítások miatt módosítanom kellett a komponensek XML-bõl történõ beolvasásáért felelõs
 osztályokat is. A korábbiakkal ellentétben ugyanis ezek az objektumok már nem konkrét komponens
-leszármazottakat, hanem \textit{GenericPrefab}-okat hoznak létre. Szükség esetén természetesen
-a \textit{GenericPrefab} példányból azonnal lehet komponens leszármazottat is készíteni, tehát a régi
-funkcionalitás nem vész el. Viszont bõvül azzal, hogy a \textit{GenericPrefab} példányt elrakhatom egy
-\textit{GameObjectCreator}-ba egy -- vagy több -- késõbbi használat reményében.
+leszármazottakat, hanem \verb+GenericPrefab+-okat hoznak létre. Szükség esetén természetesen
+a \verb+GenericPrefab+ példányból azonnal lehet komponens leszármazottat is készíteni, tehát a régi
+funkcionalitás nem vész el. Viszont bõvül azzal, hogy a \verb+GenericPrefab+ példányt elrakhatom egy
+\verb+GameObjectCreator+-ba egy -- vagy több -- késõbbi használat reményében.
 
+A játékobjektumok késleltetett létrehozását megvalósító osztályokat és azok kapcsolatait a 
+\figref{PrefabClassDiagram} ábrán szemléltetem. Az ábra könnyebb értelmezhetõsége érdekében
+az \verb+ObjectManager+ osztály tartalmát csak részben, a \verb+GameObject+ osztály tartalmát
+viszont egyáltalán nem tüntettem fel rajta.
 
-<DIAGRAM(OK)>
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=150mm, keepaspectratio]{figures/prefab_classDiagram.png}
+\caption{Játékobjektumok késleltetett létrehozását megvalósító osztályok UML osztálydiagrammja}
+\label{fig:PrefabClassDiagram}
+\end{figure} 
 
 %----------------------------------------------------------------------------
 \section{Állapotgép alapú rendszerek}
@@ -74,9 +83,9 @@ funkcionalitás nem vész el. Viszont bõvül azzal, hogy a \textit{GenericPrefab} p
 %----------------------------------------------------------------------------
 \subsection{Az állapotgépekrõl általánosságban}
 %----------------------------------------------------------------------------
-Az állapotgépek - vagy ahogy a diszkrét matematika nevezi: véges automaták - véges állapothalmazzal
+Az állapotgépek -- vagy ahogy a diszkrét matematika nevezi: véges automaták -- véges állapothalmazzal
 rendelkezõ absztrakt gépek. Definiálásához meg kell adni az állapotok halmazát, a kezdõ állapotot,
-az ``elfogadó'' állapotok halmazát (ami a teljes állapothalmaz részhalmaza), az automata ábécéjét
+az "elfogadó" állapotok halmazát (ami a teljes állapothalmaz részhalmaza), az automata ábécéjét
 (vagyis azt a halmazt, ami fölött értelmezve vannak az automata lehetséges bemenetei), illetve az
 állapotátmeneti függvényeket, amik egy állapot-bemenet pároshoz egy állapotot rendelnek (vagyis ezek
 a függvények megmondják, hogy ha egy adott állapotban egy adott input érkezik, akkor mely állapotba
@@ -116,13 +125,13 @@ Ennek megfelelõen az állapottal rendelkezõ objektum az állapot-specifikus viselk
 állapotra delegálja, melyet egy absztrakt õs objektumra mutató pointerrel ér el, kihasználva a C++
 nyelv polimorfizmusa által nyújtotta lehetõségeket.
 
-Ami a mintában részt vevõ objektumokat illeti, definiálni kell egy \textit{Context} osztályt,
+Ami a mintában részt vevõ objektumokat illeti, definiálni kell egy \verb+Context+ osztályt,
 mely az állapottal rendelkezõ objektumot testesíti meg. Emellett létre kell hozni a már korábban
-is említett absztrakt \textit{State} osztályt, mely a konkrét állapotobjektumok közös õse lesz. Ennek
-megfelelõen a konkrét állapotokat a \textit{State} osztály leszármazottaiként kell definiálni.
-Ezek után már csak a C++ nyelv polimorfizmusát kell használni, miszerint a \textit{Context} osztály tagjaként
-el kell tárolni egy \textit{State}-re mutató pointert, melynek a mutatott értékét futás közben tetszõlegesen
-állíthatjuk bármilyen \textit{State}-bõl leszármazó osztályra (\figref{StatePatternClassDiagram} ábra).
+is említett absztrakt \verb+State+ osztályt, mely a konkrét állapotobjektumok közös õse lesz. Ennek
+megfelelõen a konkrét állapotokat a \verb+State+ osztály leszármazottaiként kell definiálni.
+Ezek után már csak a C++ nyelv polimorfizmusát kell használni, miszerint a \verb+Context+ osztály tagjaként
+el kell tárolni egy \verb+State+-re mutató pointert, melynek a mutatott értékét futás közben tetszõlegesen
+állíthatjuk bármilyen \verb+State+-bõl leszármazó osztályra (\figref{StatePatternClassDiagram} ábra).
 
 \begin{figure}[!ht]
 \centering
@@ -169,25 +178,25 @@ illetve az állapotgépes megközelítésre építenek. A továbbiakban ezen megoldások 
 Ez az implementáció analógia a State tervezési mintánál leírtakra. A továbbiakban az ott ismertetett
 objektumoknak megfeleltethetõ játékmotor oldali megoldások bemutatása következik.
 
-A State tervezési minta State osztályának a játékmotor IState osztálya felel meg. Ahogy ennek az osztálynak a neve is sugallja, egy interfészrõl van szó, melynek három fõ absztrakt függvénye van:
-az Enter függvény az állapotba lépés legelején, egyszer fut le, az Execute függvény minden frame-ben
-lefut, s az Exit pedig szintén egyszer fut le, mégpedig az állapotból való kilépéskor. Konkrét állapotok
+A State tervezési minta \verb+State+ osztályának a játékmotor \verb+IState+ osztálya felel meg. Ahogy ennek az osztálynak a neve is sugallja, egy interfészrõl van szó, melynek három fõ absztrakt függvénye van:
+az \verb+Enter+ függvény az állapotba lépés legelején, egyszer fut le, az \verb+Execute+ függvény minden frame-ben
+lefut, s az \verb+Exit+ pedig szintén egyszer fut le, mégpedig az állapotból való kilépéskor. Konkrét állapotok
 létrehozásához ebbõl az osztályból kell leszármazott osztályokat készítenie a felhasználónak, s a megfelelõ
 funkciókat az imént ismertetett függvények felüldefiniálásával adhatja meg.
 
-A State minta ismertetésénél bemutatott Context osztálynak a játékmotor Stateable osztálya felel meg.
+A State minta ismertetésénél bemutatott \verb+Context+ osztálynak a játékmotor \verb+Stateable+ osztálya felel meg.
 Ez az osztály tagváltozóként eltárolja a kurrens állapotát, melyet lecserélhet, illetve befrissítõ
 függvényében meghívhatja annak Execute függvényét.
 
-Játékmotor oldalon még egyetlen osztály, az AnimState képviseli ezt a megoldást, amely az IState osztály
-leszármazottja. Ez az osztály tetszõleges számú Ogre::AnimationState-et képes eltárolni magában (csak a
+Játékmotor oldalon még egyetlen osztály, az \verb+AnimState+ képviseli ezt a megoldást, amely az \verb+IState+ osztály
+leszármazottja. Ez az osztály tetszõleges számú \verb+Ogre::AnimationState+-et képes eltárolni magában (csak a
 számítógép tárkapacitása szabhat határt). A szokásos getter-setter függvények mellett az osztály
-rendelkezik egy Blend függvénnyel, mely az animációk közötti átmenetet valósítja meg lineáris
+rendelkezik egy \verb+Blend+ függvénnyel, mely az animációk közötti átmenetet valósítja meg lineáris
 interpoláció segítségével.
 
-A megoldás használatához játéklogika-oldalon definiálni kell egy Stateable leszármazottat illetve
-tetszõleges számú AnimState leszármazottat (melyek lehetõség szerint singleton objektumok), mely
-leszármazottak egymás között döntik el, hogy a hozzájuk tartozó Stateable leszármazottnak mikor melyikük
+A megoldás használatához játéklogika-oldalon definiálni kell egy \verb+Stateable+ leszármazottat illetve
+tetszõleges számú \verb+AnimState+ leszármazottat (melyek lehetõség szerint singleton objektumok), mely
+leszármazottak egymás között döntik el, hogy a hozzájuk tartozó \verb+Stateable+ leszármazottnak mikor melyikük
 legyen az aktuális állapota.
 
 %----------------------------------------------------------------------------
@@ -200,7 +209,7 @@ implementációi továbbhívnak az Ogre animációs rendszerébe, viszont ennek köszönh
 már ezt nem kell megtenniük, nekik elég ezt az absztrahált interfészt használniuk.
 
 A korábban taglalt állapotgép implementációmhoz ez úgy kapcsolódik, hogy a felhasználó játék oldalon
-definiál egy AnimationComponent leszármazottat, s ennek a leszármazottnak a tagváltozójaként veheti fel
+definiál egy \verb+AnimationComponent+ leszármazottat, s ennek a leszármazottnak a tagváltozójaként veheti fel
 azt az egy vagy több állapotgépet, melyek a konkrét animációs állapotokat és átmeneteiket reprezentálják.
 
 %----------------------------------------------------------------------------
@@ -212,7 +221,7 @@ mozgása folytonosabbnak, ezáltal életszerûbbnek hat a felhasználók számára.
 
 Ennek ellenére természetesen az állapotgépes megoldásnak is megvan a maga elõnye a másik megoldással
 szemben, mégpedig az, hogy az állapotokat leíró függvények és az állapotátmeneteket definiáló függvények
-kódjai jól elkülönülnek kód szinten, ennek köszönhetõen bonyolultabb állapotgráf
+kódjai jól elkülönülnek egymástól, ennek köszönhetõen bonyolultabb állapotgráf
 reprezentálására ez a megoldás alkalmasabb, mint a State mintán alapuló implementáció.
 
 Mivel egyik megoldást sem tudtam egyértelmûen a jobbnak nevezni a másiknál, így mindkét implementáció
@@ -252,8 +261,6 @@ használatára, mellyel egy újabb lépést tettem a multiplatformság felé.
 A probléma megoldása után a motor oldali GUI rendszert a GUI szkriptek használatának irányába
 fejlesztettem.
 
-<KÉPERNYÕKÉPEK!!!>
-
 %----------------------------------------------------------------------------
  \section{Hangrendszer}
 %----------------------------------------------------------------------------
@@ -278,53 +285,64 @@ hang-analógiájának is tekinthetõ, legalábbis ami az API felépítését tekinti. Áll
 Az implementáció ismertetéséhez szükség van néhány OpenAL-hez kapcsolódó fogalom tisztázására, melyeket
 a következõkben ismertetek.
 
-A listener az a térbeli objektum, melynek a szemszögébõl rendereljük a hangforrásokat (pongyolán
+A \verb+listener+ az a térbeli objektum, melynek a szemszögébõl rendereljük a hangforrásokat (pongyolán
 fogalmazva ez a kamera füle). A definíciójából adódik, hogy egyidõben csak egyetlen ilyen
 objektumnak kell léteznie, jelenettõl függetlenül.
 
-A buffer objektum megfeleltethetõ egy olyan leíró fájlnak, mely egy hangfájl adatait 
-tartalmazza. Ilyen típusú objektumból akárhányat fel lehet használni.
+A \verb+buffer+ objektum megfeleltethetõ egy olyan leíró fájlnak, mely egy hangfájl adatait 
+tartalmazza. Ilyen típusú objektumból akárhányat fel lehet használni egyidõben.
 
-A source olyan objektum, mely egy vagy több buffer lejátszását teszi lehetõvé. Több source-hoz is
-hozzá lehet rendelni ugyan azt a buffert, viszont egy source egyszerre csak egyetlen buffer tartalmát
-képes emittálni. Ebbõl már nem lehet
-egyszerre akármennyi a rendszerben, hiszen a hangkártyák hardveres limitációi ezt nem teszik lehetõvé.
-Az én megoldásomban maximum 16 buffer tartalmát lehet lejátszani egyidõben, így a megoldásom régebbi
+A \verb+source+ olyan objektum, mely egy vagy több buffer lejátszását teszi lehetõvé. Több \verb+source+-hoz is
+hozzá lehet rendelni ugyan azt a \verb+buffer+-t, viszont egy \verb+source+ egyszerre csak egyetlen \verb+buffer+ tartalmát
+képes emittálni. Ebbõl az objektumból a \verb+buffer+-rel ellentétben már nem lehet
+egyidõben akármennyi a rendszerben, hiszen a hangkártyák hardveres limitációi ezt nem teszik lehetõvé.
+Az én megoldásomban maximum 16 \verb+buffer+ tartalmát lehet lejátszani egyidejúleg, így a megoldásom régebbi
 hangkártyákkal is kompatibilis.
-A forrás objektumokkal kapcsolatban megjegyzendõ, hogy lehetnek 2D-sek (Music vagy Ambient)
-illetve 3D-sek (SoundEffect) is. Az elõbbi
-azt jelenti, hogy a listenertõl való távolsága mindig nulla, míg értelemszerûen ez a 3D-s esetben nem
-igaz. A háromdimenziós (azaz térbeli) hangoknál a valósághûbb hangérzet elérésének érdekében a
-hangmagasságot megperturbálom egy általam megválasztott random faktorral. A további valósághû érzet
+A forrás objektumokkal kapcsolatban megjegyzendõ, hogy lehetnek kétdimenziósak (Music vagy Ambient)
+illetve háromdimenziósak (SoundEffect) is. Az elõbbi
+azt jelenti, hogy a \verb+listener+ objektumtól való távolsága mindig nulla, míg értelemszerûen ez a háromdimenziós
+esetben nem igaz. A háromdimenziós (azaz térbeli) hangoknál a valósághûbb hangérzet elérésének érdekében a
+hangmagasságot megperturbálom egy random generált szorzótényezõvel. A további valósághû érzet
 keltése érdekében nem csak a hangmagasságot, hanem a kiválaszott buffert is randomizálhatja a felhasználó,
 ha akarja (de dönthet úgy is, hogy a source-hoz rendelt buffereket sorrendhelyesen akarja lejátszani).
 Ennek implementálásához ki kellett vennem a rendszerbõl az OpenAL beépített looping funkcionalitását,
-ugyanis az a bufferek cserélgetését nem hordozza magában.
+ugyanis az a \verb+buffer+-ek cserélgetését nem hordozza magában.
 
-A megvalósításhoz két osztályt definiáltam motor oldalon. Az egyik az AudioManager, melynek feladata
-a source-ok, a bufferek és a listener menedzselése és karbantartása. A másik objektum az
-AudioSourceComponent, mely szabad source-ot és tetszõleges számú buffert kérhet az AudioManager-tõl,
-s lejátszhatja a hozzá rendelt buffereket tetszõleges számú alkalommal, a korábban említett módokon.
-Ha az AudioManager nem tud adni az AudioSourceComponent-nek szabad source-ot, akkor a lejátszás
+A megvalósításhoz két osztályt definiáltam motor oldalon. Az egyik az \verb+AudioManager+, melynek feladata
+a \verb+source+-ok, a \verb+buffer+-ek és a \verb+listener+ menedzselése és karbantartása. A másik objektum az
+\verb+AudioSourceComponent+, mely szabad \verb+source+-ot és tetszõleges számú \verb+buffer+-t kérhet az \verb+AudioManager+-tõl,
+s lejátszhatja a hozzá rendelt \verb+buffer+-eket tetszõleges számú alkalommal, a korábban említett módokon.
+Ha az \verb+AudioManager+ nem tud adni az \verb+AudioSourceComponent+-nek szabad \verb+source+-ot, akkor a lejátszás
 egyszerûen nem történik meg, de a rendszerben attól még megjelenik az igény.
-Az AudioManager tehát tetszõleges számú AudioSourceComponent-et menedzsel, s minden frame-ben
-felállít köztük egy sorrendiséget a következõk szerint: legelõre veszi a Music típusú komponenseket,
-aztán az Ambient típusúak következnek, végül pedig a SoundEffect-ek maradnak, melyek közötti sorrendet
-a listenertõl való távolság határozza meg (a közelebbi kerül elõrébb a sorban).
-Az így berendezett tároló elsõ 16 eleme OpenAL source-hoz jut, a többi pedig várakozni kényszerül.
-
-<DIAGRAMOK!!!>
+Az \verb+AudioManager+ tehát tetszõleges számú \verb+AudioSourceComponent+-et menedzsel, s minden frame-ben
+felállít köztük egy sorrendiséget a következõk szerint: legelõre veszi a \verb+Music+ típusú komponenseket,
+aztán az \verb+Ambient+ típusúak következnek, végül pedig a \verb+SoundEffect+-ek maradnak, melyek közötti sorrendet
+a \verb+listener+-tõl való távolság határozza meg (a közelebbi kerül elõrébb a sorban).
+Az így berendezett tároló elsõ 16 eleme OpenAL \verb+source+-hoz jut, a többi pedig várakozni kényszerül.
 
 %----------------------------------------------------------------------------
-\section{Plakátok és részecskerendszerek}
+\section{Részecskerendszerek}
 %----------------------------------------------------------------------------
-Nem volt igény kód oldali reprezentációra, mindössze annyiból áll az implementáció, hogy egy
-speciális motor oldali komponens (ParticleComponent) képes beparszolni illetve leállítani/újraindítani
-egy Ogre ParticleScriptet. Ez a megoldás azért elõnyös, mert a részecskerendszer módosulása esetén
-nem kell újrafordítani a forráskódot. Emellett viszont ez a megközelítés nem teszi lehetõvé
-részecskerendszerek kódból történõ módosítását vagy akár létrehozását.
+Háromdimenziós grafikában megszokott, hogy a felületeket háromszöghálókkal jelenítik meg.
+Azonban vannak olyan esetek, melyeknél ez a módszer nem vezet megfelelõ eredményre.
+Ha például füst-öt, tüzet, hóesést, ködöt és egyéb olyan jelenséget szeretnénk megjeleníteni,
+melyek sok kis részecskével modellezhetõek, akkor a hagyományos reprezentálási mód helyett
+egy másik módszert célszerû alkalmazni. Ilyen esetek megjelenítéséhez a számítógépes grafika
+plakátokat illetve részecskerendszereket használ.
 
-talan lehetne felhozni itt egy pl scriptet?
+A plakátok olyan kétdimenziós síkok, melyek normálvektoraik mindig az aktuális kamera nézeti irányával
+ellentétesek. Ezzel a technikával például fák lombozatát hatékonyan meg lehet valósítani.
+
+Mik a részecskerendszerek?
+
+
+Az OGRE lehetõséget ad a felhasználóknak részecskerendszerek szkriptbõl történõ létrehozására, így
+nem kell "beégetni" a kódba a részecskerendszer tulajdonságait, illetve annak módosításakor nem kell
+újrafordítani a projektet. A megvalósítás során én is ezt a módszert preferáltam, vagyis a rendszeremben
+kódszinten nem lehet létrehozni részecskerendszereket, mindössze arra van lehetõség, hogy egy szkriptben
+definiált részecskerendszert betöltsünk egy komponensbe, majd azt tetszõlegesen leállítsuk vagy újraindítsuk.
+A rendszeremben ezt a feladatot a \verb+ParticleComponent+ nevû osztály látja el.
+
 %----------------------------------------------------------------------------
 \section{Egyéb}
 %----------------------------------------------------------------------------

@@ -155,7 +155,8 @@ a felhasználónak lehetõsége nyílik bonyolultabb jelenetek leírására is.
 
 Ehhez definiáltam egy olyan XML formátumot, mely illeszkedik ahhoz a komponens alapú szemlélethez,
 melyet az egész rendszer képvisel. Ez azt jelenti, hogy az XML leírás játékobjektumok leírásainak az
-összessége, amely leírások pedig komponensek leírásaiból tevõdnek össze.
+összessége, amely leírások pedig komponensek leírásaiból tevõdnek össze. Az XML formátum ismertetését
+a Függelék tartalmazza.
 
 Ennek megfelelõen a megvalósítás során komponens parszereket kellett készítenem,
 melyek által létrehozott komponenseket a szülõ XML-tag által reprezentált játékobjektumokhoz kell hozzáfûzni.
@@ -236,7 +237,7 @@ a kezelésük. A rengeteg fájl egyetlen mappába sûrítve átláthatatlanná tette azt,
 erõforrások tartoznak össze, s melyek nem. Továbbá azt sem volt triviális kideríteni, hogy
 mely erõforrások redundánsak, vagy éppen használaton kívüliek a példa alkalmazás által.
 
-A problémák megoldására a motor oldalon ``beégetett'' elérési út helyett config fájlokat kezdtem
+A problémák megoldására a motor oldalon "beégetett" elérési út helyett konfigurációs fájlokat kezdtem
 el használni, s azokat beparszolni betöltéskor. Emellett az erõforrások tárolási módján is változtattam.
 Ezelõtt az erõforrásokat típusuk szerint tároltam (a mesh-ek együtt, a textúrák együtt, a materialok
 együtt stb.), mostantól viszont az erõforrásokat objektumonként tárolom, ami azt jelenti, hogy egy
@@ -244,7 +245,7 @@ adott objektumhoz tartozó fájlok egy egységben foglalnak helyett, jól elkülönítv
 erõforrástól.
 
 Ennek a megoldásnak talán a legnagyobb elõnye, hogy új erõforrások illetve elérési utak felvétele
-után a programot nem kell újrafordítani (hiszen ettõl a config fájl parszolása nem változik meg),
+után a programot nem kell újrafordítani (hiszen ettõl a konfigurációs fájl parszolása nem változik meg),
 így jelentõs idõt lehet megtakarítani. Emellett ha egy másik játékban is használni szeretnék egy
 objektumot, akkor nem kell megkeresni a hozzá tartozó erõforrásokat a különbözõ almappákból,
 tehát ezzel a megoldással az erõforrások újra felhasználhatóak más kontextusban is.
@@ -255,22 +256,17 @@ resource group-okra bontas fajlrendszer szinten es a leiro fajlban is (minden re
 jelenetnek feleltethetõ meg)
 
 %----------------------------------------------------------------------------
-\section{Anyagok leírása}
+\section{Anyagjellemzõk leírása}
 %----------------------------------------------------------------------------
 Egy játékmotor lehet akármennyire jól használható, rugalmas és hatékony, ha nem tud grafikailag
 elfogadható eredményt produkálni vele a felhasználó, akkor igazából nem jó semmire.
 
 Az OGRE-ben az anyagok leírására material script-eket szokás használni. Ezek olyan szkriptek, melyek
-segítségével könnyen olvasható formában lehet leírni a legkülönfélébb anyagokat, illetve kényelmesen
+segítségével könnyen olvasható formában lehet leírni a legkülönfélébb anyagoktulajdonságokat, illetve kényelmesen
 lehet árnyalóprogramoknak paramétereket átadni. Pontosabban az anyagleíró szkriptekben nem közvetlenül
 árnyalóprogramokat, hanem azok egy OGRE-ben definiált absztrakcióit, az úgynevezett programokat
 használhatjuk.
 
 Az árnyalóprogramok tekintetében csak az OpenGL jöhetett szóba, melynek árnyalónyelve a GLSL. Egy
-alternatíva lehetett volna a DirectX is, de ennek használata akadályokba ütközött, lásd <TODO> fejezet.
-
-Itt meg le kene irni, hogy milyen shader-eket hasznaltam az egyes objektumokra
-
-<RÉGI KÉP, AMELYEN SZINTE MINDEN SZURKE VOLT> -- OpenGL-lel, de meg a regi HLSL shaderek hasznalataval
-
-<ÚJ KÉP, MÁR A VÉGLEGES SHADER-EKKEL>
+alternatíva lehetett volna a DirectX is, de ennek használata akadályokba ütközött,
+errõl részletesebben a \sectref{Engine} fejezetben írok.

@@ -121,7 +121,7 @@ szerepel a hozzá tartozó állapot a helyes mûködés elõidézése érdekében.
 %----------------------------------------------------------------------------
 \subsection{SoldierAnimComponent}
 %----------------------------------------------------------------------------
-A TODO fejezetben leírtaknak megfelelõen nem csak a FiniteStateMachine osztály felhasználásával,
+A \sectref{Engine}. fejezetben leírtaknak megfelelõen nem csak a FiniteStateMachine osztály felhasználásával,
 hanem a State tervezési minta alkalmazásával is lehet állapotgép funkciókat megvalósítani.
 
 Ez az osztály a neve ellenére nem komponens, hanem Stateable leszármazott, ennek megfelelõen
@@ -152,12 +152,59 @@ részeit használják fel az egyes komponensek)
 kene egy csak jatek-oldali osszefoglalo diagram, viszont kene egy olyan is, melyen az engine
 fontosabb reszei ES a jatekoldal egyszerre szerepel
 
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=150mm, keepaspectratio]{figures/gameside_comp_hierarchy.png}
+\caption{A játéklogika oldalon elkészített fontosabb komponensek leszármazás-hierarchiája}
+\label{fig:GameSideCompHierarchy}
+\end{figure}
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=150mm, keepaspectratio]{figures/demoapp_state.png}
+\caption{A játéklogika oldalon elkészített fontosabb komponensek leszármazás-hierarchiája}
+\label{fig:GameSideCompHierarchy}
+\end{figure}
+
 %----------------------------------------------------------------------------
 \section{Tesztelés}
 %----------------------------------------------------------------------------
-Különféle eseteket kéne kipróbálni, s bizonygatni, hogy minden esetben az elvárt viselkedés
-tapasztalató. (pl.: fegyver nélkül próbálok meg lõni, halottan próbálok mozogni, ...)
+Ebben a szakaszban az elkészített alkalmazás fõbb mozzanatait szemléltetem képernyõképek
+segítségével.
 
-<SCREENSHOT-OK!!!>
+A felhasználói felületet bemutató képernyõkép a \figref{MyGUI_Example} ábrán található.
 
-meg a teljesitmenyt is 
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=100mm, keepaspectratio]{figures/mygui_example.png}
+\caption{GUI}
+\label{fig:MyGUI_Example}
+\end{figure}
+
+A következõ képernyõkép egy ellenséges karakter megölését mutatja a \figref{DemoAppKill} ábrán.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=100mm, keepaspectratio]{figures/demoapp_kill.png}
+\caption{Kill}
+\label{fig:DemoAppKill}
+\end{figure}
+
+A fegyver felvétele elõtti futás animációt a \figref{DemoAppUnarmedRun} ábra szemlélteti.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=100mm, keepaspectratio]{figures/demoapp_unarmed_run.png}
+\caption{Kill}
+\label{fig:DemoAppUnarmedRun}
+\end{figure}
+
+A felhasználó által irányított karakter halálanimációja a \figref{DemoAppDead} ábrán látható.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=100mm, keepaspectratio]{figures/demoapp_dead.png}
+\caption{Kill}
+\label{fig:DemoAppDead}
+\end{figure}
