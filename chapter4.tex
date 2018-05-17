@@ -1,5 +1,5 @@
 %----------------------------------------------------------------------------
-\chapter{Demonstrációs alkalmazás}
+\chapter{Demonstrációs alkalmazás}\label{sect:DemoApp}
 %----------------------------------------------------------------------------
 Ez a fejezet a játékmotor mûködésének demonstrálására készített példa alkalmazást mutatja be.
 Elõször is tisztázza az alkalmazással szemben támasztott követelményeket, aztán kitér a megvalósítás
@@ -11,7 +11,7 @@ zárul.
 %----------------------------------------------------------------------------
 A követelmények meghatározásakor arra kellett törekednem, hogy az elkészített motor képességeire
 minél jobban támaszkodjon az elkészítendõ demonstrációs alkalmazás. Fontos szempont volt továbbá az is, hogy
-a példa alkalmazásnak ``legyen értelme'', vagyis legyen kezdeti állapota és célja, illetve hogy
+a példa alkalmazásnak "legyen értelme", vagyis legyen kezdeti állapota és célja, illetve hogy
 ne csak nyerni, hanem veszteni is lehessen benne.
 
 Ezen szempontokat is figyelembe véve egy zárt térben játszódó FPS (First Person Shooter) játék
@@ -33,21 +33,29 @@ Ez a szakasz az alkalmazás során megvalósított fontosabb osztályok bemutatását t
 Ennek a komponens leszármazottnak az a feladata, hogy dinamikus fizikai komponenssel rendelkezõ
 játékobjektum felhasználói inputokkal történõ transzformálását megoldja illetve a fizikai ütközésekkor
 bekövetkezõ eseményeket lekezelõ függvények definiálását megtegye. Ennek megfelelõen ez a komponens
-felel a felhasználót reprezentáló karakter transzformációjának módosításáért.
+felel a felhasználót reprezentáló karakter transzformációjának módosításáért (\figref{DemoAppUnarmedRun} ábra).
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=100mm, keepaspectratio]{figures/demoapp_unarmed_run.png}
+\caption{Példa a játékos karakterének transzformálására.}
+\label{fig:DemoAppUnarmedRun}
+\end{figure}
 
 %----------------------------------------------------------------------------
 \subsection{EnemyAIComponent}
 %----------------------------------------------------------------------------
-Ez a komponens leszármazott nagyon hasonlít az elõzõekben ismertetett DynamicMovementComponent
+Ez a komponens leszármazott nagyon hasonlít az elõzõekben ismertetett \verb+DynamicMovementComponent+
 osztályhoz, ugyanis ez az osztály is dinamikus fizikai komponenssel rendelkezõ objektum transzformálását
 és az ütközéseinek kezelését végzi, annyi különbséggel, hogy ebben az esetben nem a felhasználói
 bemenetek, hanem egy belsõ logika dönt az elmozdulás és az elforgatás milyenségérõl. Ahogy arra a
 komponens nevébõl is következtetni lehet, ez az osztály felelõs az ellenséges játékobektumok
 transzformációjának módosításáért.
 
-A megvalósítás során 4 állapotot definiáltam az ellenséges karakterek számára, ezek rendre a Search,
-Attack, RunAway és Dead állapotok. Az állapotokhoz tartozó függvényeket illetve az állapotátmenetek
-menedzselését a motor oldali generikus állapotgép segítségével, a FiniteStateMachine osztály
+A megvalósítás során 4 állapotot definiáltam az ellenséges karakterek számára, ezek rendre a \verb+Search+,
+\verb+Attack+, \verb+RunAway+ és \verb+Dead+ állapotok (\figref{EnemyAIStateGraph} ábra). Az állapotokhoz tartozó
+függvényeket illetve az állapotátmenetek
+menedzselését a motor oldali generikus állapotgép segítségével, a \verb+FiniteStateMachine+ osztály
 felhasználásával valósítottam meg. Ami az implementáció mesterséges intelligenciára vonatkozó részét
 illeti, az állapotgéphez rendelt állapotfüggvényeknek az a feladatuk, hogy a felhasználó által
 irányított karakterhez képest meghatározza az kívánt elmozdulás irányát és az elforgatás szögét, s ezeknek
@@ -56,42 +64,82 @@ Látható, hogy ez a megoldás meglehetõsen korlátozott intelligenciát ruház az ell
 hiszen mivel ez egy mohó algoritmus (azaz mindig az aktuális állapot alapján dönt, determinisztikusan),
 így például az akadályok kikerülése, a kooperáció stb. nem megoldható ezzel a megvalósítással.
 
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=70mm, keepaspectratio]{figures/enemyAIState.png}
+\caption{Az ellenséges objektumok mesterséges intelligenciájának állapotgráfja.}
+\label{fig:EnemyAIStateGraph}
+\end{figure}
+
 %----------------------------------------------------------------------------
 \subsection{EnemyAnimationComponent}
 %----------------------------------------------------------------------------
-Ennek az AnimationComponent-leszármazottnak az a feladata, hogy az ellenséges játékobjektumok animálását
-menedzselje a motor oldali FiniteStateMachine osztály segítségével.
+Ennek az \verb+AnimationComponent+-leszármazottnak az a feladata, hogy az ellenséges játékobjektumok animálását
+menedzselje a motor oldali \verb+FiniteStateMachine+ osztály segítségével.
 
-Az implementáció során 3 animációs állapotot definiáltam, ezek rendre a Walk, Attack és Dead
-állapotok. Természetesen ezek az állapotok összefüggnek az imént ismertetett EnemyAIComponent-ben
-definiált állapotokkal a következõ módon: amikor az EnemyAIComponent Search vagy RunAway állapotban
-van, akkor az EnemyAnimationComponent Walk állapotban, illetve minden más EnemyAIComponent-beli
-állapothoz a vele megegyezõ nevû EnemyAnimationComponent-beli állapot tartozik.
+Az implementáció során 3 animációs állapotot definiáltam, ezek rendre a \verb+Walk+, \verb+Attack+ és \verb+Dead+
+állapotok (\figref{EnemyAnimStateGraph} ábra). Természetesen ezek az állapotok összefüggnek az imént ismertetett \verb+EnemyAIComponent+-ben
+definiált állapotokkal a következõ módon: amikor az \verb+EnemyAIComponent+ \verb+Search+ vagy \verb+RunAway+
+állapotban van, akkor az \verb+EnemyAnimationComponent+ \verb+Walk+ állapotban, illetve minden más
+\verb+EnemyAIComponent+-beli állapothoz a vele megegyezõ nevû \verb+EnemyAnimationComponent+-beli állapot tartozik.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=70mm, keepaspectratio]{figures/EnemyAnimState.png}
+\caption{Az ellenséges objektumok animációjának állapotgráfja.}
+\label{fig:EnemyAnimStateGraph}
+\end{figure}
 
 %----------------------------------------------------------------------------
 \subsection{GUIComponent}
 %----------------------------------------------------------------------------
 Ez a komponens-leszármazott felel a MyGUI szkriptek segítségével definiált felhasználói felület
 menedzseléséért, amibe beletartozik a menüelemekhez kötõdõ események kezelése illetve magának a menünek
-a megjelenítése illetve elrejtése a játékmenet aktuális állapotának megfelelõen.
+a megjelenítése és elrejtése a játékmenet aktuális állapotának megfelelõen. A példa alkalmazásomban
+ez az egyetlen olyan komponens, mely dinamikus (azaz reszponzív) felhasználói felületet valósít meg.
+
+A példa alkalmazásban felhasznált, MyGUI segítségével megalkotott felhasználói felület a \figref{MyGUI_Example}
+ábrán látható.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=100mm, keepaspectratio]{figures/mygui_example.png}
+\caption{Reszponzív felhasználói felület kialakítása a MyGUI felhasználásával.}
+\label{fig:MyGUI_Example}
+\end{figure}
 
 %----------------------------------------------------------------------------
 \subsection{HUDComponent}
 %----------------------------------------------------------------------------
-Ez a komponens leszármazott is -- a korábbiakban ismertetett GUIComponent-hez hasonlóan -- felhasználói
+Ez a komponens leszármazott is -- a korábbiakban ismertetett \verb+GUIComponent+-hez hasonlóan -- felhasználói
 felület menedzselésével foglalkozik, annyi különbséggel, hogy ez az osztály az Ogre Overlay keretrendszert
 használja a felhasználó számára fontosnak tartott információk
-(aktuális életpont, aktuális töltények száma, megölt ellenfelek száma illetve az aktuális kör sorszáma) képernyõn történõ megjelenítésére.
+(aktuális életpont, aktuális töltények száma, megölt ellenfelek száma illetve az aktuális kör sorszáma) képernyõn
+történõ megjelenítésére. Ennek megfelelõen az ezzel a komponenssel megjelenített felhasználói felület --
+a GUIComponent-ével ellentétben -- statikus, nem pedig dinamikus, vagyis felhasználói eseményekre nem képes
+reagálni.
+
+A demonstrációs alkalmazásban informatív szerepet betöltõ statikus felhasználói felületre mutat példát a
+\figref{DemoAppKill} ábra.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=100mm, keepaspectratio]{figures/demoapp_kill.png}
+\caption{Példa a statikus felhasználói felület informatív szerepére.}
+\label{fig:DemoAppKill}
+\end{figure}
 
 %----------------------------------------------------------------------------
 \subsection{ManagerComponent}
 %----------------------------------------------------------------------------
 Ez a komponens-leszármazott felel a pályán megjelenõ ellenséges játékobjektumok megfelelõ ütemben
-és helyen történõ létrehozásáért. Emellett ennek az osztálynak a feladata az is, hogy a HUDComponent-et
-tájékoztassa a szükséges mennyiségek aktuális értékeirõl.
+és helyen történõ létrehozásáért. Emellett ennek az osztálynak a feladata az is, hogy a \verb+HUDComponent+-et
+tájékoztassa a szükséges mennyiségek aktuális értékeirõl. Ennek megvalósításához felhasználja a játékost reprezentáló
+objektumhoz rendelt \verb+PlayerDataComponent+-et (\sectref{PlayerDataComponent}. alszakasz) és
+\verb+WeaponComponent+-et (\sectref{WeaponComponent}. alszakasz) egyaránt.
 
 %----------------------------------------------------------------------------
-\subsection{PlayerDataComponent}
+\subsection{PlayerDataComponent}\label{sect:PlayerDataComponent}
 %----------------------------------------------------------------------------
 Ennek a komponensnek az a feladata, hogy a felhasználó által irányított karakter illetve az ellenséges
 játékobjektumok legfontosabb közös tulajdonságait (életerõ, megölt ellenfelek száma illetve egy flag
@@ -100,111 +148,89 @@ arról, hogy van-e nála fegyver) menedzselje.
 %----------------------------------------------------------------------------
 \subsection{SoldierAnimationComponent}
 %----------------------------------------------------------------------------
-Ez a speciális AnimationComponent azért felel, hogy a felhasználó által irányított játékobjektum
+Ez a speciális \verb+AnimationComponent+ azért felel, hogy a felhasználó által irányított játékobjektum
 mindig a megfelelõ animációval legyen ellátva.
 
-Implementációs szinten ez az osztály úgy viszonyul a DynamicMovementComponent-hez, mint ahogy
-az EnemyAnimationComponent viszonyult az EnemyAIComponent-hez, annyi különbséggel, hogy a
-DynamicMovementComponent-ben nincs állapothalmaz, viszont ebben az osztályban kettõ is van.
+Implementációs szinten ez az osztály úgy viszonyul a \verb+DynamicMovementComponent+-hez, mint ahogy
+az \verb+EnemyAnimationComponent+ viszonyult az \verb+EnemyAIComponent+-hez, annyi különbséggel, hogy a
+\verb+DynamicMovementComponent+-ben nincs állapothalmaz, viszont ebben az osztályban kettõ is van.
 
 A két állapothalmazra azért van szükség, mert a felhasználó által irányított játékobjektum
 animációinak nagy része vagy csak a karakter felsõ testére, vagy csak annak az alsó testére vonatkozik,
 ennek megfelelõen a különbözõ halmazokban levõ állapotok egymástól függetlenül kezelendõk. Ez kódszinten
-azt jelenti, hogy két FiniteStateMachine példányt kell menedzselnie ennek az osztálynak.
+azt jelenti, hogy két \verb+FiniteStateMachine+ példányt kell menedzselnie ennek az osztálynak.
 
-Az alsó testre vonatkozó állapothalmaz állapotait az Idle, Run és Dead állapotok alkotják, míg
-a felsõ testen használatos állapothalmazba az Idle, Run, WeaponHold, Shoot és Dead állapotok tartoznak.
-Megjegyzendõ, hogy az állapotok és az animációk között nem egyértelmû a leképezés, hiszen
-a death animáció mind az alsó testre, mind a felsõ testre vonatkozik, viszont mindkét állapotgépben
-szerepel a hozzá tartozó állapot a helyes mûködés elõidézése érdekében.
+Az alsó testre vonatkozó állapothalmaz állapotait az \verb+Idle+, \verb+Run+ és \verb+Dead+ állapotok alkotják, míg
+a felsõ testen használatos állapothalmazba az \verb+Idle+, \verb+Run+, \verb+WeaponHold+, \verb+Shoot+ és \verb+Dead+
+állapotok tartoznak (\figref{SoldierAnimStateGraph} ábra). Megjegyzendõ, hogy az állapotok és az animációk között nem
+egyértelmû a leképezés, hiszen a death animáció (\figref{DemoAppDead} ábra) mind az alsó testre, mind a felsõ testre
+vonatkozik, viszont mindkét állapotgépben szerepel a hozzá tartozó állapot a helyes mûködés elõidézése érdekében.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=150mm, keepaspectratio]{figures/soldierAnimState.png}
+\caption{A felhasználó által irányított karakter alsó- illetve felsõtestre vonatkozó animációs gráfjai.}
+\label{fig:SoldierAnimStateGraph}
+\end{figure}
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=100mm, keepaspectratio]{figures/demoapp_dead.png}
+\caption{Az ellenséges karakterek elpusztítják a felhasználó által irányított játékobjektumot.}
+\label{fig:DemoAppDead}
+\end{figure}
 
 %----------------------------------------------------------------------------
 \subsection{SoldierAnimComponent}
 %----------------------------------------------------------------------------
-A \sectref{Engine}. fejezetben leírtaknak megfelelõen nem csak a FiniteStateMachine osztály felhasználásával,
+A \sectref{Engine}. fejezetben leírtaknak megfelelõen nem csak a \verb+FiniteStateMachine+ osztály felhasználásával,
 hanem a State tervezési minta alkalmazásával is lehet állapotgép funkciókat megvalósítani.
 
-Ez az osztály a neve ellenére nem komponens, hanem Stateable leszármazott, ennek megfelelõen
-IState leszármazottak segítségével meg lehet adni a mindenkori aktuális állapotát.
-Ehhez definiáltam három darab AnimState leszármazottat, melyek singleton objektumok, s egymás között
-döntik el, hogy adott feltételek esetén melyikük legyen a hozzájuk tartozó SoldierAnimComponent
-példány aktuális állapota.
+Ez az osztály a neve ellenére nem komponens, hanem \verb+Stateable+ leszármazott, ennek megfelelõen
+\verb+IState+ leszármazottak segítségével meg lehet adni a mindenkori aktuális állapotát. Az osztály nevében azért szerepel
+mégis a Component utótag, mert ezzel is szerettem volna arra utalni, hogy használhatóságát tekintve nem sokban különbözik
+bármely \verb+Component+ leszármazottól.
+Ehhez definiáltam három darab \verb+AnimState+ leszármazottat, melyek singleton objektumok, s egymás között
+döntik el, hogy adott feltételek esetén melyikük legyen a hozzájuk tartozó \verb+SoldierAnimComponent+
+példány aktuális állapota. Az elkészített rendszer szereplõit illetve azok kapcsolatait a \figref{GameSideStateHierarchy}
+ábra foglalja össze.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=150mm, keepaspectratio]{figures/demoapp_state.png}
+\caption{A rendszeremben megvalósított State tervezési minta UML osztálydiagrammja.}
+\label{fig:GameSideStateHierarchy}
+\end{figure}
 
 %----------------------------------------------------------------------------
-\subsection{WeaponComponent}
+\subsection{WeaponComponent}\label{sect:WeaponComponent}
 %----------------------------------------------------------------------------
 Ez a komponens menedzseli a játékos karaktere által felvehetõ fegyver objektumot. A menedzselésbe
 beletartozik a töltények számának kezelése, illetve maga a lövési folyamat definiálása is, mely során
 a fizikai rendszer segítségével fizikai first hit raycasting-ot használva a fegyver csövébõl lõtt
 sugárral metszi el a színteret, s az elsõként eltalált fizikai objektumtól von le életet akkor, ha az
-az objektum egy ellenség volt (azt, hogy egy játékobjektum ellenség-e, a hozzá rendelt tag-ek
-alapján lehet eldönteni).
+az objektum egy ellenséges karakter volt (azt, hogy egy játékobjektum ellenség-e, a hozzá rendelt tag-ek
+alapján lehet eldönteni). Mindezek mellett szintén ennek a komponensnek a feladata, hogy
+a szülõ játékobjektumhoz képest megfelelõ transzformációval lássa el a fegyvert reprezentáló
+játékobjektumot. Ezt úgy valósítja meg, hogy a szülõ játékobjektum jobb kezéhez képest alkalmaz
+egy x tengely körüli, 90°-os elforgatást (\figref{WeaponHoldDemo} ábra).
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=100mm, keepaspectratio]{figures/weapon_transform.png}
+\caption{A fegyver helyzete a katona kezéhez igazítva.}
+\label{fig:WeaponHoldDemo}
+\end{figure}
 
 %----------------------------------------------------------------------------
 \section{Áttekintés}
 %----------------------------------------------------------------------------
-Természetesen ennek az applikációnak a fejlesztése során nem az volt fõ a célom, hogy könnyen használható,
-élvezetes játékmenetet nyújtó programot készítsek, hanem sokkal inkább arra törekedtem, hogy minél jobban
-kihasználjam a használt játékmotorom által nyújtott szolgáltatásokat.
-
-itt diagrammokkal kéne szemléltetni az alkalmazást (s esetleg azt is, hogy az engine mely
-részeit használják fel az egyes komponensek)
-kene egy csak jatek-oldali osszefoglalo diagram, viszont kene egy olyan is, melyen az engine
-fontosabb reszei ES a jatekoldal egyszerre szerepel
-
+Az imént ismertetett játéklogika-oldali komponensek kapcsolatait összefoglaló UML osztálydiagramm
+a \figref{GameSideCompHierarchy} ábrán látható.
 
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=150mm, keepaspectratio]{figures/gameside_comp_hierarchy.png}
-\caption{A játéklogika oldalon elkészített fontosabb komponensek leszármazás-hierarchiája}
+\caption{A játéklogika oldalon elkészített fontosabb komponensek UML osztálydiagrammja.}
 \label{fig:GameSideCompHierarchy}
-\end{figure}
-
-\begin{figure}[!ht]
-\centering
-\includegraphics[width=150mm, keepaspectratio]{figures/demoapp_state.png}
-\caption{A játéklogika oldalon elkészített fontosabb komponensek leszármazás-hierarchiája}
-\label{fig:GameSideCompHierarchy}
-\end{figure}
-
-%----------------------------------------------------------------------------
-\section{Tesztelés}
-%----------------------------------------------------------------------------
-Ebben a szakaszban az elkészített alkalmazás fõbb mozzanatait szemléltetem képernyõképek
-segítségével.
-
-A felhasználói felületet bemutató képernyõkép a \figref{MyGUI_Example} ábrán található.
-
-\begin{figure}[!ht]
-\centering
-\includegraphics[width=100mm, keepaspectratio]{figures/mygui_example.png}
-\caption{GUI}
-\label{fig:MyGUI_Example}
-\end{figure}
-
-A következõ képernyõkép egy ellenséges karakter megölését mutatja a \figref{DemoAppKill} ábrán.
-
-\begin{figure}[!ht]
-\centering
-\includegraphics[width=100mm, keepaspectratio]{figures/demoapp_kill.png}
-\caption{Kill}
-\label{fig:DemoAppKill}
-\end{figure}
-
-A fegyver felvétele elõtti futás animációt a \figref{DemoAppUnarmedRun} ábra szemlélteti.
-
-\begin{figure}[!ht]
-\centering
-\includegraphics[width=100mm, keepaspectratio]{figures/demoapp_unarmed_run.png}
-\caption{Kill}
-\label{fig:DemoAppUnarmedRun}
-\end{figure}
-
-A felhasználó által irányított karakter halálanimációja a \figref{DemoAppDead} ábrán látható.
-
-\begin{figure}[!ht]
-\centering
-\includegraphics[width=100mm, keepaspectratio]{figures/demoapp_dead.png}
-\caption{Kill}
-\label{fig:DemoAppDead}
 \end{figure}

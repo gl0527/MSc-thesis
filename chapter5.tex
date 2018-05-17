@@ -2,41 +2,46 @@
 \chapter{Értékelés}
 %----------------------------------------------------------------------------
 Ez a fejezet az elkészült játékmotorom értékelésével foglalkozik. Elsõként megvizsgálja, hogy
-az elõzõ fejezetben ismertetett demonstrációs alkalmazás elkészítése mennyire volt egyszerû
-(összehasonlítva más motorokkal), majd kitér az elkészült kód minõségére az erre használatos
-metrikák felhasználásával, végezetül bemutatja az általam használt optimalizációs technikákat is.
+az elõzõ fejezetben ismertetett demonstrációs alkalmazás elkészítése mennyire volt egyszerû,
+majd kitér az elkészült kód teljesítményére.
 
 %----------------------------------------------------------------------------
 \section{Használhatóság}
 %----------------------------------------------------------------------------
-Ez a szakasz megvizsgálja diplomaterv keretében elkészített általános célú, komponens alapú
+Ez a szakasz megvizsgálja a diplomaterv keretében elkészített általános célú, komponens alapú
 játékmotort annak használhatósága szempontjából. Ez egy olyan metrika, melyet nehéz mérni,
-hiszen alapvetõen szubjektív véleményt tükröz. Valamiféle értékelésre mégis szükség van,
-hiszen az elkészült rendszerem egyik legfontosabb minõsítése a használhatósága.
+hiszen alapvetõen szubjektív véleményt tükröz. Valamiféle értékelésre mégiscsak szükség van,
+hiszen az elkészült rendszerem egyik legfontosabb minõsítése annak használhatósága.
 
 A demonstrációs alkalmazásnál leírtaknak megfelelõen játéklogika oldalon szinte kizárólag
 komponenseket készítettem (illetve egy main függvényt, ahol a játék indításához szükséges teendõket
-végeztem el és egy XML parser osztályt a DynamicMovementComponent osztály számára).
-
-A dolgozat írásának idején a játéklogika oldali komponensek forrásfájlainak összmérete
+végeztem el és egy XML parser osztályt a DynamicMovementComponent osztály számára). Ezen játéklogika
+oldali komponensek forrásfájlainak összmérete
 1387 sor, s 11 ilyen komponenst definiáltam (nem mindet ismerettem az elõzõ fejezetben,
-csak a legfontosabbakat). Ezekbõl az következik, hogy komponensenként körülbelül 126
-sornyi kódot kellett írnom, ami véleményem szerint nem nevezhetõ soknak.
+csak a legfontosabbakat), vagyis komponensenként körülbelül 126
+sornyi kódot kellett írnom, ami véleményem szerint nem nevezhetõ soknak. Ebbõl következik, hogy a
+játéklogika oldali kódok a sok funkcionalitás elvégzését kevés kóddal valósítják meg, tehát a játékoldali
+komponensek nagymértékben támaszkodnak az elkészített játékmotorom képességeire.
 
-mennyire támaszkodnak az engine-re ezek a komponensek?
+Az elõzõ fejezetben leírtaknak megfelelõen a demonstraciós alkalmazás megalkotása során nem kellett alacsonyszintû grafikai mûveleteket
+-- mint például pufferek kezelése, árnyalóprogramok paramétereinek elõállítása stb. -- végeznem, hiszen ezeket a teendõket az elkészített
+játékmotorom látta el. Sõt, ennél magasabb szintû funkcionalitások megvalósításának terhét is levette rólam a motor, hiszen nem kellett
+fényforrásokkal illetve anyagjellemzõkkel foglalkoznom (az OGRE-ben írt anyagleíró szkriptek és a játéklogika oldalon megvalósított
+árnyalóprogramok mellett), emellett a fizikával kapcsolatos funkcionalitásokat is csak használnom kellett játéklogika oldalon, ami szintén
+nagyban megkönnyítette a dolgomat. Mindezek mellett szintén nem kellett foglalkoznom a felhasználói bemenetek kezelésével illetve a játék
+fõhurkát sem nekem kellett elkészítenem, hiszen ezek a funkcionalitások is a már korábban elkészített játékmotorom részét képezték.
+A motor minden alrendszere -- megjelenítés, fizika, hang, stb. -- egységes módon kezelhetõ, a felhasználónak
+nem kell ismernie a belsõ mûködéseiket a használatukhoz, viszont a rendszer lehetõséget ad arra is -- több más motorral ellentétben --, hogy
+a hozzáértõ felhasználók közvetlenül hozzáférhessenek a különféle almotorokhoz, így nem csak azok kivezetett funkcionalitásait érhetik el. 
 
-mennyire volt nehez megirni a demonstracios alkalmazast?
+Ami a komponens alapú megközelítést illeti, véleményem szerint kényelmes volt új komponenseket adni a rendszerhez, hiszen a legtöbb esetben
+csak néhány függvény felüldefiniálására volt szükség. A komponensek közötti kommunikáció használata sem okozott problémát, hiszen
+a megfelelõ konténer osztályoktól torténõ lekérdezéseken túl nem volt más feladatom ezzel kapcsolatban. Hatékonysági okokból arra kellett
+figyelnem, hogy a lekérdezéseket ne minden képkocka kiszámítására végezzem el, hanem ahol erre lehetõség volt, ott a lekérdezendõ komponenst
+illetve játékobjektumot tagváltozóként eltároltam abban az osztályban, mely azt használni akarta.
 
-miert tekintheto az elozo fejezetben ismertetett implementacio kenyelmesnek? milyen resze nem volt az?
-miben lehetne fejlodni?
-
-%----------------------------------------------------------------------------
-\section{Kód minõsége}
-%----------------------------------------------------------------------------
-mennyire letisztult az architektura, mennyire keves a dependencia,
-mennyire sok a hasznalt minta, milyen konnyen bovitheto stb.
-
-LZ-s metrikak is johetnek ide
+Az elkészített rendszerem eddig felsorolt tagjai mellett még a játékobjektumok késleltetett létrehozására szeretnék kitérni. Ez a funkcionalitás
+nagyban megkönnyítette egy komponens illetve egy játékobjektum leírásának újrafelhasználását mind XML, mind C\texttt{++} oldalon.
 
 %----------------------------------------------------------------------------
 \section{Teljesítmény}
@@ -46,140 +51,231 @@ A mérésekkel kapcsolatosan megjegyzendõ, hogy mindegyiket egy percig végeztem, s
 illetve az átlagos FPS (Frames per Seconds, képkockasebesség) jelenik meg a képernyõképeken
 (a háromszögek száma mellett).
 
-A mérésekkel kapcsolatosan megjegyzendõ, hogy az Ogre beépített FPS-re vonatkozó lekérdezõ függvényeit nem
+A mérésekkel kapcsolatosan megjegyzendõ, hogy az Ogre beépített, FPS-re vonatkozó lekérdezõ függvényeit nem
 használhattam, mivel ezek az Ogre beépített megjelenítési hurkát használják fel az implementációjuk során,
 viszont az én rendszeremben saját megjelenítési hurkot definiáltam. Ennek megfelelõen a motorban levõ,
-megjelenítésért felelõs alrendszerben implementálnom kellett az FPS számoláshoz szükséges logikát. Az
-implementáció során arra törekedtem, hogy ez a logika minél egyszerûbb legyen, ami azért fontos ebben az esetben,
-hogy a mérés minél kisebb százalékban befolyásolja a mérési eredményt.
+megjelenítésért felelõs alrendszerben implementálnom kellett az FPS számoláshoz szükséges logikát. Ennek megvalósítása
+során arra törekedtem, hogy ez a logika minél egyszerûbb legyen annak érdekében, hogy
+a mérés minél kisebb százalékban befolyásolja a mérési eredményt. Úgy vélem, hogy ezt sikerült is elérnem,
+hiszen a kurrens illetve az átlag képkockasebesség méréséhez mindössze egyetlen 32 bites lebegõpontos statikus változót
+illetve egy 32 bites számlálót használtam fel. A gyors lekérdezések érdekében a kívánt értékeket tagváltozókban tároltam el.
+A megoldás fontosabb részleteit az alábbi kódrészlet szemlélteti.
 
-A méréseket a laptopomon végeztem el, melynek fontosabb adatai a következõk:
-\begin{itemize}
-  \item RAM: 8GB DDR3
-  \item CPU: Intel(R) Core(TM) i7-5500U @ 2.4GHz, 4 mag
-  \item Háttértár: 256GB SSD
-  \item GPU: Intel(R) HD Graphics 5500 (alaplapra integrált videokártya)
-\end{itemize}
+\begin{lstlisting}[frame=single,float=!ht,
+caption={Saját FPS-számolás implementálásának fontosabb részletei.}, label=ForwardDeclarationCpp]
+void RenderSystem::Update (float t, float dt)
+{
+	static float sumFPS = 0.0f;
+	static unsigned int count = 0;
+
+	// ...
+
+	if (/*...*/) {
+		// ...
+		m_currentFPS = 1 / dt;
+		sumFPS += m_currentFPS;
+		++count;
+		m_averageFPS = sumFPS / count;
+	}
+
+	// ...
+}
+\end{lstlisting}
+
+A méréseket a laptopomon végeztem el, melynek fontosabb adatait a \tabref{HWConfigTable} táblázat foglalja össze:
+
+\begin{table}[ht]
+	\footnotesize
+	\centering
+	\caption{A méréseket kiszolgáló hardverkonfiguráció fontosabb adatai.} \label{tab:HWConfigTableDesc}
+	\begin{tabular}{ | c | c | }
+	\hline
+	Hardver & Adat \\ \hline
+	RAM & 8GB DDR3 \\
+	CPU & Intel(R) Core(TM) i7-5500U @ 2.4GHz, 4 mag \\
+	Háttértár & 256GB SSD \\
+	GPU & Intel(R) HD Graphics 5500 \\ \hline
+	\end{tabular}
+	\label{tab:HWConfigTable}
+\end{table}
 
 Elsõként azt vizsgáltam meg, hogy kizárólag megjelenítõ komponenssel rendelkezõ játékobjektumokból álló
-színteret milyen hatékonysággal képes renderelni a rendszerem. Ehhez húsz darab egyforma 
+színteret milyen hatékonysággal képes kirajzolni a rendszerem. Ehhez húsz darab egyforma 
 -- viszonylag kevés háromszögbõl álló -- háromszöghálót használtam fel.
 
-Elõször a program debugger alól indított debug-os verzióján végeztem el a mérést. Az eredményt a \figref{MeasRenderDBDev}
-ábra mutatja.
+Elõször a program hibakeresõ alól indított, hibakeresést támogató verzióján végeztem el a mérést.
+Az eredményt a \figref{MeasRenderDBDev} ábra mutatja.
 
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=100mm, keepaspectratio]{figures/meas_render_debugdev.png}
-\caption{Kizárólag megjelenítéssel rendelkezõ játékobjektumoknál fellépõ képkockasebesség debugger
-alól indított debug-os program esetében}
+\caption{Kizárólag megjelenítéssel rendelkezõ játékobjektumoknál fellépõ képkockasebesség hibakeresõ
+alól indított, hibakeresést támogató konfiguráció esetében.}
 \label{fig:MeasRenderDBDev}
 \end{figure}
 
-A mérést elvégeztem debugger nélkül is, s jól látható, hogy szignifikáns különbség nem lépett fel a
-debuggeres változathoz képest. Az eredmény a \figref{MeasRenderDev} ábrán látható.
+A mérést hibakeresõ nélkül indított, hibakeresést támogató módban is elvégeztem, s jól látható, hogy szignifikáns különbség nem lépett fel az
+elõbb bemutatott változathoz képest. Az eredmény a \figref{MeasRenderDev} ábrán látható.
 
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=100mm, keepaspectratio]{figures/meas_render_dev.png}
-\caption{Kizárólag megjelenítéssel rendelkezõ játékobjektumoknál fellépõ képkockasebesség debugger
-nélkül indított debug-os program esetében}
+\caption{Kizárólag megjelenítéssel rendelkezõ játékobjektumoknál fellépõ képkockasebesség hibakeresõ
+nélkül indított, hibakeresést támogató konfiguráció esetében.}
 \label{fig:MeasRenderDev}
 \end{figure}
 
-Ezek után megvizsgáltam azt az esetet is, amikor a játékobjektumokra dinamikus fizikai komponenst is teszek.
+Ezt az esetet megvizsgáltam hibakeresést nem támogató fordítási módban is.
+Ebben az esetben az átlagos képkockasebesség nagyjából az ötszöröse az elõzõ esetek során mért értékeknek.
+A mérési eredményt a \figref{MeasRenderRel} ábra szemlélteti.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=100mm, keepaspectratio]{figures/meas_render_rel.png}
+\caption{Kizárólag megjelenítéssel rendelkezõ játékobjektumoknál fellépõ képkockasebesség hibakeresést nem támogató konfiguráció esetében.}
+\label{fig:MeasRenderRel}
+\end{figure}
+
+A következõ mérési elrendezésben ugyanezen játékobjektumokat dinamikus fizikai komponenssel is felruháztam.
 Az alábbiakban ezeknek a méréseknek az eredményeit közlöm.
 
-A program debugger alól indított debug-os verziójának mérési eredményeit a \figref{MeasRenderDynamicDBDev} ábra mutatja be.
+A program hibakeresõ alól indított hibakeresést támogató verziójának mérési eredményeit a
+\figref{MeasRenderDynamicDBDev} ábra mutatja be.
 
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=100mm, keepaspectratio]{figures/meas_renderDynamic_debugdev.png}
 \caption{Megjelenítéssel és dinamikus fizikával rendelkezõ játékobjektumoknál fellépõ képkockasebesség
-debugger alól indított debug-os program esetében}
+hibakeresõ alól indított hibakeresést támogató konfiguráció esetében.}
 \label{fig:MeasRenderDynamicDBDev}
 \end{figure}
 
-Ugyanezen konfiguráció debugger nélküli futásának eredménye a \figref{MeasRenderDynamicDev} ábrán látható.
+Ugyanezen elrendezés hibakeresõ nélkül indított, hibakeresést támogató konfiguráció futásának eredménye
+a \figref{MeasRenderDynamicDev} ábrán látható.
 
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=100mm, keepaspectratio]{figures/meas_renderDynamic_dev.png}
 \caption{Megjelenítéssel és dinamikus fizikával rendelkezõ játékobjektumoknál fellépõ képkockasebesség
-debugger nélkül indított debug-os program esetében}
+hibakeresõ nélkül indított, hibakeresést támogató program esetében.}
 \label{fig:MeasRenderDynamicDev}
+\end{figure}
+
+Ezt a mérést elvégeztem hibakeresést nem támogató konfiguráción is, melynek eredményeit a \figref{MeasRenderDynamicRel} ábra közli.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=100mm, keepaspectratio]{figures/meas_renderDynamic_rel.png}
+\caption{Megjelenítéssel és dinamikus fizikával rendelkezõ játékobjektumoknál fellépõ képkockasebesség
+hibakeresést nem támogató konfiguráció esetében.}
+\label{fig:MeasRenderDynamicRel}
 \end{figure}
 
 A következõ méréseket olyan játékobjektumokon végeztem, melyek a megjelenítés mellett animációval is rendelkeztek, viszont fizikával nem.
 
-A program debugger alól indított debug-os verziójának mérési eredménye a \figref{MeasRenderAnimDBDev} ábrán látható.
+A program hibakeresõ alól indított, hibakeresést támogató verziójának mérési eredménye a \figref{MeasRenderAnimDBDev} ábrán látható.
 
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=100mm, keepaspectratio]{figures/meas_renderAnim_dbdev.png}
-\caption{Megjelenítéssel és animációval rendelkezõ játékobjektumoknál fellépõ képkockasebesség debugger alól indított debug-os program esetében}
+\caption{Megjelenítéssel és animációval rendelkezõ játékobjektumoknál fellépõ képkockasebesség hibakeresõ alól indított, hibakeresést támogató
+konfiguráció esetében.}
 \label{fig:MeasRenderAnimDBDev}
 \end{figure}
 
-Ugyanennek a konfigurációnak a debugger nélkül indított futásának eredményeit a \figref{MeasRenderAnimDev} ábra szemlélteti.
+Ugyanennek az elrendezésnek a hibakeresõ nélkül indított, hibakeresést támogató verziójának futási eredményeit a \figref{MeasRenderAnimDev} ábra szemlélteti.
 
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=100mm, keepaspectratio]{figures/meas_renderAnim_dev.png}
-\caption{Megjelenítéssel és animációval rendelkezõ játékobjektumoknál fellépõ képkockasebesség debugger nélkül indított debug-os program esetében}
+\caption{Megjelenítéssel és animációval rendelkezõ játékobjektumoknál fellépõ képkockasebesség hibakeresõ nélkül indított hibakeresést támogató program esetében.}
 \label{fig:MeasRenderAnimDev}
 \end{figure}
 
-Végül olyan játékobjektumokon végeztem a méréseket, melyek a megjelenítés mellett pontfényforrással rendelkeznek, s semmi mással.
-Ennek hatására tízszeresére nõtt a háromszögszám.
-Az Ogre elvileg egyszerre csak nyolc fényforrást tud kezelni.
+Ezen elrendezés hibakeresést nem támogató programverziója által generált eredményeket a \figref{MeasRenderAnimRel} ábra szemlélteti.
 
-A debugger alól indított debug-os futás eredményeit az \figref{MeasRenderLightDBDev} ábra mutatja.
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=100mm, keepaspectratio]{figures/meas_renderAnim_rel.png}
+\caption{Megjelenítéssel és animációval rendelkezõ játékobjektumoknál fellépõ képkockasebesség hibakeresést nem támogató program esetében.}
+\label{fig:MeasRenderAnimRel}
+\end{figure}
+
+Végül olyan játékobjektumokon végeztem a méréseket, melyek a megjelenítés mellett pontfényforrással rendelkeznek, és semmi mással.
+Megjegyzendõ, hogy ennek hatására tízszeresére nõtt a megjelenítendõ háromszögek száma, ahogy azt a képernyõképekbõl is látni lehet.
+
+A hibakeresõ alól indított, hibakeresést támogató konfiguráció futási eredményeit az \figref{MeasRenderLightDBDev} ábra szemlélteti.
 
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=100mm, keepaspectratio]{figures/meas_renderLight_dbdev.png}
-\caption{Megjelenítéssel és pontfényforrással rendelkezõ játékobjektumoknál fellépõ képkockasebesség debugger alól indított debug-os program esetében}
+\caption{Megjelenítéssel és pontfényforrással rendelkezõ játékobjektumoknál fellépõ képkockasebesség hibakeresõ alól indított, hibakeresést támogató program esetében.}
 \label{fig:MeasRenderLightDBDev}
 \end{figure}
 
-A debugger nélkül indított debug-os futás eredményeit az \figref{MeasRenderLightDev} ábra mutatja.
+A hibakeresõ nélkül indított hibakeresést támogató futás eredményeit az \figref{MeasRenderLightDev} ábra mutatja.
 
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=100mm, keepaspectratio]{figures/meas_renderLight_dev.png}
-\caption{Megjelenítéssel és pontfényforrással rendelkezõ játékobjektumoknál fellépõ képkockasebesség debugger nélkül indított debug-os program esetében}
+\caption{Megjelenítéssel és pontfényforrással rendelkezõ játékobjektumoknál fellépõ képkockasebesség hibakeresõ nélkül indított hibakeresést támogató program esetében.}
 \label{fig:MeasRenderLightDev}
 \end{figure}
 
-DBDev-es táblázat:
+A hibakeresést nem támogató verziónak az eredményeit az \figref{MeasRenderLightRel} ábra foglalja magában.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=100mm, keepaspectratio]{figures/meas_renderLight_rel.png}
+\caption{Megjelenítéssel és pontfényforrással rendelkezõ játékobjektumoknál fellépõ képkockasebesség hibakeresést nem támogató konfiguráció esetében.}
+\label{fig:MeasRenderLightRel}
+\end{figure}
+
+A mérési konfigurációk és azok eredményeinek ismertetése után az eredmények összefoglalását és értelmezését teszem meg.
+
+Az \tabref{MeasDBDevTable}-es táblázat foglalja össze a hibakeresõ alól futtatott, hibakeresést támogató konfiguráció futási eredményeit.
 
 \begin{table}[ht]
 	\footnotesize
 	\centering
-	\caption{A debugger alól futtatott debug-os programok futásainak eredményei.} \label{tab:MeasDevTableDesc}
+	\caption{A hibakeresõ alól futtatott hibakeresést támogató programok futásainak eredményei.} \label{tab:MeasDevTableDesc}
 	\begin{tabular}{ | l | c | c | c | c | }
 	\hline
-				& Natúr & Fizika & Animáció & Fényforrás \\ \hline
+				& Megjelenítés & Fizika & Animáció & Fényforrás \\ \hline
 	Átlagos FPS & 55.72 & 56.32 & 20.17 & 14 \\ \hline
 	Háromszögek & 89614 & 89616 & 89624 & 805774 \\ \hline
 	\end{tabular}
 	\label{tab:MeasDBDevTable}
 \end{table}
 
-Dev-es táblázat:
+A \tabref{MeasDevTable}-as táblázat a hibakeresõ nélkül futtatott, hibakeresést támogató konfiguráció futási eredményeit foglalja össze.
 
 \begin{table}[ht]
 	\footnotesize
 	\centering
-	\caption{A debugger nélkül futtatott debug-os programok futásainak eredményei.} \label{tab:MeasDevTableDesc}
+	\caption{A hibakeresõ nélkül futtatott hibakeresést támogató konfiguráció futásainak eredményei.} \label{tab:MeasDevTableDesc}
 	\begin{tabular}{ | l | c | c | c | c | }
 	\hline
-				& Natúr & Fizika & Animáció & Fényforrás \\ \hline
+				& Megjelenítés & Fizika & Animáció & Fényforrás \\ \hline
 	Átlagos FPS & 58.87 & 56.58 & 20.89 & 13.76 \\ \hline
 	Háromszögek & 89612 & 89612 & 89624 & 805774 \\ \hline
 	\end{tabular}
 	\label{tab:MeasDevTable}
+\end{table}
+
+A \tabref{MeasRelTable}-es táblázat a hibakeresést nem támogató konfiguráció futási eredményeit tartalmazza.
+
+\begin{table}[ht]
+	\footnotesize
+	\centering
+	\caption{A hibakeresést nem támogató konfiguráció futásainak eredményei.} \label{tab:MeasDevTableDesc}
+	\begin{tabular}{ | l | c | c | c | c | }
+	\hline
+				& Megjelenítés & Fizika & Animáció & Fényforrás \\ \hline
+	Átlagos FPS & 285.87 & 288.18 & 177.38 & 116.61 \\ \hline
+	Háromszögek & 89616 & 89616 & 89624 & 805778 \\ \hline
+	\end{tabular}
+	\label{tab:MeasRelTable}
 \end{table}
 
 A mérési eredményekbõl jól látható, hogy a rendszeremben a szûk keresztmetszetet a megjelenítéshez kapcsolódó
@@ -190,6 +286,6 @@ Ennek az eredménye a \figref{ProfilingDBDev} ábrán látható:
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=90mm, keepaspectratio]{figures/profiling_debugdev.png}
-\caption{A rendszerben levõ szûk keresztmetszet a megjelenítés}
+\caption{A rendszerben levõ szûk keresztmetszet a megjelenítés.}
 \label{fig:ProfilingDBDev}
 \end{figure}

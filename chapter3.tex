@@ -1,16 +1,16 @@
 %----------------------------------------------------------------------------
 \chapter{A játékmotor bõvítése}\label{sect:Engine}
 %----------------------------------------------------------------------------
-Ez a fejezet tartalmazza a Bevezetõ fejezetben ismertetett feladataimnak a megoldásait.
+Ez a fejezet tartalmazza a \sectref{Intro}.~fejezetben ismertetett feladataimnak a megoldásait.
 
-Elsõként bemutatja a játékobjektumok késleltetett létrehozásának megvalósítását, aztán az
+Elsõként bemutatja a játékobjektumok késleltetett létrehozásának megvalósítását, ezután az
 állapotgép alapú rendszerek taglalását követõen az animációs alrendszer és a mesterséges intelligencia
 alrendszer implementálását ismerteti. Ezt követõen részletezi a felhasználói felület létrehozásának módját.
-Végezetül a fejezet a -- már alapjaiben eddig is meglevõ -- hangrendszer illetve részecskerendszer
+Végezetül a fejezet a -- már alapjaiban eddig is meglevõ -- hangrendszer illetve részecskerendszer
 továbbfejlesztésével illetve az elkészült rendszer áttekintésével zárul.
 
 %----------------------------------------------------------------------------
-\section{Játékobjektumok késleltetett létrehozása}
+\section{Játékobjektumok késleltetett létrehozása}\label{sect:Prefab}
 %----------------------------------------------------------------------------
 
 %----------------------------------------------------------------------------
@@ -18,7 +18,7 @@ továbbfejlesztésével illetve az elkészült rendszer áttekintésével zárul.
 %----------------------------------------------------------------------------
 Korábban az XML parszolás azt határozta meg, hogy milyen legyen a betöltött virtuális világ a
 kezdeti idõpontjában. Nem volt lehetõség olyan objektumok definiálására, melyek példányosítását
-csak a virtuális világ egy késõbbi szakaszában lehetett volna véghez vinni.
+csak a virtuális világ egy késõbbi szakaszában lehetett volna véghezvinni.
 
 Igény viszont lett volna erre a funkcionalitásra, gondoljunk csak egy lõfegyverre, mely valamilyen
 lövedéket képes magából kibocsátani egy adott esemény -- például bal egérgomb lenyomása -- hatására.
@@ -28,7 +28,7 @@ kizárólag a felhasználótól függ. Viszont azt sem szeretnénk, ha minden lövedék-b
 fájlhoz kellene fordulni, mert az nagyon lelassítaná a program futását (a háttértár elérési ideje
 nagyságrendekkel nagyobb a memória elérési idejénél).
 
-Másfelõl annak is van értelme, ha több féle lövedék típus létezik egy játékban, s ezeknek vannak közös
+Másfelõl annak is van értelme, ha többféle lövedék típus létezik egy játékban, s ezeknek vannak közös
 tulajdonságaik. Ebben az esetben is hasznos lenne egy olyan absztrakt játékobjektum definíció
 az XML leírásban, melyet közvetlenül nem példányosítunk, viszont a tartalmát felhasználva
 -- esetleg azt módosítva -- konkrét játékobjektumokat lehet létrehozni.
@@ -51,7 +51,7 @@ eltárolhatók heterogén kollekcióban. Az összetartozó \verb+GenericPrefab+ példán
 példányokat gyártani. A \verb+GameObjectCreator+ objektumok az \verb+ObjectManager+-ben
 foglalnak helyet.
 
-A C++ oldal mellett a jelenet XML leírása is módosult természetesen. Az eddigi funkcionalitások mellett
+A C\texttt{++} oldal mellett a jelenet XML leírása is módosult természetesen. Az eddigi funkcionalitások mellett
 a fejlesztõnek lehetõsége van prefab-ok megadására is. Egy ilyen objektum definiálása gyakorlatilag
 megegyezik egy játékobjektum definiálásával, mindössze az XML tag-ek nevében van különbség (gameobject
 helyett prefab). Mindemellett a felhasználó megadhatja azt is, hogy egy játékobjektum mely prefabból
@@ -72,7 +72,7 @@ viszont egyáltalán nem tüntettem fel rajta.
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=150mm, keepaspectratio]{figures/prefab_classDiagram.png}
-\caption{Játékobjektumok késleltetett létrehozását megvalósító osztályok UML osztálydiagrammja}
+\caption{Játékobjektumok késleltetett létrehozását megvalósító osztályok UML osztálydiagrammja.}
 \label{fig:PrefabClassDiagram}
 \end{figure} 
 
@@ -122,21 +122,21 @@ az objektum viselkedése és állapota között.
 Ez a minta mindezt egy objektumorientált állapotgép implementálásával valósítja meg. Egymástól független
 állapot objektumokat definiál, melyek egy-egy állapothoz köthetõ viselkedést implementálnak.
 Ennek megfelelõen az állapottal rendelkezõ objektum az állapot-specifikus viselkedést a kurrens
-állapotra delegálja, melyet egy absztrakt õs objektumra mutató pointerrel ér el, kihasználva a C++
+állapotra delegálja, melyet egy absztrakt õs objektumra mutató pointerrel ér el, kihasználva a C\texttt{++}
 nyelv polimorfizmusa által nyújtotta lehetõségeket.
 
 Ami a mintában részt vevõ objektumokat illeti, definiálni kell egy \verb+Context+ osztályt,
 mely az állapottal rendelkezõ objektumot testesíti meg. Emellett létre kell hozni a már korábban
 is említett absztrakt \verb+State+ osztályt, mely a konkrét állapotobjektumok közös õse lesz. Ennek
 megfelelõen a konkrét állapotokat a \verb+State+ osztály leszármazottaiként kell definiálni.
-Ezek után már csak a C++ nyelv polimorfizmusát kell használni, miszerint a \verb+Context+ osztály tagjaként
+Ezek után már csak a C\texttt{++} nyelv polimorfizmusát kell használni, miszerint a \verb+Context+ osztály tagjaként
 el kell tárolni egy \verb+State+-re mutató pointert, melynek a mutatott értékét futás közben tetszõlegesen
 állíthatjuk bármilyen \verb+State+-bõl leszármazó osztályra (\figref{StatePatternClassDiagram} ábra).
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[width=130mm, keepaspectratio]{figures/state_static_diagram.png}
-\caption{A State tervezési minta UML osztálydiagrammja}
+\includegraphics[width=110mm, keepaspectratio]{figures/state_static_diagram.png}
+\caption{A State tervezési minta UML osztálydiagrammja.}
 \label{fig:StatePatternClassDiagram}
 \end{figure}
 
@@ -150,14 +150,15 @@ fogalomra.
 
 Az osztály sablon paraméterben kapja meg a kezelendõ állapotok típusát illetve az automata bemeneteinek
 típusát. Emellett definiálja azokat a típusokat, melyekkel meg lehet adni, hogy egy adott konkrét automata
-az állapotokban való tartózkodást illetve az állapotátmeneteket hogyan kezelje. Az osztály mûködésének
+az állapotokban való tartózkodást illetve az állapotátmeneteket hogyan kezelje. Ehhez felhasználja a
+\sectref{Events} szakaszban ismertetett Delegate osztályt. Az osztály mûködésének
 egyik sarkallatos pontja a bemenetek kezelése. Ennek lényege, hogy az aktuális állapothoz megkeresi
 a belõle kiinduló átmeneteket, s ezek között megkeresi, hogy melyik aktiválódik az olvasott bemenet
 hatására. A megoldásnak Update függvénye is van, mely minden frame-ben meghívódik, s a kurrens állapot
 állapotfüggvényeit hívja meg.
 
 %----------------------------------------------------------------------------
-\section{Animációs rendszer}
+\section{Animációs rendszer}\label{sect:Animation}
 %----------------------------------------------------------------------------
 A mai játékokban gyakorlatilag bármilyen játékobjektum rendelkezik legalább egy minimális szintû
 animációval. Ezen animációk elsõdleges feladata az objektumok mozgásainak minél élethûbb bemutatása.
@@ -229,7 +230,7 @@ a motor részét képezi, s a felhasználó dönthet arról, hogy melyik megoldást vála
 elvégzéséhez.
 
 %----------------------------------------------------------------------------
-\section{Felhasználói felület}
+\section{Felhasználói felület}\label{sect:GUI}
 %----------------------------------------------------------------------------
 A felhasználói felületek használata a mai játékokban alap funkcionalitásnak tekinthetõ, hiszen még
 egy kisebb mobil alkalmazásnak is nyújtania kell valamiféle GUI-t a felhasználó felé, hogy tájékoztassa
@@ -262,13 +263,13 @@ A probléma megoldása után a motor oldali GUI rendszert a GUI szkriptek használat
 fejlesztettem.
 
 %----------------------------------------------------------------------------
- \section{Hangrendszer}
+ \section{Hangrendszer}\label{sect:Audio}
 %----------------------------------------------------------------------------
 A hangok használata a mai játékokban messze túlmutat a felhasználó szórakoztatásán, hiszen emellett egyéb
 céljai is vannak, mint például az aktuális játékbeli szituációhoz kapcsolódó
 hangulat sugallása illetve felerõsítése, földrajzi elhelyezkedés ismertetése, a játékost megszemélyesítõ
 karakter (vagyis az avatar) jellemzése, vagy éppen a játékos aktuális cselekvésének sikerességét is
-szokás hangokkal jelezni a felhasználó felé (pl.: fegyver felvétele, szintlépés, stb.).
+szokás hangokkal jelezni a felhasználó felé (pl.: fegyver felvétele, szintlépés, stb.)\cite{SoundDesign}.
 
 Összességében az elmondható, hogy a megfelelõen megválasztott és idõzített hangokkal hatni lehet a
 felhasználók lelki világára illetve hangulatára, emellett informálják õket a státuszukról, az aktuális környezetrõl illetve az elõrehaladásukról is, s ezen tulajdonságaik miatt a mai játékok elengedhetetlen kellékei.
@@ -279,8 +280,16 @@ melyet az alábbiakban ismertetek.
 %----------------------------------------------------------------------------
 \subsection{Megvalósítás}
 %----------------------------------------------------------------------------
-A megvalósításhoz az ingyenes, platformfüggetlen OpenAL-t használtam fel, mely az OpenGL 
-hang-analógiájának is tekinthetõ, legalábbis ami az API felépítését tekinti. Állapotgép!!!
+A megvalósításhoz az ingyenes, platformfüggetlen OpenAL-t használtam fel. Ez egy háromdimenziós hang
+rendereléssel foglalkozó függvénykönyvtár, mely API szinten nagyon hasonlít az OpenGL-hez, így
+a használata a grafikában jártas fejlesztõk számára könnyen elsajátítható.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=40mm, keepaspectratio]{figures/OpenAL_logo.png}
+\caption{Az OpenAL logója.}
+\label{fig:OpenALLogo}
+\end{figure}
 
 Az implementáció ismertetéséhez szükség van néhány OpenAL-hez kapcsolódó fogalom tisztázására, melyeket
 a következõkben ismertetek.
@@ -320,21 +329,42 @@ aztán az \verb+Ambient+ típusúak következnek, végül pedig a \verb+SoundEffect+-e
 a \verb+listener+-tõl való távolság határozza meg (a közelebbi kerül elõrébb a sorban).
 Az így berendezett tároló elsõ 16 eleme OpenAL \verb+source+-hoz jut, a többi pedig várakozni kényszerül.
 
+Ez a megoldás egyébként analógia a grafikai motoroknál megszokott fényforrások kezelésére.
+
 %----------------------------------------------------------------------------
-\section{Részecskerendszerek}
+\section{Plakátok és részecskerendszerek}\label{sect:Particles}
 %----------------------------------------------------------------------------
 Háromdimenziós grafikában megszokott, hogy a felületeket háromszöghálókkal jelenítik meg.
 Azonban vannak olyan esetek, melyeknél ez a módszer nem vezet megfelelõ eredményre.
-Ha például füst-öt, tüzet, hóesést, ködöt és egyéb olyan jelenséget szeretnénk megjeleníteni,
+Ha például füstöt (\figref{ParticlesSmoke} ábra), tüzet, hóesést, ködöt és egyéb olyan jelenséget szeretnénk megjeleníteni,
 melyek sok kis részecskével modellezhetõek, akkor a hagyományos reprezentálási mód helyett
 egy másik módszert célszerû alkalmazni. Ilyen esetek megjelenítéséhez a számítógépes grafika
 plakátokat illetve részecskerendszereket használ.
 
-A plakátok olyan kétdimenziós síkok, melyek normálvektoraik mindig az aktuális kamera nézeti irányával
-ellentétesek. Ezzel a technikával például fák lombozatát hatékonyan meg lehet valósítani.
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=60mm, keepaspectratio]{figures/particles_smoke.jpg}
+\caption{Példa füst megjelenítésére részecskerendszerek segítségével\cite{SmokeParticles}.}
+\label{fig:ParticlesSmoke}
+\end{figure}
 
-Mik a részecskerendszerek?
+A plakátok olyan kétdimenziós -- általában textúrázott -- síkdarabok, mely normálvektoraik
+mindig az aktuális kamera nézeti irányával ellentétes irányúak, vagyis a kurrens nézeti síkkal
+párhuzamosak. Ezzel a technikával háromdimenziós érzetet lehet kelteni a felhasználóban, hiszen
+az imént leírt tulajdonsága miatt a geometria kétdimenziós mivoltát el lehet titkolni a felhasználó
+elõl. A plakátokat általában növényzet illetve távoli objektumok megjelenítésére és részecskerendszerek
+definiálásához használják.
 
+Viszont önmagában egyetlen kétdimenziós síklap nem elegendõ a korábbiakban említett effektek vizuális megjelenítésére,
+ellenben nagy mennyiségû használatuk segítségével igen is valósághû eredményeket lehet produkálni.
+A számítógépes grafikában a részecskerendszerek éppen olyan objektumok, melyek sok-sok megfelelõen elhelyezett
+és textúrázott plakát segítségével jelenítik meg a korábban említett jelenségeket.
+
+Általában a részecskéket kibocsátó objektumot \verb+emitter+-nek nevezik. Szokás megadni a részecskék
+keletkezési gyakoriságát és mennyiségét, kezdõsebességét, élettartamát, színét és még sok-sok más
+paramétert az imént felsoroltakon kívül. Az is jellemzõ, hogy a fejlesztõk nem konkrét értékeket adnak
+meg a paramétereknek, hanem várható értékkel és szórással vagy minimum és maximum korlátokkal
+definiálják a mennyiségeket, amivel még valósághûbb eredményeket lehet elérni.
 
 Az OGRE lehetõséget ad a felhasználóknak részecskerendszerek szkriptbõl történõ létrehozására, így
 nem kell "beégetni" a kódba a részecskerendszer tulajdonságait, illetve annak módosításakor nem kell
@@ -344,12 +374,23 @@ definiált részecskerendszert betöltsünk egy komponensbe, majd azt tetszõlegesen 
 A rendszeremben ezt a feladatot a \verb+ParticleComponent+ nevû osztály látja el.
 
 %----------------------------------------------------------------------------
-\section{Egyéb}
-%----------------------------------------------------------------------------
-Delegate
-
-%----------------------------------------------------------------------------
 \section{Áttekintés}
 %----------------------------------------------------------------------------
+Ez a szakasz az ebben a fejezetben ismertetett általános célú, komponens alapú játékmotorom
+funkcionalitásainak összefoglalását teszi meg.
 
-<DIAGRAMOK!!!>
+Elsõként azokra a funkcionalitásokra szeretnék kitérni, melyek már az alapképzés során elkészített
+rendszeremben is jelen voltak, de átdolgozásra kerültek a mesterképzésem alatt. Ilyen funkcionalitás
+a fizika, melyben a \sectref{PhyMaterial} szakaszban leírtaknak megfelelõen változott az anyagok leírása, illetve
+a \sectref{PhyEvents} szakaszban ismertetett módon bõvült a rendszer a fizikai események kezelésével.
+Emellett a megjelenítés is egy olyan része a rendszernek, mellyel természetesen már rendelkezett a korábbi
+megvalósításom is, viszont számos ponton bõvült azóta. Itt példaként említhetõ a \sectref{Animation} szakaszban
+ismertetett animációs alrendszer, a \sectref{GUI} szakaszban kifejtett felhasználói felület illetve a
+\sectref{Particles} szakaszban taglalt részecskerendszerek.
+
+Ezek mellett kerültek be olyan funkcionalitások is a rendszerembe, melyek az alapképzés során elkészített
+motoromnak nem voltak részei. Ilyen funkcionalitás a \sectref{Audio} szakaszban leírt hangrendszer, vagy a 
+\sectref{Prefab} szakaszban ismertetett játékobjektumok késleltetett létrehozása.
+
+Összességében elmondható, hogy az alapképzés során elkészített komponens alapú játékmotorhoz képest a jelen dolgozat
+által ismertetett játékmotor egy merõben más rendszer.

@@ -1,10 +1,10 @@
 %----------------------------------------------------------------------------
-\chapter{Bevezetõ}
+\chapter{Bevezetõ}\label{sect:Intro}
 %----------------------------------------------------------------------------
 Ez a fejezet tartalmazza a diplomaterv-kiírás értelmezését, történelmi elõzményeit, a feladat indokoltságát
 (a motiváció leírását), illetve az eddigi megoldások rövid áttekintését.
 
-A fejezet a diplomaterv felépítésével zárul, mely a további fejezetek rövid tartalmi ismertetõjét
+A fejezet a diplomaterv felépítésének ismertetésével zárul, mely a további fejezetek rövid tartalmi ismertetõjét
 foglalja magában.
 
 %----------------------------------------------------------------------------
@@ -21,9 +21,9 @@ kell kiterjednie:
 	megvalósításával
 	\item általános állapotgép funkciók megvalósítása, melyeket késõbb a felhasználó hasznosítani
 	tud pl.: mesterséges intelligencia implementálásánál
-	\item motor képességeinek bõvítése felhasználói felület megvalósításával
-	\item motor képességeinek bõvítése hangrendszer megvalósításával
-	\item motor képességeinek bõvítése részecskerendszer megvalósításával
+	\item a motor képességeinek bõvítése felhasználói felület megvalósításával
+	\item a motor képességeinek bõvítése hangrendszer megvalósításával
+	\item a motor képességeinek bõvítése részecskerendszer megvalósításával
 \end{itemize}
 
 %----------------------------------------------------------------------------
@@ -31,70 +31,59 @@ kell kiterjednie:
 %----------------------------------------------------------------------------
 Komponens alapú játékmotor-fejlesztéssel a BSc-s Önálló laboratórium tárgy keretében kezdtem el
 ismerkedni. Ennek a tárgynak a keretein belül megismerkedtem a fizikai és grafikai alrendszerek
-mûködésével, a komponens alapú szemlélettel és ezeken felül lehetõségem volt fejleszteni a C++-
+mûködésével, a komponens alapú szemlélet alapjaival és ezeken felül lehetõségem volt fejleszteni a C\texttt{++}-
 programozási képességemet is. Ezek mellett lehetõségem volt ismerkedni az Ubuntu operációs rendszerrel
-és a QtCreator fejlesztõkörnyezettel is.
+és a QtCreator fejlesztõkörnyezettel is. Az alábbiakban az akkori rendszerben megvalósított pályabetöltésre
+(\figref{BScLabFieldGen}~ábra) illetve útkeresésre (\figref{BScLabPathFinding}~ábra) láthatók példák.
 
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=120mm, keepaspectratio]{figures/bsc_onlab_palya.png}
-\caption{Pályaleírás módja és a betöltés eredménye a BSc-s önálló labor tárgyam alkalmával}
+\caption{Pályaleírás módja és a betöltés eredménye a BSc-s önálló labor tárgyam alkalmával.}
 \label{fig:BScLabFieldGen}
 \end{figure}
 
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=100mm, keepaspectratio]{figures/bsc_onlab_pathfinding.png}
-\caption{Már az BSc-s önálló laboratórium tárgy keretében létezett egy mohó útkeresõ algoritmus}
+\caption{Már az BSc-s önálló laboratórium tárgy keretében létezett egy mohó útkeresõ algoritmus.}
 \label{fig:BScLabPathFinding}
 \end{figure}
 
-A BSc-s Szakdolgozat tárgy keretében alakult ki az a gyakorlat, mely szerint az engine-t és a játékot
+Az alapképzés Szakdolgozat tárgyának keretében alakult ki az a gyakorlat, mely szerint a motort és a játékot
 külön választom, s az elõbbibõl dinamikus csatolású könyvtárat (Windows platformon .dll-t, Linux platformon .so-t),
 utóbbiból futtatható binárist készítek. A tervezés során létrehoztam alrendszereket, melyek feladata
 a komponensek tárolása és kezelése volt. Egy komponenshez aszerint rendeltem alrendszert, hogy
 mikor akartam meghívni annak befrissítõ függvényét. Ezek alapján egy komponens pontosan egy alrendszernek
-lehetett a része. Emellett létrehoztam egy ObjectFactory osztályt, mely a játékobjektumok
+lehetett a része. Emellett létrehoztam egy \verb+ObjectFactory+ osztályt, mely a játékobjektumok
 eltárolásáért felelt. A játékobjektumok létrehozására megfelelõ gyártó objektumokat kreáltam.
 A komponensek leírása helyett a motor (\figref{BScThesisEngineComponents} ábra) és
 játéklogika (\figref{BScThesisGameComponents} ábra) oldali komponens-hierarchiákat UML osztálydiagrammok
-segítségével szemléltetem.
+segítségével szemléltetem. A szakdolgozatom végeredményeként elõálló szoftvert a \figref{BScThesisResult}
+~ábra mutatja be.
 
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=110mm, keepaspectratio]{figures/old_engine_components.png}
-\caption{Szakdolgozatom motor oldali komponenseinek UML osztálydiagrammja}
+\caption{Szakdolgozatom motor oldali komponenseinek UML osztálydiagrammja.}
 \label{fig:BScThesisEngineComponents}
 \end{figure}
 
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=110mm, keepaspectratio]{figures/old_game_components.png}
-\caption{Szakdolgozatom játéklogika oldali komponenseinek UML osztálydiagrammja}
+\caption{Szakdolgozatom játéklogika oldali komponenseinek UML osztálydiagrammja.}
 \label{fig:BScThesisGameComponents}
 \end{figure}
 
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=90mm, keepaspectratio]{figures/bscthesis_result.png}
-\caption{Szakdolgozatom végeredménye}
+\caption{A szakdolgozatom végeredményét képezõ szoftver futásáról egy képernyõkép.}
 \label{fig:BScThesisResult}
 \end{figure}
 
-A mesterképzés kezdeti szakaszában megszüntettem a komponensek
-redundáns tárolását, melyet az okozott, hogy a játékobjektumokban is és a megfelelõ alrendszerekben
-is el voltak tárolva a komponensek. Emiatt változott a komponensek befrissítési mechanizmusa is,
-aminek a lényege, hogy a befrissítési sorrend meghatározásához a megfelelõ befrissítési függvényeket
-kell a komponenseknek felüldefiniálniuk, melyek meghívásáról a gazda \textit{GameObject} gondoskodott.
-Új funkcionalitások implementálásával is foglalkoztam, ugyanis ebben az idõszakban valósítottam meg
-egy alap hang alrendszert, melyet az OpenAL felhasználásával valósítottam meg. Emellett megvalósítottam
-a virtuális világ XML-bõl történõ betöltését is, melynek köszönhetõen a korábbiaknál egyszerûbben tudtam
-leírni a betöltendõ színteret, illetve annak módosítása esetén ennek köszönhetõen már nem kellett többé
-újrafordítanom a kódot, ami a fejlesztés felgyorsítását is eredményezte. Szintén erre az idõszakra
-tehetõ a fényforrások beemelése motor oldalra, illetve az OGRE overlay elemeinek alapszintû,
-játéklogika oldali felhasználása is.
-
-A diplomaterv során az eddigre kialakult rendszert kívánom továbbfejleszteni az elõzõ szakaszban
+Jelen diplomaterv során az eddigre kialakult rendszert kívánom továbbfejleszteni az elõzõ szakaszban
 leírtaknak megfelelõen.
 
 A legfõbb célom ezzel a dolgozattal egy olyan rendszer létrehozása, mely a késõbbiekben alapot
@@ -108,130 +97,126 @@ felhasználható a késõbbiek folyamán.
 %----------------------------------------------------------------------------
 \subsubsection{Öröklés esetén felmerülõ problémák}
 %----------------------------------------------------------------------------
-a többszörös örökléssel vigyázni kell, nehogy beleütközzünk a gyémánt problémába
+Az öröklés alapú megközelítés lényege, hogy a kód újrafelhasználást a függvények használata mellett leszármazással 
+valósítjuk meg, vagyis
+az õsosztály (nem privát) tulajdonságai illetve mûveletei tovább öröklõdnek a leszármazott osztályra.
+Ez a megoldás illeszkedik a fejlesztõk objektumorientált szemléletmódjához, hiszen a specializált
+osztály példányai mindenhol használhatóak, ahol az õsosztály példányai is -- vagyis ahol egy Rombusz példányt
+használni lehet, ott egy Négyzet példányt is, feltéve hogy a Négyzet típus leszármazottja az Rombusz osztálynak.
+Ez a megközelítés közel áll ahhoz, ahogyan a világot szemléljük, így a fejlesztõk egy idõben úgy gondolták, hogy
+az objektumorientált szemlélet lesz az egyeduralkodó paradigma a szoftverfejlesztésben. Ez nem így lett, mivel
+vannak olyan problémakörök, melyek megoldásaira nem az objektumorientált szemlélet a legmegfelelõbb.
 
-Képzeljük el a következõt: öröklésen alapú rendszert akarunk létrehozni, melynek alapja egy absztrakt
-õsosztály, \textit{GameObject} néven. Ebbõl az õsosztályból örököltetünk egy \textit{Dynamic} és egy
-\textit{Static} osztályt, melyek a mozgó és nem mozgó játékobjektumokat reprezentálják.
-De ezek még mindig absztrakt osztályok, vagyis nem lehet õket példányosítani.
-Ahhoz, hogy objektumokat kapjunk, további leszármazásokat kell tennünk. Legyen egy \textit{Dynamic}
-leszármazott \textit{Car} néven, illetve egy \textit{Static} leszármazott \textit{House} néven.
-Ezeken felül ha létrehozunk egy \textit{Caravan} osztályt, mely származik a \textit{Car} és a
-\textit{House} osztályból is, akkor máris fatális logikai hibába ütköztünk, hiszen a \textit{Caravan}
-az egyszerre \textit{Dynamic} és \textit{Static} is, ami természetesen ellentmondáshoz vezet (\figref{BadInheritance} ábra).
+Nagy rendszerek esetében ugyanis könnyen elõfordulhat, hogy a leszármazási hierarchia olyan méreteket ölt, amelyet már nem vagy
+csak nagyon nehezen lehet átlátni illetve módosítani. Gondoljunk csak bele, egy osztály mûködésének teljes megértéséhez
+meg kell érteni az adott osztály õseinek a mûködését is, és így tovább rekurzívan, egészen a leszármazási részfa tetejéig!
+Emellett a módosítás során olyan eset is elõfordulhat, hogy egy új típus több, már a rendszer részét képezõ típus
+specializációjának tekinthetõ (például a négyzet az rombusz is és téglalap is). Ilyen esetben elõjön a többszörös öröklés
+problémája, melynek köszönhetõen a leszármazott osztálynak lehetnek olyan örökölt változói vagy metódusai, melyek
+több õsben is szerepelnek. Ilyen esetben nem egyértelmû, hogy a leszármazott objektumon történõ hívás melyik õsbeli
+implementációt hajtja végre (\figref{DiamondProblem} ábra). Ennek a problémának a megoldására találták ki a virtuális öröklést
+a C\texttt{++} nyelvben,
+viszont modernebb objektumorientált nyelvekben -- mint például a Java -- már nyelvi szinten sem lehet többszörös öröklést
+létrehozni, az említett problémák elkerülése érdekében.
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[width=40mm, keepaspectratio]{figures/bad_inheritance.png}
-\caption{Ellentmondás: a Caravan egyszerre Dynamic és Static is} 
-\label{fig:BadInheritance}
+\includegraphics[width=50mm, keepaspectratio]{figures/diamondProblem.png}
+\caption{A gyémánt probléma: D::foo meghívása esetén mely osztály foo-implementációja hívódik meg?}
+\label{fig:DiamondProblem}
 \end{figure}
-
-Az olvasó gondolataiban persze jogosan megfogalmazódhat, hogy ezt az egyszerû rendszert
-le lehetne cserélni egy olyanra, ahol problémamentesen megférne egymás mellet az autó, a ház illetve
-a lakókocsi osztály is. Ez így is van, de a gyakorlatban nem három, hanem sokkal több játékobjektummal
-kell dolgozniuk a programozóknak, s egy hatalmas öröklési rendszerbe beszúrni egy újabb típusú
-játékobjektumot sokszor vezethet hasonló anomáliákhoz, mint amilyet az elõbbiekben ismertettem.
-
-Ezek után már talán nem is olyan meglepõ, hogy az iparban manapság nem az öröklésen alapuló rendszereket
-részesítik elõnyben. A továbbiakban egy alternatív megközelítést ismertetek.
 
 %----------------------------------------------------------------------------
 \subsubsection{Leszármazás helyett tartalmazás}
 %----------------------------------------------------------------------------
-is-a helyett has-a
+Ennek a szemléletnek az a lényege, hogy a kód újrafelhasználást nem leszármazással, hanem komponensek
+használatával valósítjuk meg. Minden komponens egyetlen jól meghatározott funkcionalitásért felel, éppen ezért ez a
+megközelítés nem úgy tekint az objektumokra, mint más objektum(ok) specializált
+változataira, hanem mint funkcionalitások halmazára. Ennek köszönhetõen egy objektum viselkedését kizárólag az határozza meg,
+hogy milyen típusú komponensek vannak rendelve hozzá. Emiatt futásidõben egyszerûen lehet módosítani egy objektum
+viselkedését, hiszen csak a hozzárendelt komponensek halmazát kell megváltoztatni. Ha több objektumnak is szüksége
+van ugyanarra a funkcionalitásra, akkor egyszerûen csak mindannyian magukhoz veszik az adott funkcionalitást megvalósító
+komponens példányait. Ezen elõnyös tulajdonságai miatt ez a megoldás sok típus esetében rugalmasabb és karbantarthatóbb lehet, mint
+az öröklésen alapuló implementáció, viszont egy ilyen rendszer megalkotása kissé idegen lehet a fejlesztõk számára, hiszen
+el kell vonatkoztatniuk a már jól ismert objektumorientált szemléletmódtól.
 
-composition over inheritance - kód újrafelhasználás és polimorfizmus leszármazás helyett kompozícióval
-
-Ebben a rendszerben kizárólag egyetlen játékobjektum osztály van, illetve ezen kívül vannak komponensek
-is. Minden komponens egyetlen jól meghatározott funkcionalitásért felel, például a kirajzolásért, a
-fizikáért, stb. Általában ilyen rendszerek esetén a felhasználónak is lehetõsége van új komponensek
-létrehozására.
-
-A módszer lényege, hogy a játékobjektum tulajdonságait kizárólag az határozza meg, hogy milyen típusú
-komponensek vannak hozzárendelve, vagyis a játékobjektumtól elcsatoljuk annak tulajdonságait (\figref{ComponentBased} ábra).
-Ez egyszerre lehet áldás és átok is. Áldás, hiszen egy ilyen rendszer sokkal rugalmasabb és karbantarthatóbb lehet,
-mint az öröklésen alapuló megoldás (gondoljunk csak arra, hogy az objektumok tulajdonságait dinamikusan,
-futás közben is nagyon egyszerûen módosíthatjuk), emellett viszont átok is egyben, hiszen egy ilyen rendszer
-megvalósításához el kell vonatkoztatnunk attól az objektumorientált szemléletmódtól, amiben
-egyébként a programozók jelentõs hányada képes gondolkodni.
+Ezt a megoldást alapvetõen kétféleképpen szokták megvalósítani. Az egyik a fix elemes módszer, melynek az a lényege,
+hogy egy játékobjektum kizárólag a fordítási idõben (tagváltozóként) megadott típusú komponensekkel rendelkezhet
+(\figref{FixedSlots} ábra).
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[width=70mm, keepaspectratio]{figures/component_based.png}
-\caption{Funkcionalitás elcsatolása az objektumtól}
-\label{fig:ComponentBased}
+\includegraphics[width=90mm, keepaspectratio]{figures/fixedSlots.png}
+\caption{A fix elemes módszer hátránya a fordítási idõben meghatározott komponens-halmaz.}
+\label{fig:FixedSlots}
 \end{figure}
 
-Ennek a módszernek a segítségével az elõzõ szakaszban felvetett problémát egyszerûen meg lehet oldani.
-Ehhez létre kell hozni három \textit{GameObject} példányt a megfelelõ komponensekkel. A \textit{Car}
-objektumhoz a \textit{WheelComponent} komponenst, a \textit{House} objektumhoz a \textit{KitchenComponent}
-komponenst illetve a \textit{Caravan} objektumhoz mindkét elõbb említett komponenst
-hozzárendeljük (\figref{SolutionWithComponents} ábra).
+Egy másik megvalósítás pedig
+egy õs komponens osztályt definiál, s a különbözõ komponensek ennek az osztálynak a leszármazottai. A játékobjektum ebben az
+esetben egy heterogén kollekciót használ a komponenseinek tárolására, így tetszõleges számú és típusú komponens-leszármazottat
+menedzselhet (\figref{DynamicSlots} ábra). Az én megvalósításomban az utóbbi módszer mellett döntöttem.
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[width=60mm, keepaspectratio]{figures/all_compbased.png}
-\caption{A feladat megoldása komponensekkel}
-\label{fig:SolutionWithComponents}
+\includegraphics[width=100mm, keepaspectratio]{figures/dynamicComponents.png}
+\caption{A polimorfizmuson alapuló megoldás tetszõleges komponens-halmaz használatát lehetõvé teszi.}
+\label{fig:DynamicSlots}
 \end{figure}
 
 %----------------------------------------------------------------------------
-\subsection{Felhasznált technológiák}\label{subsec:3rdparty}
+\subsection{Felhasznált technológiák}
 %----------------------------------------------------------------------------
 Természetesen nem volt -- és nem is lehetett -- célja a szakdolgozatomnak, hogy minden egyes
 funkcionalitást saját magam implementáljak, hiszen ennek a véghez vitele túlmutatott volna a
 tantárgy terjedelmi és idõkorlátain. Ennek megfelelõen a fontosabb részfeladatokhoz már meglevõ,
-ingyenes és platform-független eszközöket használtam fel, melyeket a továbbiakban ismertetek.
+ingyenes és platformfüggetlen eszközöket használtam fel, melyeket a továbbiakban ismertetek.
 %----------------------------------------------------------------------------
 \subsubsection{OGRE 3D}
 %----------------------------------------------------------------------------
 A játékmotorok egyik legalapvetõbb funkcionalitása a virtuális világ megjelenítésének képessége.
 Ennek megvalósításához különféle grafikai alrendszereket használnak fel, melyek lehetnek a motortól
-teljesen külön váló külsõ könyvtárak, vagy éppen a motorhoz fejlesztett belsõ eszközök is. Az én
+teljesen különálló külsõ könyvtárak, vagy éppen a motorhoz fejlesztett belsõ eszközök is. Az én
 megvalósításomban nem volt cél egy ilyen belsõ eszköz megvalósítása, így egy erre a célra alkalmas
 külsõ könyvtárat, az OGRE-t használtam fel, melyet az alábbiakban ismertetek.
 
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=40mm, keepaspectratio]{figures/ogre_logo.png}
-\caption{Az Ogre3D logója}
+\caption{Az Ogre3D logója.}
 \label{fig:OGRELogo}
 \end{figure}
 
 Az OGRE (\textbf{O}bject-Oriented \textbf{G}raphics \textbf{R}endering \textbf{E}ngine), vagyis
 az objektumorientált grafikai megjelenítõ motor egy színtér alapú, rugalmas 3D grafikai motor,
-melyet C++ nyelven készítettek\cite{OGRE}. Célja, hogy könnyebbé tegye a fejlesztõk számára olyan
+melyet C\texttt{++} nyelven készítettek\cite{OGRE}. Célja, hogy könnyebbé tegye a fejlesztõk számára olyan
 alkalmazások készítését, melyek hardveresen gyorsított grafikai megjelenítéseket is igénybe vehetnek.
 Ez a könyvtár elvonatkoztat az alatta levõ grafikai könyvtáraktól (mint például DirectX, OpenGL),
 s ezek használatához biztosít egy egységes interfészt a szoftverrendszer többi szereplõje számára.
 
 Jónéhány grafikai motorral ellentétben tervezés-orientált, s nem funkció-orientált módon készült,
-vagyis a fejlesztés során a letisztult szoftver-struktúra legalább olyan fontos volt, mint a
+vagyis a fejlesztés során a letisztult szoftverarchitektúra legalább olyan fontos szempont volt, mint a
 megvalósított funkciók mennyisége. Ennek köszönhetõen kellõen általános lett ahhoz, hogy bármilyen
 típusú játék elkészítéséhez megfelelõen alkalmazható legyen. Ezek mellett a meglehetõsen gazdag
 dokumentációja is hozzájárult ahhoz, hogy ilyen mértékben elterjedjen a játékfejlesztõk körében.
 
 Elterjedtségének ellenére azonban az OGRE népszerûsége folyamatosan csökken. Ez többek között
-betudható annak, hogy a fejlesztõi közösség az utóbbi idõben nem mutatott megfelelõ aktivitást
-(a Visual Studio 2015-höz fordított 1.9-es SDK 2016 decemberében jelent meg, s azt is csak egy
-fórumozó kommentjében lehetett megtalálni), illetve magyarázható azzal a tendenciával is, hogy
+magyarázható azzal a tendenciával is, hogy
 manapság a játékfejlesztõk elõnyben részesítik azokat a szoftver-rendszereket, melyek nem csak a
-megjelenítésért, hanem más funkcionalitások elvégzéséért is felelõsek. Ez azonban nem kizárólag az
-OGRE problémája, hiszen általánosságban elmondható, hogy az általános célú játékmotorok kezdik
+megjelenítésért, hanem más funkcionalitások -- mint például fizika, hangok, stb. -- elvégzéséért is felelõsek.
+Ez azonban nem kizárólag az OGRE problémája, hiszen általánosságban elmondható, hogy az általános célú játékmotorok kezdik
 kiszorítnani a piacról a funkció-specifikus motorokat.
 %----------------------------------------------------------------------------
 \subsubsection{OIS}
 %----------------------------------------------------------------------------
-Az OIS (\textbf{O}bject \textbf{O}riented \textbf{I}nput \textbf{S}ystem) platformfüggetlen C++
+Az OIS (\textbf{O}bject Oriented \textbf{I}nput \textbf{S}ystem) platformfüggetlen C\texttt{++}
 osztálykönyvtár, melynek feladata a különbözõ felhasználói bemenetek kezelése.
 Az OGRE az 1.4-es verziója óta használja\cite{OIS}.
 
 %----------------------------------------------------------------------------
 \subsubsection{Boost}
 %----------------------------------------------------------------------------
-A Boost C++ szabványon alapuló modern könyvtárak gyûjteménye. Nyílt forráskódú, platformfüggetlen projekt,
-mely a legtöbb népszerû C++ fordítót támogatja\cite{Boost}.
+A Boost C\texttt{++} szabványon alapuló modern könyvtárak gyûjteménye. Nyílt forráskódú, platformfüggetlen projekt,
+mely a legtöbb népszerû C\texttt{++} fordítót támogatja\cite{Boost}.
 
 %----------------------------------------------------------------------------
 \subsubsection{Bullet}
@@ -248,7 +233,7 @@ a Bullet nevû fizikai motort használtam fel\cite{Bullet}.
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=40mm, keepaspectratio]{figures/bullet_logo.png}
-\caption{A Bullet logója}
+\caption{A Bullet logója.}
 \label{fig:BulletLogo}
 \end{figure}
 
@@ -267,7 +252,7 @@ Framestore 2009-es közremûködésével létrejött Sherlock Holmes film.
 \section{Diplomaterv felépítése}
 %----------------------------------------------------------------------------
 A dolgozat második fejezete az eddigi munkám átdolgozásával foglalkozik, kitérve az egyes módosítandó
-egységekre, úgy mint a projektek build-elési folyamatai, az XML-feldolgozó alrendszer, az erõforrások
+egységekre, úgy mint a projektek fordítási folyamatai, az XML-feldolgozó alrendszer, az erõforrások
 kezelése és anyagok leírása.
 
 A dolgozat harmadik fejezete a diplomaterv leglényegesebb része, ugyanis ebben a fejezetben foglalkozok

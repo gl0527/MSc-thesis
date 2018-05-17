@@ -2,23 +2,23 @@
 \chapter{A keretrendszer átdolgozása}
 %----------------------------------------------------------------------------
 Az alábbi fejezet bemutatja azokat a módszereket, melyek segítségével módosítottam a szoftverkörnyezet
-felépítését annak érdekében, hogy annak build-elési módja, karbantarthatósága illetve bõvíthetõsége
+felépítését annak érdekében, hogy annak fordítási módja, karbantarthatósága illetve bõvíthetõsége
 javuljon a korábbi rendszerhez képest.
 
 %----------------------------------------------------------------------------
-\section{Projektek build-elése}
+\section{Projektek fordítása}
 %----------------------------------------------------------------------------
 
 %----------------------------------------------------------------------------
-\subsection{Build-elési idõ csökkentése}
+\subsection{Fordítási idõ csökkentése}
 %----------------------------------------------------------------------------
-C++ projektek esetében nem lehet figyelmen kívül hagyni a build-elési idõ hosszát, hiszen ez az
-egyik leglassabban build-elõ programozási nyelv, ami a komplexitásából adódik. Korábbi munkáim
+C\texttt{++} projektek esetében nem lehet figyelmen kívül hagyni a fordítási idõ hosszát, hiszen ez az
+egyik leglassabban forduló programozási nyelv, ami a komplexitásából adódik. Korábbi munkáim
 során nem törõdtem ezzel a metrikával, hiszen a projektek mérete és bonyolultsága miatt az
-újrabuild-elések ideje sem volt számottevõ, viszont a szakdolgozatom eredményeként megszületett
+újrafordítások ideje sem volt számottevõ, viszont a szakdolgozatom eredményeként megszületett
 szoftverre ezt nem lehetett elmondani. A fejlesztési idõ vége felé kifejezetten hosszú ideig tartott
-egy-egy kisebb módosítás utáni build-elés ideje is, ezért határoztam el azt, hogy idõmet és energiámat
-nem sajnálva megpróbálom csökkenteni a build-elési folyamat idejét, hiszen ha ezt nem tenném meg, akkor
+egy-egy kisebb módosítás utáni újrafordítás ideje is, ezért határoztam el azt, hogy idõmet és energiámat
+nem sajnálva megpróbálom csökkenteni a fordítási folyamat idejét, hiszen ha ezt nem tenném meg, akkor
 a késõbbi -- feltehetõleg nagyobb -- kódbázis esetén a várakozási idõk még hosszabbak lennének.
 
 Az legfontosabb követendõ elv volt számomra a header fájlok szerepének csökkentése. Ez azt
@@ -41,7 +41,7 @@ fájljainak a tartalma is beemelõdik, és így tovább, tranzitív módon. Így könnyen
 a ténylegesen beemelt kódmennyiségnek csak a töredékét szeretnénk ténylegesen használni.
 
 \begin{lstlisting}[frame=single,float=!ht,
-caption={Példa elõdeklarálásra a C++ nyelvben}, label=ForwardDeclarationCpp]
+caption={Példa elõdeklarálásra a C\texttt{++} nyelvben}, label=ForwardDeclarationCpp]
 // forward declaration of class A
 class A;
 class B
@@ -59,7 +59,7 @@ Az én kódjaimban a két ismertetett megoldást együtt használom, így a kívánt funk
 fordítók esetén is el tudom érni, melyek nem támogatják a \verb+#pragma once+ használatát.
 
 \begin{lstlisting}[frame=single,float=!ht,
-caption={Include guard és pragma once együttes használata}, label=IncludeGuardsCpp]
+caption={Include guard és pragma once együttes használata.}, label=IncludeGuardsCpp]
 #ifndef INCLUDE_GUARD
 #define INCLUDE_GUARD
 
@@ -77,11 +77,11 @@ soha -- vagy csak nagyon ritkán -- változnak. Ennek a fájlnak a létrehozása után
 a kurrens fordítónak -- ha az támogatja --, hogy kezelje ezt a header fájlt elõfordítottként, vagyis
 ezt fordítsa le elsõnek, és egyetlen egyszer, s linkeléskor a már meglevõ object fájlt kelljen
 használni. Ez is tipikusan egy olyan módszer, mellyel esetenként többszörös gyorsulást lehet
-elérni az eredeti build-elési módszerhez képest, viszont ha nem megfelelõen használják, akkor
+elérni az eredeti fordítási módszerhez képest, viszont ha nem megfelelõen használják, akkor
 akár többet is árthat, mint használhat.
 
-A felsorolt módszereken kívül természetesen még számos más technika is létezik a C++-os projektek
-build-elési idejének csökkentésére, s a lista valószínûleg a jövõben még tovább fog gyarapodni, hiszen
+A felsorolt módszereken kívül természetesen még számos más technika is létezik a C\texttt{++}-os projektek
+fordítási idejének csökkentésére, s a lista valószínûleg a jövõben még tovább fog gyarapodni, hiszen
 az gyorsításra való igény továbbra is megvan a fejlesztõk körében.
 %----------------------------------------------------------------------------
 \subsection{Binárisok méreteinek csökkentése}
@@ -108,34 +108,59 @@ akar felszabadítani, amit nem is lát, mivel másik heap-en lett foglalva.
 
 Ezt -- miután rájöttem a hiba forrására -- már triviális volt kijavítani, hiszen csak a megfelelõ
 Bullet-hez tartozó statikus könyvtárakat kellett újrafordítani úgy, hogy dinamikusan linkeljék
-magukhoz a C Runtime-ot, majd az engine-re is alkalmazva ezt a beállítást a fentebb említett
-problémák megszûntek. A javítás után az engine mérete -- mivel már nem tartalmazta magában a
+magukhoz a C Runtime-ot, majd a motorra is alkalmazva ezt a beállítást a fentebb említett
+problémák megszûntek. A javítás után a játékmotor mérete -- mivel már nem tartalmazta magában a
 C Runtime-ot -- lecsökkent 1.8MB-ra.
 
 %----------------------------------------------------------------------------
-\subsection{CMake használata}
+\subsection{Automatizált fordítási környezet használata}
 %----------------------------------------------------------------------------
-Az automatizált build-elés a szoftverfejlesztés egyik fontos folyamata, melynek köszönhetõen az
-alkalmazás elkészítését minden egyes alkalommal ugyanazokkal a lépésekkel, beállításokkal illetve
-paraméterekkel lehet megtenni. A kódbázis növekedésével egyre nagyobb igény van az ilyen eszközök
-használatára.
+Minden szoftverfejlesztési folyamatnak része, hogy az elkészültnek gondolt forrásfájlokból bináris
+állományok(at) szeretnénk generálni valamilyen módszerrel. Ennek a generálási folyamatnak
+gyorsnak kell lennie, ami azt jelenti, hogy hamar adjon visszajelzést a programozók számára
+bármiféle hibáról, illetve támogassa a többmagos végrehajtást a modern architektúrák hatékonyabb
+kihasználása érdekében. Emellett a folyamatnak megbízhatónak kell lennie, vagyis a nemdeterminisztikus
+illetve instabil viselkedés nem elfogadható egy ilyen rendszertõl (sem). Mindezeken túl a generálási
+folyamatnak rugalmasnak is kell lennie, ami annyit tesz, hogy könnyen lehessen a folyamatot meghatározó
+paramétereket módosítani illetve értelmezni.
 
-Egy ilyen eszköz a CMake is, ami egy olyan nyílt forrású rendszer, mely platform- és fordítófüggetlen
-módon kezeli a futtatható állományok létrehozási folyamatait. A legtöbb platformfüggetlen rendszerrel
-ellentétben a CMake nem kínál saját építési folyamatot, hanem az aktuális platform natív környezetét
-használja erre a célra. 
+Sok esetben viszont a környezet konfigurációja illetve a fejleszõi igények megnehezítik a generálási folyamatot.
+Errõl van szó például abban az esetben, amikor a forrásfájlok több könyvtárba vannak elosztva.
+Emellett az is bonyolítja a folyamat végrehajtását, ha külsõ könyvtárakat kell használni a folyamat sikeres
+lefutása érdekében. Arról nem is beszélve, hogy ha egy projektet több platformon is szeretnénk használni, akkor
+fel kell készíteni a környezetet többféle fordítóprogram, hardver és operációs rendszer támogatására is.
+A több platform támogatása mellett ma már gyakori, hogy a nagyobb projektek több programozási nyelven készülnek el
+(például PC-re C\texttt{++}-ban, iOS-re pedig Objective-C-ben is készülnek a tartalmak). Ez is növeli a projekt, s így a
+fordítási folyamat komplexitását is.
 
+Az alapképzésem során nem foglalkoztam az általam elkészített szoftverrendeszer ilyen jellegû kérdéseivel, hanem
+kizárólag az adott környezet által biztosított fordítási módszereit (Linux platformon a g++ fordítót, míg Windows
+platformon a Microsoft Visual Studio beépített fordítóját, az MSVC-t) használtam erre a célra. A projekt méretének
+növekedésével viszont megfogalmazódott bennem az igény a fordítási rendszerek használata iránt.
 
-ide kell minden a cmake-rol
+A diplomaterv folyamán elkészített szoftver projekt generálásához a C-ben illetve C\texttt{++}-ban fejlesztett,
+nyílt forráskódú, platformfüggetlen CMake nevezetû programot használtam fel.
+Ezt a szoftvert a Kitware nevû cég készítette a millenium körül, viszont csak az utóbbi három-négy évben
+terjedt el igazán. A legtöbb platformfüggetlen rendszerrel ellentétben a CMake nem kínál saját építési folyamatot,
+hanem az aktuális platform natív környezetét használja erre a célra. Emellett támogatja a statikus és a dinamikus
+könyvtárak fordítását is. Platformfüggetlen tulajdonságából fakadóan rendelkezik grafikus interfésszel is,
+a hagyományos parancssoros interfész mellett (\figref{CMakeGUI} ábra).
 
-hátha más platformon is mûködne a programom
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=150mm, keepaspectratio]{figures/cmake_gui.png}
+\caption{A CMake felhasználói felülete a különbözõ platformokon.}
+\label{fig:CMakeGUI}
+\end{figure}
 
-a visual studio beállításai között matatni sem leányálom + könnyû elrontani
-nagy projekteknél ez egyszerûbb, mint mindig kézzel beállítani a dependenciákat a user-eknél
+A CMake mûködése a következõ: a fordítandó projekt minden forráskönyvtárában definiálni kell egy CMake által értelmezendõ
+szöveges konfigurációs fájlt, amit \verb+CMakeLists.txt+-nek kell elnevezni. A CMake ezeknek a platformfüggetlen konfigurációs
+fájloknak a felhasználásával platformfüggõ állományokat (például Linux környezetben Makefile-t) generál, amiket aztán
+-- platformfüggõ eszközök segítségével -- fel lehet használni a tényleges bináris(ok) generálásához.
 
-a visual studio nem szemeteli tele a forras konyvtarakat
-
-A projekt könyvtárszerkezetének kialakítása
+A CMake használatának elõnyei között megemlítendõ, hogy a forrásfájlok és a fordítókörnyezet által generált fájlok
+fáljrendszer szintû szeparálása könnyedén megoldható, ezzel is megkönnyítve a verziókezelés folyamatát. Emellett
+ez a megoldás lehetõséget ad arra, hogy a jövõben más platformokon is kipróbálhassam az elkészült rendszeremet.
 
 %----------------------------------------------------------------------------
 \section{Jelenetek kezelése}
@@ -158,36 +183,120 @@ melyet az egész rendszer képvisel. Ez azt jelenti, hogy az XML leírás játékobjek
 összessége, amely leírások pedig komponensek leírásaiból tevõdnek össze. Az XML formátum ismertetését
 a Függelék tartalmazza.
 
-Ennek megfelelõen a megvalósítás során komponens parszereket kellett készítenem,
+Ennek megfelelõen a megvalósítás során komponens leírásokat értelmezni képes objektumokat kellett készítenem,
 melyek által létrehozott komponenseket a szülõ XML-tag által reprezentált játékobjektumokhoz kell hozzáfûzni.
 Így a jelenetleíró XML fájl egyetlen rekurzív top-down bejárásával a felhasználó által leírt jelenet
  -- a megfelelõ komponens parszerek meglétében -- megjelenik a szimuláció kezdetén.
 Onnantól kezdve a fizikai világ szabályai illetve a felhasználói események indukálhatják a virtuális
 világ változásait.
 
-Az XML parszolásához a TinyXML nevû eszközt használtam fel, amely egy C++-ban írt, platformfüggetlen,
-nyílt forráskódú, ingyenes XML feldolgozó könyvtár.
+A komponensek leírásai mellett a jelenetek globális paramétereit -- úgy mint a felhasználandó égbolt OGRE anyagleírás
+neve vagy éppen a környezeti fény értéke -- is lehetõsége van megadnia a felhasználónak.
+
+Az XML parszolásához a TinyXML nevû eszközt használtam fel, amely egy C\texttt{++}-ban írt, platformfüggetlen,
+nyílt forráskódú, ingyenes XML feldolgozó könyvtár\cite{TinyXML}.
 
 %----------------------------------------------------------------------------
 \section{Bemenetek kezelése}
 %----------------------------------------------------------------------------
-Ezelõtt a bemeneti eszközök eseményeit kizárólag pollingolós módszerrel figyeltem, ami azt jelenti,
-hogy minden frame-ben rá kellett néznem a bemeneti eszközök aktuális állapotaira. Ennek a megoldásnak
-az az elõnye, hogy mindig pontosan tudom, hogy az update-elési lánc melyik részérõl polling-olok.
-A megoldásnak a hátránya viszont az, hogy nem költség-hatékony, hiszen a frame-enkénti ellenõrzés
-túl sok fölösleges kommunikációt vihet a rendszerbe.
+A felhasználói bemenetek kezelése az egyik legalapvetõbb funkcionalitása egy mai játékmotornak.
+Az alapképzés során elkészített rendszerem is tartalmazott ilyen megoldást, habár az akkori
+implementáció mindössze a bemeneti eszközök állapotainak folyamatos lekérdezésére korlátozódott.
+Ez a megoldás azért volt elõnyös, mert bármilyen bemeneti eseményhez hozzá lehetett rendelni
+az akkori rendszer fõhurkának egy adott pontját. Az implementáció hátrányaként felróható
+az a kommunikációs overhead, amit a frame-enkénti állapot-lekérdezések okoznak, vagyis ez a megoldás
+nem nevezhetõ hatékonynak.
 
-Ezt a megoldást kiegészítettem azzal, hogy a bemeneti eseményeket figyelõ osztályom (InputManager)
-feliratkozik OIS eseményekre, s mint ahogy azt az Observer tervezési mintánál megszokhattuk, bármilyen
-bemeneti eszköz-eseményrõl értesítést kap, s meghívódik a megfelelõ eseménykezelõ függvénye. Ennek a
-megoldásnak az az elõnye, hogy az eseménykezelõ kód kizárólag akkor hívódik meg, amikor az esemény
+Éppen ezért a diplomatervezés elkészítése során a bemeneti események menedzseléséért felelõs
+\verb+InputManager+ osztályt kiegészítettem azzal, hogy feliratkozik OIS eseményekre, s az
+Observer tervezési mintának\cite{ObserverPattern} megfelelõen bármilyen egér illetve billentyûzet eseményrõl értesítést
+kap, s meghívódnak a megfelelõ eseménykezelõ függvényei. Ezekben az eseménykezelõ függvényekben
+meghívja a rá feliratkozott objektumok ugyanazon nevû eseménykezelõ függvényeit. Az implementáció
+arra is gondot fordít, hogy a felhasználói felületet külön kezelje a többi observer objektumtól,
+amire azért van szükség, mert az események kezelésében a felhasználói felület elsõbbséget élvez.
+Ez annyit tesz, hogy ha a rendszerbe beérkezik egy felhasználói esemény, akkor az \verb+InputManager+
+osztály elõször azt vizsgálja meg, hogy a felhasználói felület lekezeli-e azt. A rá feliratkozott objektumoknak
+csak abban az esetben adja tovább a felhasználói eseményeket, ha a felhasználói felület nem kezelte le azokat.
+Ennek a megoldásnak az az elõnye, hogy az eseménykezelõ kód kizárólag akkor hívódik meg, amikor az esemény
 bekövetkezett, tehát nincs fölösleges kommunikációs overhead. A megoldás hátrányaként ugyanakkor
 megemlíthetõ, hogy nem tudjuk azt, hogy az eseménykezelõ függvény az update-lánc melyik szakaszában
 hívódott meg.
 
-Ahogy látható, mindkét megoldásnak megvannak az elõnyei illetve a hátrányai egyaránt, éppen ezért
-a felhasználó dönthet arról, hogy mikor melyik módszert kívánja használni a bemeneti események
-kezelésére.
+Mivel mind a frame-enkénti lekérdezéseknek, mind az observer mintás megoldásnak megvannak az elõnyei
+illetve a hátrányai egyaránt, ezért mindkét megoldás a rendszerem részét képezi, ennek megfelelõen a felhasználóra
+van bízva az, hogy mikor melyik eseménykezelési módszert választja.
+
+%----------------------------------------------------------------------------
+\section{Események kezelése}\label{sect:Events}
+%----------------------------------------------------------------------------
+Olyan nagy szoftverarchitektúrák esetében, mint amilyen egy játékmotor is, a rendszer mûködésének egyik sarkallatos pontja
+a különféle események kezelése. Az eseménykezelésért felelõs alrendszernek a teljesítménye az egész rendszer teljesítményére hatással van.
+
+Az alapképzés során megvalósított rendszeremben az Event Aggregator\cite{EvtAggregator} tervezési mintát használtam az események
+kezelésére, amely az Observer minta általánosítása. Ennek a megoldásnak az a lényege, hogy a rendszerben az eseményforrásokon
+és az eseményfeliratkozókon kívül van még egy objektum, az esemény-gyûjtõ, melyrõl a minta a nevét is kapta.
+Ennek az objektumnak az a feladata, hogy összegyûjtse a rendszerben levõ összes esemény-forrástól azok eseményeit,
+s értesítse a rájuk feliratkozókat azok elsülése esetén. Ez a megoldás azért elõnyös, mert megszünteti a függéseket
+a források és a feliratkozók közt, hiszen mind a források, mind a feliratkozók csak az esemény-gyûjtõtõl függnek ebben a
+megoldásban. Az alapképzés keretein belül elkészített játékmotoromban azonban nem valósítottam meg megfelelõen ezt a
+tervezési mintát, hiszen a források és a feliratkozók nem lettek teljesen függetlenek egymástól.
+
+A mesterképzés keretein belül megvalósított rendszeremben az imént ismertetett megoldástól eltérõ módszert választottam
+az események kezelésére, melyet az alábbiakban ismertetek. Ehhez elõször a C\texttt{\#} nyelv beépített \verb+delegate+
+típusát ismertetem.
+
+A C\texttt{\#} nyelv delegate típusa olyan típus, mely egy vagy több metódusra képes hivatkozni. Ezeket a metódusokat
+belül listában tárolja el. A típus példányosítása során dõl el, hogy egy delegate példány milyen szignatúrájú függvényekre
+mutathat. A delegate példányokhoz függvényeket a \texttt{+} illetve \texttt{+=} operátorok használatával lehet hozzáadni, illetve
+a \texttt{-} és \texttt{-=} operátorok segítségével lehet elvenni. A delegate objektumon meghívott függvényhívás operátor hatására
+a benne referált függvények egytõl egyig meghívódnak. Egy delegate példánynak nem lehet értékül adni egy másik delegate
+objektumot, viszont értelmezve van az \texttt{==} és a \texttt{!=} operátor egyaránt. Két delegate példány megegyezik, ha mindkettejük
+értéke null, vagy ha híváslistáikon ugyanazon objektumok ugyanazon metódusai (vagy ugyanazon statikus metódusok) szerepelnek.
+A delegate-ek legnagyobb haszna, hogy nem kell tudnunk fordítási idõben, hogy milyen metódusokat akarunk használni,
+ezt futási idõben, dinamikusan el lehet dönteni. Ennek köszönhetõen a C\texttt{\#} programozási nyelv beépített eseménykezelõ
+mechanizmusa is többek között erre a típusra épül\cite{CSharp}.
+
+Az események kezelésének megkönnyítése érdekében a saját rendszeremben is definiáltam egy Delegate típust, mely
+használatát tekintve hasonlít az imént ismertetett C\texttt{\#}-os delegate-hez. Az implementáció -- a probléma
+jellegébõl fakadóan -- generikus: az osztály sablon paraméterekben kapja meg a kezelendõ függvények szignatúráját, vagyis
+azok visszatérési értékeinek illetve paramétereinek típusait. Mivel a tárolandó függvényeknek tetszõleges számú paramétere
+lehet, így a megoldás során fel kellett használnom a C\texttt{++}11 óta szabványosított változó paraméterszámú sablonokat is.
+
+%----------------------------------------------------------------------------
+\section{Fizikai események kezelése}\label{sect:PhyEvents}
+%----------------------------------------------------------------------------
+A fizikai rendszerben különbözõ események keletkeznek, például amikor két objektum összeütközik, vagy egy trigger objektum
+ütközõgeometriáját metszi egy másik objektum, stb. A fizikai rendszerek triggernek nevezik az olyan objektumokat, melyek
+habár rendelkeznek ütközõgeometriával, de a velük történõ ütközéseket a fizikai rendszer nem kezeli le, az ütközésekre adott válasz
+megadása teljes mértékben a felhasználókra van bízva. Az ilyen viselkedéssel bíró objektumok felhasználásával létrehozhatók portálok,
+teleport illetve csapda objektumok, illetve bármilyen olyan objektum, melynek bizonyos más objektumok adott pozíciót történõ
+elérésérõl kell eseményt jeleznie a fizikai rendszer felé.
+
+A mesterképzés ideje alatt megalkotott rendszeremben a fizikai világ által generált események kezelését a \sectref{Events}. szakaszban
+ismertetett Delegate objektumok felhasználásával valósítottam meg. Ezeket a Delegate példányokat a motorban létrehozott fizikai
+rendszer fizikai eseményeket kezelõ függvénye hivja meg, melynek hatására a hozzájuk beregisztrált összes eseménykezelõ függvény
+lefut a megfelelõ paraméterekkel.
+
+%----------------------------------------------------------------------------
+\section{Komponensek kezelése}
+%----------------------------------------------------------------------------
+Az alapképzés során megalkotott rendszeremben a komponensek mind a hozzájuk tartozó játékobjektumokban, mind
+a befrissítésüket végzõ alrendszerekben el voltak tárolva. Ez a duplikált tárolás egyrész fölöslegesen
+használt többlet erõforrásokat, másrészt -- mivel akkor még nem használtam okos mutatókat -- az objektumok
+törlésénél rendkívül körültekintõnek kellett lennem az esetleges futásidejû hibák elkerülésének érdekében.
+
+Ebben a rendszerben a komponensek a \sectref{Events} szakaszban ismertetett EventAggregator használatával kommunikáltak
+egymással. Ezzel az volt a probléma, hogy a kommunikálni kívánó komponensek között függõség alakult ki, mely alapjaiban
+mond ellent a komponens alapú megvalósításnak.
+
+A mesterképzés során megszüntettem a komponensek duplikált tárolását, a komponensek ugyanis már csak a hozzájuk tartozó
+játékobjektumokban vannak eltárolva. Ami a komponensek kommunikációját illeti, se nem az alapképzés során használt EventAggregator
+tervezési mintát, se nem a korábban említett Delegate-eket nem használom erre a célra. A komponensek ugyanis elérik a hozzájuk tartozó
+játékobjektumot, s mivel minden játékobjektumtól le lehet kérdezni annak komponenseit, így a komponensek kommunikációja
+gyakorlatilag indirekciókon keresztül történik. A gazda játékobjektum mellett bármely más játékobjektum is könnyedén elérhetõ a
+komponensekbõl, mivel a játékobjektumok -- nevükkel azonosítva -- az ObjectManager osztályban vannak eltárolva, s onnan név szerint
+lekérdezhetõek. Ennek megfelelõen nem csak az azonos játékobjektumokhoz tartozó komponensek kommunikálása, hanem bármely két
+komponens kommunikálása is megoldható a rendszeremben.
 
 %----------------------------------------------------------------------------
 \section{Transzformációk kezelése}
@@ -201,7 +310,7 @@ játékobjektumokat reprezentáló osztályba került volna elhelyezésre, túlságosan m
 illetve megnehezítve annak kezelését.
 
 Ennek a problémának a kiküszöbölésére hoztam létre a rendszeremben a geometriai transzformációkért
-(eltolás, forgatás illetve skálázás) felelõs motor oldali komponenst, a TransformComponent-et.
+(eltolás, forgatás illetve skálázás) felelõs motor oldali komponenst, a \verb+TransformComponent+-et.
 A rendszeremben ez az egyik legfontosabb komponens típus, ugyanis ez az egyetlen olyan komponens-
 leszármazott, melyet alapértelmezetten hozzárendelek minden játékobjektumhoz. Emellett természetesen
 rengeteg más komponens is támaszkodik a transzformációs komponens különbözõ funkcionalitására, így
@@ -216,9 +325,10 @@ Viszont amilyen fontos ennek az osztálynak a helyes és hatékony mûködése, annyir
 az állapotnak az elõidézése, ugyanis ehhez nélkülözhetetlenek matematikai -- fõleg lineáris algebrai --
 alapismeretek.
 
-A megvalósításhoz a TransformComponent nyílván tartja a hozzá tartozó játékobjektum transzformációs
-adatait (eltolást, forgatást, skálázást illetve az ezeket egységben reprezentálni képes transzformációs mátrixot) mind világtérben, mind a szülõ koordináta-rendszerében. Bármilyen módosítás hatására be kell
-frissíteni az összes vektort/kvaterniót/mátrixot a konzisztens állapot érdekében. A sok tagváltozó miatt
+A megvalósításhoz a \verb+TransformComponent+ nyílván tartja a hozzá tartozó játékobjektum transzformációs
+adatait (eltolást, forgatást, skálázást illetve az ezeket egységben reprezentálni képes transzformációs
+mátrixot) mind világtérben, mind a szülõ koordináta-rendszerében. Bármilyen módosítás hatására
+frissíteni kell az összes vektort/kvaterniót/mátrixot a konzisztens állapot érdekében. A sok tagváltozó miatt
 az osztály getter függvényeinek költsége elhanyagolható, viszont az elõbb említett konzisztens
 állapot megtartása miatt a setter függvények költsége nagyságrendekkel nagyobb, de ez összességében
 nem volt zavaró tényezõ a fejlesztés és a tesztelés során sem. Egyébként is a helyes mûködést ez a
@@ -229,7 +339,7 @@ diplomaterv fontosabbnak tartja, mint a villámgyors mûködést.
 %----------------------------------------------------------------------------
 Korábban nem fordítottam kellõ figyelmet az erõforrások kezelésére, hiszen lényegtelen volt, hogy
 milyen fájlszerkezetben vannak elhelyezve, illetve milyen módon vannak betöltve. Csak az számított,
-hogy a betöltés sikeres legyen. Ezzel nem is volt gond addig, amíg a motor illetve a hozzá tartozó
+hogy a betöltés sikeres legyen. Ezzel nem is volt gond mindaddig, amíg a motor illetve a hozzá tartozó
 példa alkalmazás kis méretû volt, s kevés erõforrást használt.
 
 Viszont ahogy nõtt a felhasználandó erõforrások száma, úgy kezdett egyre nehézkesebbé válni
@@ -252,21 +362,138 @@ tehát ezzel a megoldással az erõforrások újra felhasználhatóak más kontextusban 
 Végül, de nem utolsó sorban mivel ezek az erõforrásokból álló egységek tömörítve foglalnak helyet a
 számítógép háttértárán (.zip fájlok), így tárterületet is lehet spórolni ezzel a megoldással.
 
-resource group-okra bontas fajlrendszer szinten es a leiro fajlban is (minden resource group egy
-jelenetnek feleltethetõ meg)
+A megoldás egy másik következménye, hogy a különbözõ jelenetek erõforrásait mind fájlrendszer szinten,
+mind az OGRE által használatos erõforrás-leíró fájlokban -- úgynevezett erõforrás-csoportok létrehozásával --
+egyszerûen külön lehet választani.
 
 %----------------------------------------------------------------------------
-\section{Anyagjellemzõk leírása}
+\section{Grafikai anyagjellemzõk leírása}\label{sect:GraphMaterial}
 %----------------------------------------------------------------------------
-Egy játékmotor lehet akármennyire jól használható, rugalmas és hatékony, ha nem tud grafikailag
-elfogadható eredményt produkálni vele a felhasználó, akkor igazából nem jó semmire.
+A grafikus alkalmazások elsõdleges megítélési szempontja az általuk biztosított megjelenítés
+minõsége. Ehhez többek között definiálni kell a megjelenítendõ felületek anyagtulajdonságait, melyek
+meghatározzák például azt, hogy megvilágítás hatására a felület a beérkezõ fényt hogyan nyeli el, töri
+meg illetve veri vissza.
 
-Az OGRE-ben az anyagok leírására material script-eket szokás használni. Ezek olyan szkriptek, melyek
-segítségével könnyen olvasható formában lehet leírni a legkülönfélébb anyagoktulajdonságokat, illetve kényelmesen
-lehet árnyalóprogramoknak paramétereket átadni. Pontosabban az anyagleíró szkriptekben nem közvetlenül
-árnyalóprogramokat, hanem azok egy OGRE-ben definiált absztrakcióit, az úgynevezett programokat
-használhatjuk.
+Az OGRE lehetõséget nyújt a fejlesztõk számára, hogy a saját anyagleíró szkript formátumában
+adhassák meg a különféle anyagok tulajdonságait. Ebbe természetesen a különféle árnyalóprogramok
+kezelése is beletartozik. Az OGRE-ben dedikált változók felhasználásával lehet az árnyalóprogramok
+bemeneteit (például kurrens kamerapozíció, model mátrix stb.) megadni Az általam is használt
+árnyaló paraméterek listáját a \tabref{ShaderParamTable} táblázat tartalmazza. A teljes listát
+az OGRE honlapján\cite{OgreShaderParams} lehet megtalálni.
 
-Az árnyalóprogramok tekintetében csak az OpenGL jöhetett szóba, melynek árnyalónyelve a GLSL. Egy
-alternatíva lehetett volna a DirectX is, de ennek használata akadályokba ütközött,
-errõl részletesebben a \sectref{Engine} fejezetben írok.
+\begin{table}[ht]
+	\footnotesize
+	\centering
+	\caption{Az OGRE általam is használt árnyalóparamétereinek listája.} \label{tab:ShaderParamTableDesc}
+	\begin{tabular}{ | c | c | }
+	\hline
+	Szimbólum neve & Szimbólum jelentése \\ \hline
+	world\_matrix & modelkoordinátákból világkoordinákat képezõ transzformáció mátrixa \\
+	inverse\_world\_matrix & modelkoordinátákból világkoordinákat képezõ transzformáció mátrixának inverze \\
+	worldviewproj\_matrix & modelkoordinátákból képernyõkoordinátákat képezõ transzformáció mátrixa \\
+	light\_diffuse\_colour & fényforrás diffúz színe \\
+	light\_specular\_colour & fényforrás spekuláris színe \\
+	light\_position & fényforrás pozíciója \\
+	light\_attenuation & fényforrás csillapodási faktorai \\
+	camera\_position & kamera pozíciója \\ \hline
+	\end{tabular}
+	\label{tab:ShaderParamTable}
+\end{table}
+
+Az alapképzésem alatt nem tértem ki ennek a területnek a tanulmányozására, mivel végig olyan
+erõforrásokat használtam, melyekhez biztosítva voltak a megfelelõ anyagleíró fájlok (konzulensem
+Játékfejlesztés címû labor tárgya által), illetve a hozzá tartozó árnyalóprogramok. Emellett ha
+ez mégsem teljesült volna, akkor is futott volna az alkalmazásom, mivel akkoriban olyan OGRE verziót
+használtam, mely még DirectX9-et támogatott, amely még kínált alapértelmezett árnyalóprogramokat a
+fejlesztõk számára (fixed function pipeline).
+
+A diplomatervem elkészítéséhez új OGRE verziót (1.9) kezdtem el használni, mely már a DirectX11-et támogatta,
+amelyben viszont már nincs fixed function pipeline, s ebbõl akadtak gondok (lásd \sectref{Engine}.~fejezet).
+Ebbõl következik, hogy az elkészített rendszerem OpenGL megjelenítésen alapul. Ez a megoldás az imént leírt probléma
+áthidalása mellett lehetõséget teremt egy esetleges jövõbeni, többplatformos megoldás elkészítésére is.
+
+A problémák gyors és egyszerû elhárítása érdekében át kellett térnem egy olyan OpenGL verzió használatára,
+mely még tartalmaz alapértelmezett árnyalóprogramokat. Én az OpenGL 3.0-s verzióját választottam, melyet 2008
+augusztusában adtak ki. Így már lehetõségem nyílt az OpenGL árnyalónyelve, a GLSL segítségével megvalósítani
+a kívánt árnyalóprogramokat, melyeket a továbbiakban ismertetek.
+
+Négy darab árnyalóprogramot készítettem. Ezek közül egyetlen darab csúcspont árnyaló, míg a többi pixel -- 
+vagy ahogy az OpenGL terminológia nevezi: fragmens -- árnyaló. Ezeket az árnyalóprogram típusokat a \figref{OpenGLPipeline}
+ábra piros buborékai jelzik.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=100mm, keepaspectratio]{figures/opengl_pipeline.jpg}
+\caption{Az OpenGL csõvezeték fontosabb elemei.}
+\label{fig:OpenGLPipeline}
+\end{figure}
+
+Az egyetlen csúcspont árnyaló fõ feladata, hogy
+a bemenetére érkezõ, model koordinátákkal megadott csúcspontokat képernyõkoordinátákba transzformálja. Emellett
+a megvalósításom a csúcspontok pozícióit illetve normálvektorait világkoordinátákban is megadja. Ezen túl
+a fragmens árnyalók számára textúra koordinátákat definiál. 
+
+Ehhez a csúcspont árnyalóhoz készítettem egy olyan fragmens árnyalót, mely Phong\cite{PhongShading} (azaz per fragmens) árnyalást valósít meg.
+Emellett még két fragmens árnyalót hoztam létre, az egyiknek az a feladata, hogy világkoordinátabeli pozíció
+segítségével a környezeti fényt meghatározza. A másik árnyalóprogram azért felel, hogy a pályához felhasznált
+textúrákba magas dinamikatartományú statikus fényeket égessen bele (utóbbi technikát a szakirodalom lightmapping-nek nevezi\cite{LightMapping}).
+
+Az eddigiekkel kapcsolatosan megjegyzendõ, hogy az árnyalóprogramokat játéklogika oldalon készítettem el,
+motor oldalon nem hoztam létre ilyen jellegû fájlokat. Ennek köszönhetõen a játékmotorom mindenkori felhasználójára
+van bízva, hogy olyan anyagleíró szkripteket készít-e, amelyek az OpenGL alapértelmezett árnyalóprogramjait használják,
+vagy esetleg olyan OGRE anyagleírásokat hoz létre, melyek a szintén általa létrehozott GLSL árnyalóprogramokon alapulnak.
+Viszont ahogy arra korábban is kitértem, a felhasználók nem használhatnak más árnyaló nyelvet, mivel a megjelenítés
+OpenGL fölött fut.
+
+%----------------------------------------------------------------------------
+\section{Fizikai anyagjellemzõk leírása}\label{sect:PhyMaterial}
+%----------------------------------------------------------------------------
+
+Egy háromdimenziós játéktól manapság egy alapvetõ elvárás, hogy a megjelenítés mellett a
+színtérben megjelenõ objektumokra ható
+gravitációt szimulálni illetve az objektumok között történõ ütközések detektálását kezelni tudja.
+Az objektumok ütközéseinek viselkedését -- a tömegük mellett -- az objektumok fizikai anyagminõsége határozza
+meg. Ezen anyagjellemzõk leírásához számos paramétert lehet használni, a legfontosabbak véleményem szerint
+a lineáris és perdület csillapítás, a surlódás illetve a pattogósság.
+
+Az alapképzésem alatt a rendszerem rendelkezett többféle fizikai komponenssel is (dinamikus, kinematikus
+és statikus), s ezek közül a dinamikus fizikai komponens foglalkozott egyedül fizikai anyagleírással, de az
+is csak a súrlódással illetve csillapításokkal. Az implementáció kimerült abban, hogy a Bullet hasonló nevû
+függvényei fölé csomagoló függvényeket készítettem, melyek a Bullet API-jába továbbhívva módosították
+a fizikai merevtest tulajdonságait.
+
+A mesterképzés során megalkotott rendszeremben ezt a funkcionalitást kiemeltem a fizikai komponens funkcionalitásai
+közül, s létrehoztam egy különálló osztályt \verb+PhysicsMaterial+ névvel, melynek mindössze annyi a feladata, hogy
+az imént említett fizikai anyagleírásokat eltárolja magában, illetve lehetõséget adjon a felhasználók számára ezen
+paraméterek lekérdezésére illetve módosítására. Ennek megfelelõen a fizikai komponens ennek az osztálynak
+a felhasználásával képes módosítani a mögöttes fizikai merevtest tulajdonságait.
+
+%----------------------------------------------------------------------------
+\section{Fényforrások megadása}
+%----------------------------------------------------------------------------
+Ahogy azt már a \sectref{GraphMaterial}.~szakaszban is leírtam, a grafikus alkalmazások megjelenítési
+képességének fontosságát nem lehet eléggé hangsúlyozni. Ennek a funkcionalitásnak a minõségét
+nagyban meghatározzák a felhasznált fényforrások. A számítógépes grafikában alapvetõen három fajta
+fényforrás típusról lehet beszélni, melyeket rendre pontfényforrásnak, irányfényforrásnak és reflektor-
+fényforrásnak neveznek. 
+
+Az alapképzés során fényforrásokat kizárólag játéklogika oldalon használtam, motor oldalon egyáltalán nem.
+Ennek az volt a hátránya, hogy a játéklogika-programozónak az OGRE szintjén kellett megadni az általa
+használni kívánt fényforrások tulajdonságait.
+
+A mesterképzés keretein belül létrehoztam motor oldalon egy \verb+LightComponent+ nevû osztályt, melynek
+segítségével a felhasználó bármilyen típusú fényforrást egyszerûen tud definiálni. Ehhez bérmilyen fényforrástípus
+esetén lehetõsége van megadni a létrehozandó fényforrás diffúz és spekuláris színét illetve a fényforrás intenzitását.
+Ezek mellett pont és reflektorfényforrás esetén megszabható annak hatótávolsága, illetve a konstans, lineáris és
+négyzetes csillapítása is. Reflektor fényforrás esetén a forgáskúp belsõ és külsõ szögét
+is meg lehet adni, ezt szemlélteti a \figref{SpotLight} ábra. A belsõ szög segítségével azt lehet
+szabályozni, hogy mekkora szögtartományban legyen a fényforrás erõssége maximális. A külsõ szög pedig arra
+való, hogy használatával a felhasználó megadhassa azt a tartományt, amin belül a fényforrás erõssége
+nem nulla.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=100mm, keepaspectratio]{figures/spotlight.png}
+\caption{Reflektor fényforrás mûködése.}
+\label{fig:SpotLight}
+\end{figure}
